@@ -37,8 +37,8 @@ ActionController::Routing::Routes.draw do |map|
   map.connect 'curnit/create/:pid', :controller => 'curnit', :action => 'create'
   map.connect 'curnit/new/:pid', :controller => 'curnit', :action => 'new'
   map.connect 'curnit/list/:pid', :controller => 'curnit', :action => 'list'
-  map.connect 'curnit/:pid/:id', :controller => 'curnit', :action => 'show'
   map.connect 'curnit/:pid', :controller => 'curnit', :action => 'list'
+  map.connect 'curnit/:pid/:id', :controller => 'curnit', :action => 'show'
 
   map.connect 'portal/list', :controller => 'portal', :action => 'list'
   map.connect 'portal', :controller => 'portal', :action => 'list'
