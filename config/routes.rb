@@ -40,9 +40,13 @@ ActionController::Routing::Routes.draw do |map|
   map.connect 'curnit/:pid/:id', :controller => 'curnit', :action => 'show'
   map.connect 'curnit/:pid', :controller => 'curnit', :action => 'list'
 
+  map.connect 'portal/list', :controller => 'portal', :action => 'list'
   map.connect 'portal/:id', :controller => 'portal', :action => 'show'
   map.connect 'portal', :controller => 'portal', :action => 'list'
 
   # Install the default route as the lowest priority.
   map.connect ':controller/:action/:id'
+  
+  map.connect '', :controller => "home", :action => 'index'
+
 end
