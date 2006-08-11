@@ -1,0 +1,26 @@
+<html> 
+  <head> 
+    <title>SAIL Prototype Microportal: Login</title> 
+  </head> 
+  <body> 
+      <h2>SAIL Prototype Microportal: Login</h2>
+      
+      <p>Please <a href="http://members.concord.org/signup/?return_url=<%= url_for :controller => 'user', :action => 'login', :only_path => false%>">Register</a> first if you are not already a CC member.</p>
+          
+    <%= start_form_tag :action => "login" %> 
+        
+      <label for="email">Email address:</label><br /> 
+      <%= text_field_tag "email" %><br /> 
+
+      <label for="password">Password:</label><br />
+      <%= password_field_tag "password" %><br /> 
+
+      <%= submit_tag "Login" %> 
+
+    <%= end_form_tag %> 
+    <p><%= link_to "Back", :controller => 'page' %></p>
+
+    <p>If you are already a registered member at the Concord Consortium please use that email address and password to login here. Otherwise please register as a <a href="http://members.concord.org/signup/?return_url=<%= url_for :controller => 'user', :action => 'login_form', :only_path => false%>">Concord Concord Consortium member</a>. After registering you will return to the SAIL Prototype Microportal.</p>
+  </body> 
+</html>
+

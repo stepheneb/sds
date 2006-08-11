@@ -1,0 +1,9 @@
+<h1>Editing curnit</h1>
+
+<%= start_form_tag :action => 'update', :id => @curnit %>
+  <%= render :partial => 'form' %>
+  <%= submit_tag 'Save' %>
+<%= end_form_tag %>
+
+<%= link_to 'Show', :action => 'show', :id => @curnit %> |
+<%= link_to 'Back', :action => 'list' %>

@@ -1,0 +1,23 @@
+<div id="pageheader"><span class="PageTitle">User Listing</span></div>
+
+<table width="90%" cellpadding="5" cellspacing="0">
+    <% odd_or_even = 0
+    for user in @users 
+        odd_or_even = 1 - odd_or_even
+    %>
+    <tr valign="top" class="ListLine<%= odd_or_even %>">
+        <td width="80%">
+            <span class="ListTitle"><%= h(user.name) %></span><br />
+            <small>Email: <%= user.email %></small><br />
+            
+        </td>
+    </tr>
+    <% end %>
+</table>
+
+<br />
+<p><%= link_to "Back", :controller => 'page' %></p>
+
+<%= link_to 'Previous page', { :page => @user_pages.current.previous } if @user_pages.current.previous %>
+<%= link_to 'Next page', { :page => @user_pages.current.next } if @user_pages.current.next %> 
+

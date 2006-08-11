@@ -1,0 +1,12 @@
+<h1>Editing offering</h1>
+
+<%= link_to 'Show', :action => 'show', :id => @offering %> |
+<%= link_to 'Back', :action => 'list' %>
+
+<%= start_form_tag :action => 'edit', :id => @offering %>
+  <%= render :partial => 'form' %>
+  <%= submit_tag 'Save' %>
+<%= end_form_tag %>
+
+<%= link_to 'Show', :action => 'show', :id => @offering %> |
+<%= link_to 'Back', :action => 'list' %>
