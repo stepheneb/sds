@@ -65,7 +65,7 @@ class CurnitController < ApplicationController
    s = curnit_xml
    c = REXML::Document.new(s)
    return { 
-     'portal_id' => params[:pid]
+     'portal_id' => params[:pid],
      'name' => c.elements['/curnit/name'].text,
      'url' => c.elements['/curnit/url'].text
       }
