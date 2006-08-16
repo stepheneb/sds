@@ -3,9 +3,9 @@ class CreateUsers < ActiveRecord::Migration
     create_table :sds_users do |t|
       t.column :portal_id, :integer
       t.column :portal_token, :string, :null => false
-      t.column :uuid, :string, :limit => 36, :null => false
       t.column :first_name, :string, :limit => 60, :null => false
       t.column :last_name, :string, :limit => 60, :null => false
+      t.column :uuid, :string, :limit => 36, :null => false
       t.column :created_at, :timestamp
       t.column :updated_at, :timestamp
     end

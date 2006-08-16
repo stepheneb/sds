@@ -3,6 +3,7 @@ class CreateBundles < ActiveRecord::Migration
     create_table :sds_bundles do |t|
       t.column :offering_id, :integer
       t.column :workgroup_id, :integer
+      t.column :workgroup_version, :integer
       t.column :content, :text
       t.column :created_at, :timestamp
     end

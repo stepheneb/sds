@@ -1,74 +1,105 @@
 class CurnitController < ApplicationController
 
-#  layout "standard"
-
-  # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
-  verify :method => :post, :only => [ :destroy, :create, :update ],
-         :redirect_to => { :action => :list }
+  layout "standard"
 
   def list
-   if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
-     @curnit = Curnit.new(process_curnit_xml(request.raw_post))
-     if @curnit.save
-       response.headers['Location'] = url_for(:action => :show, :id => @curnit.id)
-       render(:xml => "", :status => 201)
-     else
-       render(:text => "", :status => 404)
-     end
-   else
-#     breakpoint
-     @curnits = Curnit.find(:all, :conditions => ["portal_id = :pid", params])
-     respond_to do |wants|
-       wants.html
-       wants.xml { render :xml => @curnits.to_xml(:except => ['created_at', 'updated_at']) }
-     end
-   end
+    if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
+      begin
+        c = Convert.hash_from_xml(request.raw_post).merge({ "portal_id" => params[:pid]})
+        @curnit = Curnit.new(c)
+        if @curnit.save
+          response.headers['Location'] = url_for(:action => :show, :id => @curnit.id)
+          render(:xml => "", :status => 201) # Created
+        else
+          raise
+        end
+      rescue
+        render(:text => "", :status => 400) # Bad Request
+      end
+    else
+      @curnits = Curnit.find_all_in_portal(params[:pid])
+#      @curnits = Curnit.find(:all, :conditions => ["portal_id = :pid", params])
+      respond_to do |wants|
+        wants.html
+        wants.xml { render :xml => @curnits.to_xml(:except => ['portal_id', 'created_at', 'updated_at']) }
+      end
+    end
+  end
+
+  def edit
+    begin
+      if request.post?
+        @curnit = Curnit.find(params[:id])
+        if @curnit.update_attributes(params[:curnit])
+          flash[:notice] = "Curnit #{@curnit.id} was successfully updated."
+          redirect_to :action => 'list'
+        end
+      else
+        @curnit = Curnit.find(params[:id])
+      end
+    rescue
+      flash[:notice] = "Curnit #{@curnit.id} does not exist." 
+      redirect_to :action => :list
+    end
   end
 
   def new
    @curnit = Curnit.new
-   respond_to do |wants|
-     wants.html
-   end
   end
 
   def create
-    c = params[:curnit].merge({ "portal_id" => params[:pid]})
-    @curnit = Curnit.new(c)
-    if @curnit.save
-      flash[:notice] = 'Curnit was successfully created.'
+    begin
+      c = params[:curnit].merge({ "portal_id" => params[:pid]})
+      @curnit = Curnit.create!(c)
+      flash[:notice] = "Curnit #{@curnit.id} was successfully created."
       redirect_to :action => 'list'
-    else
-      render :action => 'new'
+    rescue
+      flash[:notice] = "Error creating Curnit." 
+      redirect_to :action => :list
     end
   end
 
   def show
-    @curnit = Curnit.find(params[:id])
-    respond_to do |wants|
-     wants.html
-     wants.xml  do
-       response.headers['Location'] = url_for(:action => :show, :id => params[:id])
-       render :xml => @curnit.to_xml(:except => ['created_at', 'updated_at'])
-     end
+    if Curnit.exists?(params[:id])
+      @curnit = Curnit.find(params[:id])
+      if request.get?
+        respond_to do |wants|
+          wants.html
+          wants.xml  do
+            response.headers['Location'] = url_for(:action => :show, :id => params[:id])
+            render :xml => @curnit.to_xml(:except => ['portal_id', 'created_at', 'updated_at'])
+          end
+        end
+      elsif request.put?
+        begin
+          @curnit.update_attributes(Convert.hash_from_xml(request.raw_post))
+          if @curnit.save
+            response.headers['Location'] = url_for(:action => :show, :id => @curnit.id)
+            render(:xml => "", :status => 201) # Created
+          else
+            raise
+          end
+        rescue
+          render(:text => "", :status => 400) # Bad Request
+        end
+      elsif request.delete?
+        @curnit.destroy
+        render(:text => "", :status => 204) # No Content
+      end
+    else
+      render(:text => "", :status => 404) # Not Found
     end
   end
-
+  
   def destroy
-   Curnit.find(params[:id]).destroy
-   redirect_to :action => 'list'
-  end
-
-  private
-
-  def process_curnit_xml(curnit_xml)
-   s = curnit_xml
-   c = REXML::Document.new(s)
-   return { 
-     'portal_id' => params[:pid],
-     'name' => c.elements['/curnit/name'].text,
-     'url' => c.elements['/curnit/url'].text
-      }
+    id = params[:id]
+    begin
+      Curnit.find(id).destroy
+      flash[:notice] = "Curnit #{id.to_s} was successfully deleted."
+    rescue
+      flash[:notice] = "Error deleting Curnit #{id.to_s}." 
+    end
+    redirect_to :action => :list
   end
 
 end

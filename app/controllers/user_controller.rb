@@ -1,50 +1,103 @@
 class UserController < ApplicationController
 
   layout "standard"
-  before_filter :check_authentication, :except => [:login, :login_form, :login_or_register]
 
-  def check_authentication 
-    unless session[:user] 
-      session[:intended_action] = action_name 
-      session[:intended_controller] = controller_name 
-      redirect_to :action => "login_form" 
+  def list
+    if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
+      begin
+        u = Convert.hash_from_xml(request.raw_post).merge({"portal_id" => params[:pid]})
+        @user = User.new(u)
+        if @user.save!
+          response.headers['Location'] = url_for(:action => :show, :id => @user.id)
+          render(:xml => "", :status => 201) # Created
+        end
+      rescue
+        render(:text => "", :status => 400) # Bad Request
+      end
+    else
+      @users = User.find_all_in_portal(params[:pid])
+#      @users = User.find(:all, :conditions => ["portal_id = :pid", params])
+      respond_to do |wants|
+        wants.html
+        wants.xml { render :xml => @users.to_xml(:except => ['portal_id', 'created_at', 'updated_at']) }
+      end
     end
   end
 
-  def login_form
-    # execution follows with :view => login_form, :action => login_or_register
-    @user = User.new
-    render :action => 'login_form' # goes to login_or_register
-  end
-
-  def login
-    # successful authentication continues with :view => page, :action => list
+  def edit
     begin
-      session[:user] = User.authenticate(params[:email], params[:password])
-      redirect_to :controller => 'offering', :action => 'list'
-#      redirect_to :action => session[:intended_action], :controller => session[:intended_controller] 
-    rescue 
-      flash[:notice]  = "Login unsuccessful, email or password incorrect."
-      redirect_to :action => "login_form"
-    end 
+      if request.post?
+        @user = User.find(params[:id])
+        if @user.update_attributes(params[:user])
+          flash[:notice] = "User #{@user.id} was successfully updated."
+          redirect_to :action => 'list'
+        end
+      else
+        @user = User.find(params[:id])
+      end
+    rescue
+      flash[:notice] = "User #{@user.id} does not exist." 
+      redirect_to :action => :list
+    end
   end
 
-  def logout
-    session[:user] = nil 
-    redirect_to :controller => "offering"
+  def new
+   @user = User.new
   end
 
-  def index
-    list
-    render :action => 'list'
-  end
-
-  def list
-    @user_pages, @users = paginate :users, :per_page => 10
+  def create
+    begin
+      u = params[:user].merge({ "portal_id" => params[:pid]})
+      @user = User.create!(u)
+      flash[:notice] = "User #{@user.id} was successfully created."
+      redirect_to :action => 'list'
+    rescue
+      flash[:notice] = "Error creating User." 
+      redirect_to :action => :list
+    end
   end
 
   def show
-    @user = User.find(params[:id])
+    if User.exists?(params[:id])
+      @user = User.find(params[:id])
+      if request.get?
+        respond_to do |wants|
+          wants.html
+          wants.xml  do
+            response.headers['Location'] = url_for(:action => :show, :id => params[:id])
+            render :xml => @user.to_xml(:except => ['portal_id', 'created_at', 'updated_at'])
+          end
+        end
+      elsif request.put?
+        begin
+          @user.update_attributes(Convert.hash_from_xml(request.raw_post))
+          if @user.save
+            response.headers['Location'] = url_for(:action => :show, :id => @user.id)
+            render(:xml => "", :status => 201) # Created
+          else
+            raise
+          end
+        rescue
+          render(:text => "", :status => 400) # Bad Request
+        end
+      elsif request.delete?
+        @user.destroy
+        render(:text => "", :status => 204) # No Content
+      end
+    else
+      render(:text => "", :status => 404) # Not Found
+    end
+  end
+  
+  def destroy
+    id = params[:id]
+    begin
+      User.find(id).destroy
+      flash[:notice] = "User #{id.to_s} was successfully deleted."
+    rescue
+      flash[:notice] = "Error deleting User #{id.to_s}." 
+    end
+    redirect_to :action => :list
   end
 
 end

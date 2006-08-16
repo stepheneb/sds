@@ -13,39 +13,75 @@ ActionController::Routing::Routes.draw do |map|
   # -- just remember to delete public/index.html.
   # map.connect '', :controller => "welcome"
 
-  # Allow downloading Web Service WSDL as a file with an extension
-  # instead of a file named 'wsdl'
-  map.connect ':controller/service.wsdl', :action => 'wsdl'
+# offering: java web start services
 
-  map.connect 'offering/config/:pid/:oid/:uid', :controller => 'offering', :action => 'config'
-  map.connect 'offering/jnlp/:pid/:oid/:uid', :controller => 'offering', :action => 'jnlp'
-  map.connect 'offering/bundle/:pid/:oid/:uid/:bid', :controller => 'offering', :action => 'bundle'
-  map.connect 'offering/bundle/:pid/:oid/:uid', :controller => 'offering', :action => 'bundle'
-  map.connect 'offering/bundle/:pid/:id', :controller => 'offering', :action => 'bundle'
-  map.connect 'offering/edit/:pid/:id', :controller => 'offering', :action => 'edit'
-  map.connect 'offering/show/:pid/:id', :controller => 'offering', :action => 'show'
-  map.connect 'offering/destroy/:pid/:id', :controller => 'offering', :action => 'destroy'
-  map.connect 'offering/:pid/:oid/:uid/:bid', :controller => 'offering', :action => 'bundle'
-  map.connect 'offering/:pid/:oid/:uid', :controller => 'offering', :action => 'bundle'
+  map.connect ':pid/offering/:id/jnlp/:wid', :controller => 'offering', :action => 'jnlp'
+  map.connect ':pid/offering/:id/config/:wid/:version', :controller => 'offering', :action => 'config'
+  map.connect ':pid/offering/:id/bundle/:wid/:version', :controller => 'offering', :action => 'bundle'
 
-  map.connect 'jnlp/create/:pid', :controller => 'jnlp', :action => 'create'
-  map.connect 'jnlp/new/:pid', :controller => 'jnlp', :action => 'new'
-  map.connect 'jnlp/list/:pid', :controller => 'jnlp', :action => 'list'
-  map.connect 'jnlp/:pid/:id', :controller => 'jnlp', :action => 'show'
-  map.connect 'jnlp/:pid', :controller => 'jnlp', :action => 'list'
+# workgroup
 
-  map.connect 'curnit/create/:pid', :controller => 'curnit', :action => 'create'
-  map.connect 'curnit/new/:pid', :controller => 'curnit', :action => 'new'
-  map.connect 'curnit/list/:pid', :controller => 'curnit', :action => 'list'
-  map.connect 'curnit/:pid', :controller => 'curnit', :action => 'list'
-  map.connect 'curnit/:pid/:id', :controller => 'curnit', :action => 'show'
+  map.connect ':pid/workgroup', :controller => 'workgroup', :action => 'list'
+  map.connect ':pid/workgroup/list', :controller => 'workgroup', :action => 'list'
+  map.connect ':pid/workgroup/new', :controller => 'workgroup', :action => 'new'
+  map.connect ':pid/workgroup/create', :controller => 'workgroup', :action => 'create'
+  map.connect ':pid/workgroup/edit/:id', :controller => 'workgroup', :action => 'edit'
+  map.connect ':pid/workgroup/destroy/:id', :controller => 'workgroup', :action => 'destroy'
+  map.connect ':pid/workgroup/:id/membership', :controller => 'workgroup', :action => 'membership'
+  map.connect ':pid/workgroup/:id', :controller => 'workgroup', :action => 'show'
 
-  map.connect 'portal/list', :controller => 'portal', :action => 'list'
+# offering: administrative
+
+  map.connect ':pid/offering', :controller => 'offering', :action => 'list'
+  map.connect ':pid/offering/list', :controller => 'offering', :action => 'list'
+  map.connect ':pid/offering/new', :controller => 'offering', :action => 'new'
+  map.connect ':pid/offering/create', :controller => 'offering', :action => 'create'
+  map.connect ':pid/offering/edit/:id', :controller => 'offering', :action => 'edit'
+  map.connect ':pid/offering/destroy/:id', :controller => 'offering', :action => 'destroy'
+  map.connect ':pid/offering/:id', :controller => 'offering', :action => 'show'
+
+# user
+
+  map.connect ':pid/user', :controller => 'user', :action => 'list'
+  map.connect ':pid/user/list', :controller => 'user', :action => 'list'
+  map.connect ':pid/user/new', :controller => 'user', :action => 'new'
+  map.connect ':pid/user/create', :controller => 'user', :action => 'create'
+  map.connect ':pid/user/edit/:id', :controller => 'user', :action => 'edit'
+  map.connect ':pid/user/destroy/:id', :controller => 'user', :action => 'destroy'
+  map.connect ':pid/user/:id', :controller => 'user', :action => 'show'
+
+# jnlp
+
+  map.connect ':pid/jnlp/', :controller => 'jnlp', :action => 'list'
+  map.connect ':pid/jnlp/list', :controller => 'jnlp', :action => 'list'
+  map.connect ':pid/jnlp/new', :controller => 'jnlp', :action => 'new'
+  map.connect ':pid/jnlp/create', :controller => 'jnlp', :action => 'create'
+  map.connect ':pid/jnlp/edit/:id', :controller => 'jnlp', :action => 'edit'
+  map.connect ':pid/jnlp/destroy/:id', :controller => 'jnlp', :action => 'destroy'
+  map.connect ':pid/jnlp/:id', :controller => 'jnlp', :action => 'show'
+
+# curnit
+
+  map.connect ':pid/curnit/', :controller => 'curnit', :action => 'list'
+  map.connect ':pid/curnit/list', :controller => 'curnit', :action => 'list'
+  map.connect ':pid/curnit/new', :controller => 'curnit', :action => 'new'
+  map.connect ':pid/curnit/create', :controller => 'curnit', :action => 'create'
+  map.connect ':pid/curnit/edit/:id', :controller => 'curnit', :action => 'edit'
+  map.connect ':pid/curnit/destroy/:id', :controller => 'curnit', :action => 'destroy'
+  map.connect ':pid/curnit/:id', :controller => 'curnit', :action => 'show'
+
+# portal
+
   map.connect 'portal', :controller => 'portal', :action => 'list'
+  map.connect 'portal/list', :controller => 'portal', :action => 'list'
+  map.connect 'portal/new', :controller => 'portal', :action => 'new'
+  map.connect 'portal/create', :controller => 'portal', :action => 'create'
+  map.connect 'portal/edit/:id', :controller => 'portal', :action => 'edit'
+  map.connect 'portal/destroy/:id', :controller => 'portal', :action => 'destroy'
   map.connect 'portal/:id', :controller => 'portal', :action => 'show'
 
   # Install the default route as the lowest priority.
-  map.connect ':controller/:action/:id'
+#  map.connect ':controller/:action/:id'
   
   map.connect '', :controller => "home", :action => 'index'
 

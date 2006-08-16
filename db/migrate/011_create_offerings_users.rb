@@ -1,4 +1,4 @@
-class OfferingsUsers < ActiveRecord::Migration
+class CreateOfferingsUsers < ActiveRecord::Migration
   def self.up
     create_table :sds_offerings_users, :id => false do |t|
       t.column :offering_id, :integer, :null => false

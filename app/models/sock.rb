@@ -4,5 +4,5 @@ class Sock < ActiveRecord::Base
   belongs_to :pod
   belongs_to :user
   belongs_to :workgroup
-  belongs_to :bundle
+  belongs_to :session
 end

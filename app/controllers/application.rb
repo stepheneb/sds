@@ -8,4 +8,7 @@ class ApplicationController < ActionController::Base
   model :user
   model :workgroup
   model :bundle
+  
+  require 'convert'
+  
 end
