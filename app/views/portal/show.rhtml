@@ -1,2 +1,22 @@
-<h1>Portal#show</h1>
-<p>Find me in app/views/portal/show.rhtml</p>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+  <% pagetitle = "Show Portal: #{@portal.name} (#{@portal.id.to_s})" %>
+    <head>
+        <title><%= pagetitle %></title>
+    </head>
+<h2><%= pagetitle %></h2>
+
+<%= link_to 'List', :action => 'list'  %> | 
+<%= link_to 'Edit', :action => 'edit' %>
+
+<table cellpadding="3" cellspacing="4">
+  <% for column in Portal.columns %>
+    <tr>
+      <td><%= h column.human_name %></td>
+      <td><%= h @portal.send(column.name) %></td>
+    </tr>
+  <% end %>
+</table>
+
+

@@ -1,12 +1,11 @@
-<h2>Show Offering</h2>
-
-<%= link_to 'Edit', :action => 'edit', :id => @offering %> |
 <%= link_to 'List', :action => 'list'  %> | 
-<%= link_to 'Run', :action => 'jnlp', :oid => @offering.id, :uid => session[:user].id %>
+<%= link_to 'Edit', :action => 'edit' %>
 
-<p>
-  <span class="ListTitle">Name: </b><%= h @offering.name %></span><br />
-  Author: <%= @offering.user.name %><br />
-  Curnit: <%= @offering.curnit.name %>, <%= @offering.curnit.url %><br />
-  Jnlp: <%= @offering.jnlp.name %>, <%= @offering.jnlp.url %><br />
-</p>
+<table cellpadding="3" cellspacing="4">
+  <% for column in Offering.columns %>
+    <tr>
+      <td><%= h column.human_name %></td>
+      <td><%= h @offering.send(column.name) %></td>
+    </tr>
+  <% end %>
+</table>

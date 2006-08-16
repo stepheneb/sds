@@ -1,8 +1,11 @@
-<% for column in User.content_columns %>
-<p>
-  <b><%= column.human_name %>:</b> <%=h @user.send(column.name) %>
-</p>
-<% end %>
+<%= link_to 'List', :action => 'list'  %> | 
+<%= link_to 'Edit', :action => 'edit' %>
 
-<%= link_to 'Edit', :action => 'edit', :id => @user %> |
-<%= link_to 'Back', :action => 'list' %>
+<table cellpadding="3" cellspacing="4">
+  <% for column in User.columns %>
+    <tr>
+      <td><%= h column.human_name %></td>
+      <td><%= h @user.send(column.name) %></td>
+    </tr>
+  <% end %>
+</table>

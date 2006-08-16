@@ -1,19 +1,13 @@
 <%= error_messages_for 'offering' %>
 
-<!--[form:offering]-->
-
-<p><label for="offering_name">Descriptive Name</label><br/>
+<p><label for="offering_name">Name</label><br/>
 <%= text_field 'offering', 'name', "cols" => 60  %></p>
 
+<p><label for="offering_portal_token">Portal Token</label><br/>
+<%= text_field 'offering', 'portal_token', "cols" => 60  %></p>
+
 <p><label for="offering_curnit">Curnit: </label><br/>
-<%= select 'offering', 'curnit_id',  Curnit.find(:all).map { |p| [p.name, p.id] }  %></p>
+<%= select 'offering', 'curnit_id',  Curnit.find_all_in_portal(params[:pid]).map { |p| [p.name, p.id] }  %></p>
 
 <p><label for="offering_jnlp">Jnlp: </label><br/>
-<%= select 'offering', 'jnlp_id',  Jnlp.find(:all).map { |p| [p.name, p.id] }  %></p>
-
-<p><label for="dont_return_data">Don't return data to anonymous users.</label>
-<%= check_box 'offering', 'dont_return_data'  %></p>
-
-
-<!--[eoform:offering]-->
-
+<%= select 'offering', 'jnlp_id',  Jnlp.find_all_in_portal(params[:pid]).map { |p| [p.name, p.id] }  %></p>

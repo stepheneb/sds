@@ -1,33 +1,21 @@
-<div id="pageheader"><span class="PageTitle">Offering Listing</span> (<%= link_to 'Create new offering', :action => 'new' %>)</div>
+<%= link_to 'New Offering', :action => 'new', :pid => params[:pid] %>
 
-<%= user = if !session[:user] then session[:user] = User.find(:first, :conditions => "email='anonymous'") end %>
-
-<table width="90%" cellpadding="5" cellspacing="0">
-    <% odd_or_even = 0
-    for offering in @offerings
-        odd_or_even = 1 - odd_or_even
-    %>
-    <tr valign="middle" class="ListLine<%= odd_or_even %>">
-        <td >
-            <%= link_to 'Show', :action => 'show', :id => offering %><br />
-            <%= link_to 'Edit', :action => 'edit', :id => offering %><br />
-            <%= link_to 'Run', :action => 'jnlp', :oid => offering.id, :uid => session[:user].id %> <br />
-            <%= link_to 'Delete', { :action => 'destroy', :id => offering }, :confirm => 'Are you sure?', :post => true %>
-        </td>
-        <td width="90%">
-            <span class="ListTitle"><%= h(offering.name) %></span><br />
-            <small>Author: <%= offering.user.name %></small><br />
-            <small>Curnit: <%= offering.curnit.name %></small><br />
-            <small>Jnlp: <%= offering.jnlp.name %></small><br />
-        </td>
+<table cellpadding="3" cellspacing="3">
+  <tr>
+    <td><b>Id</b></td>
+    <td><b>Name</b></td>
+    <td><b>Portal Token</b></td>
+  </tr>
+  <% for offering in @offerings %>
+    <tr>
+      <td><%= offering.id.to_s %></td>
+      <td><%= offering.name %></td>
+      <td><%= offering.portal_token %></td>
+      <td>
+        <%= link_to 'Show', :action => 'show', :id => offering %> | 
+        <%= link_to 'Edit', :action => 'edit', :id => offering %> | 
+        <%= link_to 'Destroy', { :action => 'destroy', :id => offering }, :confirm => 'Are you sure?', :post => true %>
+      </td>
     </tr>
-    <% end %>
+  <% end %>
 </table>
-
-<p>
-<%= link_to 'Previous page', { :page => @offering_pages.current.previous } if @offering_pages.current.previous %>
-<%= pagination_links(@offering_pages) %>
-<%= link_to 'Next page', { :page => @offering_pages.current.next } if @offering_pages.current.next %>
-</p>
-
-

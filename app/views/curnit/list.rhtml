@@ -1,24 +1,21 @@
-<h1>Listing Curnits</h1>
-
-<table width="90%" cellpadding="5" cellspacing="0">
-  <tr>
-  <% for column in Curnit.content_columns %>
-    <th><%= column.human_name %></th>
-  <% end %>
-  </tr>
-  
-<% for curnit in @curnits %>
-  <tr>
-  <% for column in Curnit.content_columns %>
-    <td><%=h curnit.send(column.name) %></td>
-  <% end %>
-    <td><%= link_to 'Show', :action => 'show', :id => curnit %></td>
-    <td><%= link_to 'Edit', :action => 'edit', :id => curnit %></td>
-    <td><%= link_to 'Destroy', { :action => 'destroy', :id => curnit }, :confirm => 'Are you sure?', :post => true %></td>
-  </tr>
-<% end %>
-</table>
-
-<br />
-
 <%= link_to 'New Curnit', :action => 'new', :pid => params[:pid] %>
+
+<table cellpadding="3" cellspacing="3">
+  <tr>
+    <td><b>Id</b></td>
+    <td><b>Name</b></td>
+    <td><b>Url</b></td>
+  </tr>
+  <% for curnit in @curnits %>
+    <tr>
+      <td><%= curnit.id.to_s %></td>
+      <td><%= curnit.name %></td>
+      <td><%= curnit.url %></td>
+      <td>
+        <%= link_to 'Show', :action => 'show', :id => curnit %> | 
+        <%= link_to 'Edit', :action => 'edit', :id => curnit %> | 
+        <%= link_to 'Destroy', { :action => 'destroy', :id => curnit }, :confirm => 'Are you sure?', :post => true %>
+      </td>
+    </tr>
+  <% end %>
+</table>

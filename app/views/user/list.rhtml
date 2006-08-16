@@ -1,23 +1,23 @@
-<div id="pageheader"><span class="PageTitle">User Listing</span></div>
+<%= link_to 'New User', :action => 'new', :pid => params[:pid] %>
 
-<table width="90%" cellpadding="5" cellspacing="0">
-    <% odd_or_even = 0
-    for user in @users 
-        odd_or_even = 1 - odd_or_even
-    %>
-    <tr valign="top" class="ListLine<%= odd_or_even %>">
-        <td width="80%">
-            <span class="ListTitle"><%= h(user.name) %></span><br />
-            <small>Email: <%= user.email %></small><br />
-            
-        </td>
+<table cellpadding="3" cellspacing="3">
+  <tr>
+    <td><b>Id</b></td>
+    <td><b>First Name</b></td>
+    <td><b>Last Name</b></td>
+    <td><b>Portal Token</b></td>
+  </tr>
+  <% for user in @users %>
+    <tr>
+      <td><%= user.id.to_s %></td>
+      <td><%= user.first_name %></td>
+      <td><%= user.last_name %></td>
+      <td><%= user.portal_token %></td>
+      <td>
+        <%= link_to 'Show', :action => 'show', :id => user %> | 
+        <%= link_to 'Edit', :action => 'edit', :id => user %> | 
+        <%= link_to 'Destroy', { :action => 'destroy', :id => user }, :confirm => 'Are you sure?', :post => true %>
+      </td>
     </tr>
-    <% end %>
+  <% end %>
 </table>
-
-<br />
-<p><%= link_to "Back", :controller => 'page' %></p>
-
-<%= link_to 'Previous page', { :page => @user_pages.current.previous } if @user_pages.current.previous %>
-<%= link_to 'Next page', { :page => @user_pages.current.next } if @user_pages.current.next %> 
-

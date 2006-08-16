@@ -1,16 +1,16 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
         "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
-  <% pagetitle = "New Portal" %>
+  <% pagetitle = "Editing Portal: #{@portal.name} (#{@portal.id.to_s})" %>
     <head>
         <title><%= pagetitle %></title>
     </head>
 <h2><%= pagetitle %></h2>
 
-<%= link_to 'List', :action => 'list' %>
+<%= link_to 'List', :action => 'list' %> | 
+<%= link_to 'Show', :action => 'show', :id => @portal %>
 
-<%= start_form_tag :action => 'create' %>
+<%= start_form_tag :action => 'edit', :id => @portal %>
   <%= render :partial => 'form' %>
-  <%= submit_tag "Create" %>
+  <%= submit_tag 'Save' %>
 <%= end_form_tag %>
-

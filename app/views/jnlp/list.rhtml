@@ -1,24 +1,21 @@
-<h1>Listing Jnlps</h1>
-
-<table width="90%" cellpadding="5" cellspacing="0">
-  <tr>
-  <% for column in Jnlp.content_columns %>
-    <th><%= column.human_name %></th>
-  <% end %>
-  </tr>
-  
-<% for jnlp in @jnlps %>
-  <tr>
-  <% for column in Jnlp.content_columns %>
-    <td><%=h jnlp.send(column.name) %></td>
-  <% end %>
-    <td><%= link_to 'Show', :action => 'show', :id => jnlp %></td>
-    <td><%= link_to 'Edit', :action => 'edit', :id => jnlp %></td>
-    <td><%= link_to 'Destroy', { :action => 'destroy', :id => jnlp }, :confirm => 'Are you sure?', :post => true %></td>
-  </tr>
-<% end %>
-</table>
-
-<br />
-
 <%= link_to 'New Jnlp', :action => 'new', :pid => params[:pid] %>
+
+<table cellpadding="3" cellspacing="3">
+  <tr>
+    <td><b>Id</b></td>
+    <td><b>Name</b></td>
+    <td><b>Url</b></td>
+  </tr>
+  <% for jnlp in @jnlps %>
+    <tr>
+      <td><%= jnlp.id.to_s %></td>
+      <td><%= jnlp.name %></td>
+      <td><%= jnlp.url %></td>
+      <td>
+        <%= link_to 'Show', :action => 'show', :id => jnlp %> | 
+        <%= link_to 'Edit', :action => 'edit', :id => jnlp %> | 
+        <%= link_to 'Destroy', { :action => 'destroy', :id => jnlp }, :confirm => 'Are you sure?', :post => true %>
+      </td>
+    </tr>
+  <% end %>
+</table>

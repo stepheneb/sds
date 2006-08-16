@@ -1,9 +1,7 @@
-<h1>Editing jnlp</h1>
+<%= link_to 'List', :action => 'list' %> | 
+<%= link_to 'Show', :action => 'show', :id => @jnlp %>
 
-<%= start_form_tag :action => 'update', :id => @jnlp %>
+<%= start_form_tag :action => 'edit', :id => @jnlp %>
   <%= render :partial => 'form' %>
   <%= submit_tag 'Save' %>
 <%= end_form_tag %>
-
-<%= link_to 'Show', :action => 'show', :id => @jnlp %> |
-<%= link_to 'Back', :action => 'list' %>

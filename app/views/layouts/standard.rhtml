@@ -1,10 +1,19 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
         "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
+  <% p = Portal.find(params[:pid])
+    pagetitle = "SAIL Data Service; Portal: #{p.id.to_s} (#{p.name}); #{controller.controller_name}: #{controller.action_name}" %>
     <head>
-        <title>SAIL Data Service, Page: <%= controller.action_name %></title>
+        <title><%= pagetitle %></title>
     </head>
     <body>
-        <%= yield %>
+      <h2><%= pagetitle %></h2>
+      <%= link_to 'Curnits', :controller => 'curnit', :action => 'list' %> | 
+      <%= link_to 'Jnlps', :controller => 'jnlp', :action => 'list' %> | 
+      <%= link_to 'Users', :controller => 'user', :action => 'list' %> | 
+      <%= link_to 'Offerings', :controller => 'offering', :action => 'list' %> | 
+      <%= link_to 'Workgroups', :controller => 'workgroup', :action => 'list' %>    
+      <p style="color: green"><%= flash[:notice] %></p>
+      <%= yield %>
     </body>
 </html>

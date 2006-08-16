@@ -1,17 +1,10 @@
 <%= error_messages_for 'user' %>
 
-<!--[form:user]-->
-<p><label for="user_email">Email</label><br/>
-<%= text_field 'user', 'email'  %></p>
-
-<p><label for="user_first_name">First name</label><br/>
+<p><label for="user_first_name">First Name</label><br/>
 <%= text_field 'user', 'first_name'  %></p>
 
-<p><label for="user_last_name">Last name</label><br/>
+<p><label for="user_last_name">Last Name</label><br/>
 <%= text_field 'user', 'last_name'  %></p>
 
-<p><label for="user_password">Password</label><br/>
-<%= password_field 'user', 'password'  %></p>
-
-<!--[eoform:user]-->
-
+<p><label for="user_portal_token">Portal Token</label><br/>
+<%= text_field 'user', 'portal_token'  %></p>

@@ -12,8 +12,9 @@ end
 application_desc = jnlp.root.elements["application-desc"]
 application_desc[1].text = @controller.url_for(:controller => "offering", 
                             :action => "config", 
-                            :oid => @offering.id, 
-                            :uid => @user.id,
+                            :id => @offering.id, 
+                            :wid => @workgroup.id,
+                            :version => @version,
                             :only_path => false)
 
 xml.instruct! :xml, :version=>"1.0", :encoding=>"UTF-8"
@@ -21,8 +22,9 @@ xml.jnlp("spec" => jattr['spec'],
         "codebase" => jattr['codebase'], 
         "href" => @controller.url_for(:controller => 'offering', 
                                       :action => 'jnlp', 
-                                      :oid => @offering.id, 
-                                      :uid => @user.id).to_s) {
+                                      :id => @offering.id, 
+                                      :wid => @workgroup.id,
+                                      :version => @version).to_s) {
 #  xml << info.to_s
   xml.information {
     xml.title("Preview Pas Pedagogica")
