@@ -1,0 +1,11 @@
+<%= link_to 'List', :action => 'list'  %> | 
+<%= link_to 'Edit', :action => 'edit' %>
+
+<table cellpadding="3" cellspacing="4">
+  <% for column in Workgroup.columns %>
+    <tr>
+      <td><%= h column.human_name %></td>
+      <td><%= h @workgroup.send(column.name) %></td>
+    </tr>
+  <% end %>
+</table>
