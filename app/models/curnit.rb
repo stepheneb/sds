@@ -3,7 +3,7 @@ class Curnit < ActiveRecord::Base
   set_table_name "sds_curnits"
   
   validates_presence_of :portal_id, :name, :url
-  validates_uniqueness_of :portal_token, :scope => :portal_id
+#  validates_uniqueness_of :portal_token, :scope => :portal_id
   
   belongs_to :portal
   has_many :offerings
