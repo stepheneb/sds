@@ -102,7 +102,6 @@ class OfferingController < ApplicationController
   def jnlp
     @offering = Offering.find(params[:id])
     @workgroup = Workgroup.find(params[:wid])
-    @version = @workgroup.version
     @headers["Content-Type"] = "application/x-java-jnlp-file"
     @headers["Cache-Control"] = "public"
     @headers["Content-Disposition"] = "attachment; filename=testjnlp.jnlp"

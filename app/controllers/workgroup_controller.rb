@@ -39,7 +39,6 @@ class WorkgroupController < ApplicationController
         render(:text => "", :status => 400) # Bad Request
       end
     else
-      breakpoint
       @members = WorkgroupMembership.find_all_in_workgroup(params[:id])
       respond_to do |wants|
         wants.html

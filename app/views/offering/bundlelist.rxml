@@ -1,6 +1,8 @@
 xml.instruct! :xml, :version=>"1.0", :encoding=>"UTF-8"
 xml.tag!('sailuserdata:EPortfolio', 'xmi:version' => '2.0',  'xmlns:xmi' => 'http://www.omg.org/XMI',  'xmlns:sailuserdata' => 'sailuserdata') {
-  unless (@bundles == [])
+  if (@bundles == [])
+    xml.sessionBundles
+  else
     @bundles.each do |b|
       xml << b.content
     end

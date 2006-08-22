@@ -14,7 +14,7 @@ application_desc[1].text = @controller.url_for(:controller => "offering",
                             :action => "config", 
                             :id => @offering.id, 
                             :wid => @workgroup.id,
-                            :version => @version,
+                            :version => @workgroup.version,
                             :only_path => false)
 
 xml.instruct! :xml, :version=>"1.0", :encoding=>"UTF-8"
