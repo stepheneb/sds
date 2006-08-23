@@ -204,11 +204,3 @@ module WorkgroupHelper
      checkboxes_for_multiple_select.join("\n")
    end
 end
-
-
-module FightTheMelons #:nodoc:
-  module Helpers #:nodoc:
-    # Provides a number of methods for turning different kinds of containers
-    # into a checkbox lists.
-  end
-end

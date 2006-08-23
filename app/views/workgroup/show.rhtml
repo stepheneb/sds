@@ -2,10 +2,26 @@
 <%= link_to 'Edit', :action => 'edit' %>
 
 <table cellpadding="3" cellspacing="4">
-  <% for column in Workgroup.columns %>
+  <tr><td><b>Id</b><td><%= @workgroup.id.to_s %></td></tr>
+  <tr><td><b>Name</b><td><%= @workgroup.name %></td></tr>
+  <tr><td><b>Version</b><td><%= @workgroup.version.to_s %></td></tr>
+  <tr><td><b>Uuid</b><td><%= @workgroup.uuid %></td></tr>
+  <tr><td><b>Created at</b><td><%= @workgroup.created_at.to_s %></td></tr>
+  <tr><td><b>Updated at</b><td><%= @workgroup.updated_at.to_s %></td></tr>
+  <tr><td><b>Portal token</b><td><%= @workgroup.portal_token %></td></tr>
+</table>
+<h4>Membership:</h4>
+<table cellpadding="3" cellspacing="4">
+  <tr>
+    <td><b>Id</b></td>
+    <td><b>Name</b></td>
+    <td><b>Portal token</b></td>
+  </tr>
+  <% @workgroup.users.version(@workgroup.version).each do |m| %>
     <tr>
-      <td><%= h column.human_name %></td>
-      <td><%= h @workgroup.send(column.name) %></td>
+      <td><%= m.id.to_s %></td>
+      <td><%= m.name %></td>
+      <td><%= m.portal_token %></td>
     </tr>
   <% end %>
 </table>

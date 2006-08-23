@@ -83,6 +83,8 @@ ActionController::Routing::Routes.draw do |map|
   # Install the default route as the lowest priority.
 #  map.connect ':controller/:action/:id'
   
+  map.connect ':pid', :controller => 'offering', :action => 'list'
+  
   map.connect '', :controller => "home", :action => 'index'
 
 end

@@ -9,10 +9,10 @@
 <p><label for="workgroup_offering">Offering: </label><br/>
 <%= select 'workgroup', 'offering_id',  Offering.find_all_in_portal(params[:pid]).map { |p| [p.name, p.id] }  %></p>
 
-<p>Users:</p>
+<p>Membership (version: <%= @workgroup.version %>):</p>
 <%=
   collection_multiple_select(
-    'users', User.find_all_in_portal(params[:pid]), :id, :identifier, :selected_items => @users
+    'users', User.find_all_in_portal(params[:pid]), :id, :identifier, :selected_items => @workgroup.users.version(@workgroup.version).collect { |item| item.id.to_i }
   )
 %>
 <p/>
