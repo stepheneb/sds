@@ -77,6 +77,10 @@ class WorkgroupController < ApplicationController
     begin
       w = params[:workgroup].merge({ "portal_id" => params[:pid]}).merge({ "version" => "0"})
       @workgroup = Workgroup.create!(w)
+      users = params[:users]
+      users.each do |u|
+        @workgroup.workgroup_memberships.create!(:user_id => u, :version => @workgroup.version)
+      end
       flash[:notice] = "Workgroup #{@workgroup.id} was successfully created."
       redirect_to :action => 'list'
     rescue

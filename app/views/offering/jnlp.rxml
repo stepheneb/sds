@@ -4,40 +4,48 @@ jnlp = REXML::Document.new jnlp
 jattr = jnlp.root.attributes
 info = jnlp.root.elements["information"]
 security = jnlp.root.elements["security"]
-resources = jnlp.root.elements["resources"]
-prop = jnlp.root.elements["resources/property"]
-if prop
-  prop.add_attribute('value', 'net.sf.sail.emf.launch.EMFLauncher2')
+
+nl = "\n"
+href_url =     @controller.url_for(:controller => 'offering', :action => 'jnlp', :id => @offering.id, :wid => @workgroup.id, :version => @version, :only_path => false).to_s
+homepage_url = @controller.url_for(:controller => 'offering', :action => 'show', :id => @offering.id, :only_path => false).to_s
+config_url =   @controller.url_for(:controller => "offering", :action => "config", :id => @offering.id, :wid => @workgroup.id, :version => @workgroup.version, :only_path => false).to_s
+sds_launcher = "net.sf.sail.emf.launch.EMFLauncher2"
+
+# if there is a file-based launcher convert to an sds launcher
+case "net.sf.sail.emf.launch.EMFLauncher3"
+when jnlp.root.elements["application-desc"].attributes["main-class"]
+  jnlp.root.elements["application-desc"].attributes["main-class"] = sds_launcher
+when jnlp.root.elements["resources/property"].attributes["value"]
+  jnlp.root.elements["resources/property"].attributes["value"] = sds_launcher
 end
-application_desc = jnlp.root.elements["application-desc"]
-application_desc[1].text = @controller.url_for(:controller => "offering", 
-                            :action => "config", 
-                            :id => @offering.id, 
-                            :wid => @workgroup.id,
-                            :version => @workgroup.version,
-                            :only_path => false)
+
+# if there is an sds_launcher set the application-desc/argument to the config_url
+case sds_launcher
+when jnlp.root.elements["application-desc"].attributes["main-class"], jnlp.root.elements["resources/property"].attributes["value"]
+  jnlp.root.elements["application-desc/argument"].text = config_url
+end
+
+resources = []
+jnlp.elements.each("//resources") { |e| resources << e } 
 
 xml.instruct! :xml, :version=>"1.0", :encoding=>"UTF-8"
-xml.jnlp("spec" => jattr['spec'],
-        "codebase" => jattr['codebase'], 
-        "href" => @controller.url_for(:controller => 'offering', 
-                                      :action => 'jnlp', 
-                                      :id => @offering.id, 
-                                      :wid => @workgroup.id,
-                                      :version => @version).to_s) {
+xml.jnlp("spec" => jattr['spec'], "codebase" => jattr['codebase'], "href" => href_url) {
+
 #  xml << info.to_s
   xml.information {
     xml.title("Preview Pas Pedagogica")
     xml.vendor("Concord Consortium")
-    xml.homepage("href" => @controller.url_for(:controller => 'offering', 
-                                  :action => 'show', 
-                                  :id => @offering.id).to_s)
+    xml.homepage("href" => homepage_url)
     xml.description("Preview Pas Pedagogica")
     xml.icon("href" => "sail_orangecirc_64.gif", "height" => "64", "width" => "64")
-    xml << "<offline-allowed/>\n"
-    
+    xml << nl + "<offline-allowed/>" 
   }
   xml << security.to_s
-  xml << resources.to_s
-  xml << application_desc.to_s
+  
+  resources.each do |r| 
+    xml << nl + r.to_s
+  end
+
+  xml << nl + jnlp.root.elements["application-desc"].to_s
 }
+
