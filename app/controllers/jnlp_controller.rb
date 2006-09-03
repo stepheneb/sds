@@ -5,7 +5,7 @@ class JnlpController < ApplicationController
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
       begin
-        j = Convert.hash_from_xml(request.raw_post).merge({ "portal_id" => params[:pid]})
+        j = ConvertXml.xml_to_hash(request.raw_post).merge({ "portal_id" => params[:pid]})
         @jnlp = Jnlp.new(j)
         if @jnlp.save
           response.headers['Location'] = url_for(:action => :show, :id => @jnlp.id)
@@ -18,10 +18,9 @@ class JnlpController < ApplicationController
       end
     else
       @jnlps = Jnlp.find_all_in_portal(params[:pid])
-#      @jnlps = Jnlp.find(:all, :conditions => ["portal_id = :pid", params])
       respond_to do |wants|
         wants.html
-        wants.xml { render :xml => @jnlps.to_xml(:except => ['portal_id', 'created_at', 'updated_at']) }
+        wants.xml { render :xml => @jnlps.to_xml }
       end
     end
   end
@@ -67,12 +66,12 @@ class JnlpController < ApplicationController
           wants.html
           wants.xml  do
             response.headers['Location'] = url_for(:action => :show, :id => params[:id])
-            render :xml => @jnlp.to_xml(:except => ['portal_id', 'created_at', 'updated_at'])
+            render :xml => @jnlp.to_xml
           end
         end
       elsif request.put?
         begin
-          @jnlp.update_attributes(Convert.hash_from_xml(request.raw_post))
+          @jnlp.update_attributes(ConvertXml.xml_to_hash(request.raw_post))
           if @jnlp.save
             response.headers['Location'] = url_for(:action => :show, :id => @jnlp.id)
             render(:xml => "", :status => 201) # Created

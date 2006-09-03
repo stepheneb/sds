@@ -5,7 +5,7 @@ class UserController < ApplicationController
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
       begin
-        u = Convert.hash_from_xml(request.raw_post).merge({"portal_id" => params[:pid]})
+        u = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
         @user = User.new(u)
         if @user.save!
           response.headers['Location'] = url_for(:action => :show, :id => @user.id)
@@ -16,10 +16,9 @@ class UserController < ApplicationController
       end
     else
       @users = User.find_all_in_portal(params[:pid])
-#      @users = User.find(:all, :conditions => ["portal_id = :pid", params])
       respond_to do |wants|
         wants.html
-        wants.xml { render :xml => @users.to_xml(:except => ['portal_id', 'created_at', 'updated_at']) }
+        wants.xml { render :xml => @users.to_xml }
       end
     end
   end
@@ -65,12 +64,12 @@ class UserController < ApplicationController
           wants.html
           wants.xml  do
             response.headers['Location'] = url_for(:action => :show, :id => params[:id])
-            render :xml => @user.to_xml(:except => ['portal_id', 'created_at', 'updated_at'])
+            render :xml => @user.to_xml
           end
         end
       elsif request.put?
         begin
-          @user.update_attributes(Convert.hash_from_xml(request.raw_post))
+          @user.update_attributes(ConvertXml.xml_to_hash(request.raw_post))
           if @user.save
             response.headers['Location'] = url_for(:action => :show, :id => @user.id)
             render(:xml => "", :status => 201) # Created

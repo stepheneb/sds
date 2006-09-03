@@ -1,10 +1,10 @@
 <%= error_messages_for 'workgroup' %>
 
 <p><label for="workgroup_name">Name</label><br/>
-<%= text_field 'workgroup', 'name', "cols" => 60  %></p>
+<%= text_field 'workgroup', 'name', :size => 60  %></p>
 
 <p><label for="workgroup_portal_token">Portal Token</label><br/>
-<%= text_field 'workgroup', 'portal_token', "cols" => 60  %></p>
+<%= text_field 'workgroup', 'portal_token', :size => 60  %></p>
 
 <p><label for="workgroup_offering">Offering: </label><br/>
 <%= select 'workgroup', 'offering_id',  Offering.find_all_in_portal(params[:pid]).map { |p| [p.name, p.id] }  %></p>

@@ -1,4 +1,4 @@
-require 'conversions.rb'
+# require 'conversions.rb'
 
 class Portal < ActiveRecord::Base
   set_table_name "sds_portals"
@@ -10,5 +10,11 @@ class Portal < ActiveRecord::Base
   has_many :users
   has_many :workgroups
   has_many :portal_urls
+
+  
+  def to_xml
+    super(:except => ['created_at', 'updated_at'])
+  end
+
 end
 

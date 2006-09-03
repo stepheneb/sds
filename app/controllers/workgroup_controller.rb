@@ -5,7 +5,7 @@ class WorkgroupController < ApplicationController
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
       begin
-        w = Convert.hash_from_xml(request.raw_post).merge({"portal_id" => params[:pid]})
+        w = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
         @workgroup = Workgroup.new(w)
         if @workgroup.save!
           response.headers['Location'] = url_for(:action => :show, :id => @workgroup.id)
@@ -18,7 +18,7 @@ class WorkgroupController < ApplicationController
       @workgroups = Workgroup.find_all_in_portal(params[:pid])
       respond_to do |wants|
         wants.html
-        wants.xml { render :xml => @workgroups.to_xml(:except => ['portal_id', 'created_at', 'updated_at']) }
+        wants.xml { render :xml => @workgroups.to_xml }
       end
     end
   end
@@ -28,7 +28,7 @@ class WorkgroupController < ApplicationController
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
       begin
         @workgroup.version += 1
-        members = Convert.hash_from_xml(request.raw_post)
+        members = ConvertXml.xml_to_hash(request.raw_post)
         members['workgroup_membership'].each do |m|
           @workgroup.workgroup_memberships.create!(:user_id => m['user_id'], :version => @workgroup.version)
         end
@@ -39,10 +39,11 @@ class WorkgroupController < ApplicationController
         render(:text => "", :status => 400) # Bad Request
       end
     else
-      @members = WorkgroupMembership.find_all_in_workgroup(params[:id])
+      @members = @workgroup.users.version(@workgroup.version) # array of User objects
+      @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects
       respond_to do |wants|
         wants.html
-        wants.xml { render :xml => @members.to_xml(:except => [:id, :workgroup_id, :version]) }
+        wants.xml { render :xml => WorkgroupMembership.wg_array_to_xml(@membership_array) }
       end
     end
   end
@@ -92,17 +93,19 @@ class WorkgroupController < ApplicationController
   def show
     if Workgroup.exists?(params[:id])
       @workgroup = Workgroup.find(params[:id])
+      @members = @workgroup.users.version(@workgroup.version) # array of User objects
+      @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects
       if request.get?
         respond_to do |wants|
           wants.html
           wants.xml  do
             response.headers['Location'] = url_for(:action => :show, :id => params[:id])
-            render :xml => @workgroup.to_xml(:except => ['portal_id', 'created_at', 'updated_at'])
+            render :xml => @workgroup.to_xml
           end
         end
       elsif request.put?
         begin
-          @workgroup.update_attributes(Convert.hash_from_xml(request.raw_post))
+          @workgroup.update_attributes(ConvertXml.xml_to_hash(request.raw_post))
           if @workgroup.save
             response.headers['Location'] = url_for(:action => :show, :id => @workgroup.id)
             render(:xml => "", :status => 201) # Created

@@ -31,5 +31,7 @@ class Workgroup < ActiveRecord::Base
   def self.find_all_in_portal(pid)
     Workgroup.find(:all, :conditions => ["portal_id = ?", pid])
   end
+  
+  include FromXml # module in lib/from_xml, customizes class_instance.to_xml
 
 end

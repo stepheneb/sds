@@ -5,7 +5,7 @@ class CurnitController < ApplicationController
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
       begin
-        c = Convert.hash_from_xml(request.raw_post).merge({ "portal_id" => params[:pid]})
+        c = ConvertXml.xml_to_hash(request.raw_post).merge({ "portal_id" => params[:pid]})
         @curnit = Curnit.new(c)
         if @curnit.save
           response.headers['Location'] = url_for(:action => :show, :id => @curnit.id)
@@ -21,7 +21,7 @@ class CurnitController < ApplicationController
 #      @curnits = Curnit.find(:all, :conditions => ["portal_id = :pid", params])
       respond_to do |wants|
         wants.html
-        wants.xml { render :xml => @curnits.to_xml(:except => ['portal_id', 'created_at', 'updated_at']) }
+        wants.xml { render :xml => @curnits.to_xml }
       end
     end
   end
@@ -67,12 +67,12 @@ class CurnitController < ApplicationController
           wants.html
           wants.xml  do
             response.headers['Location'] = url_for(:action => :show, :id => params[:id])
-            render :xml => @curnit.to_xml(:except => ['portal_id', 'created_at', 'updated_at'])
+            render :xml => @curnit.to_xml
           end
         end
       elsif request.put?
         begin
-          @curnit.update_attributes(Convert.hash_from_xml(request.raw_post))
+          @curnit.update_attributes(ConvertXml.xml_to_hash(request.raw_post))
           if @curnit.save
             response.headers['Location'] = url_for(:action => :show, :id => @curnit.id)
             render(:xml => "", :status => 201) # Created

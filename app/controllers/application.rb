@@ -10,5 +10,6 @@ class ApplicationController < ActionController::Base
   model :bundle
   
   require 'convert'
+  require 'from_xml'
   
 end

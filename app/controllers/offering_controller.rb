@@ -5,7 +5,7 @@ class OfferingController < ApplicationController
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
       begin
-        u = Convert.hash_from_xml(request.raw_post).merge({"portal_id" => params[:pid]})
+        u = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
         @offering = Offering.new(u)
         if @offering.save!
           response.headers['Location'] = url_for(:action => :show, :id => @offering.id)
@@ -18,7 +18,7 @@ class OfferingController < ApplicationController
       @offerings = Offering.find_all_in_portal(params[:pid])
       respond_to do |wants|
         wants.html
-        wants.xml { render :xml => @offerings.to_xml(:except => ['portal_id', 'created_at', 'updated_at']) }
+        wants.xml { render :xml => @offerings.to_xml }
       end
     end
   end
@@ -64,12 +64,12 @@ class OfferingController < ApplicationController
           wants.html
           wants.xml  do
             response.headers['Location'] = url_for(:action => :show, :id => params[:id])
-            render :xml => @offering.to_xml(:except => ['portal_id', 'created_at', 'updated_at'])
+            render :xml => @offering.to_xml
           end
         end
       elsif request.put?
         begin
-          @offering.update_attributes(Convert.hash_from_xml(request.raw_post))
+          @offering.update_attributes(ConvertXml.xml_to_hash(request.raw_post))
           if @offering.save
             response.headers['Location'] = url_for(:action => :show, :id => @offering.id)
             render(:xml => "", :status => 201) # Created
