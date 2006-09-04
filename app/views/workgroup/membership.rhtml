@@ -1,0 +1,22 @@
+<%= link_to 'List', :action => 'list'  %> | 
+<%= link_to 'Edit', :action => 'edit' %>
+
+<h4>Membership:</h4>
+<table cellpadding="3" cellspacing="4">
+  <tr>
+    <td><b>Id</b></td>
+    <td><b>Name</b></td>
+    <td><b>Portal token</b></td>
+  </tr>
+  <% @members.each do |m| %>
+    <tr>
+      <td><%= m.id.to_s %></td>
+      <td><%= m.name %></td>
+      <td><%= m.portal_token %></td>
+    </tr>
+  <% end %>
+</table>
+<p><b>XML output representation: </b></p>
+<p><code><%= h(WorkgroupMembership.wg_array_to_xml(@membership_array)) %></code></p>
+
+<%= link_to 'Workgroup', :action => 'show'  %>

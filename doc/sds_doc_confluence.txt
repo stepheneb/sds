@@ -4,7 +4,38 @@ REST web service protocols are based on the HTTP verbs POST (create), PUT (updat
 
 See [Crossing borders: REST on Rails|http://www-128.ibm.com/developerworks/java/library/j-cb08016/index.html] for an example of Java code for interfacing to a REST interface.
 
-h3. The resources managed in the SDS are:
+h3. Table of Contents
+# [#Resources managed in the SDS]
+# [#Create a new SDS portal relationship]
+#* [#Info on all SDS portals]
+# [#Info on a specific SDS portal]
+#* [#Change a specific SDS portal]
+# [#Create a new SDS curnit for a portal]
+#* [#Info on all SDS curnits for a portal]
+#* [#Info on one SDS curnit for a portal]
+# [#Create a new SDS jnlp for a portal]
+#* [#Info on all SDS jnlps for a portal]
+#* [#Info on one SDS jnlp for a portal]
+# [#Create a new SDS user for a portal]
+#* [#Info on all SDS users for a portal]
+#* [#Info on one SDS user for a portal]
+# [#Create a new SDS offering for a portal]
+#* [#Info on all SDS offerings for a portal]
+#* [#Info on one SDS offering for a portal]
+# [#Create a new SDS workgroup for an offering]
+#* [#Create the membership for a workgroup]
+#* [#List the members in a workgroup]
+#* [#Info on all SDS workgroups for a portal]
+#* [#Info on one SDS workgroup for a portal]
+# [#Producing a Java Webstart JNLP]
+# [#Producing a config file for the Java client]
+# [#Saving new session bundle files for the Java client]
+# [#Producing a collection of session bundle files for the Java client]
+
+----
+*
+{anchor:Resources managed in the SDS}
+h3. Resources managed in the SDS:
 
   *portal*: this is an SDS realm managed for an external portal. 
 
@@ -42,7 +73,8 @@ At this time all of the following resources are also editable through a browser 
 
 ----
 
-h3. Create a new portal relationship.
+{anchor:Create a new portal relationship}
+h3. Create a new SDS portal relationship.
 
 In order to create a portal relationship the SDS portal the username and password must be sent in the HTTP header as Basic Authentication must be sent. The username and password can be obtained from the SDS administrator. In addition the portal host url is sent. Any further requests for creation or changing resources associated with this portal must come from the portal host url.
 
@@ -84,6 +116,7 @@ Example (note: don't pass an <id /> element in when creating a portal, this is g
 
 If you pass in malformed xml or are missing required elements a HTTP/1.1 400 Bad Request error will be reported in the returned HTTP headers.
 
+{anchor:Info on all SDS portals}
 h4. Info on all SDS portals.
 
 {panel}
@@ -128,6 +161,7 @@ Example:
   </portals>
 {panel}
 
+{anchor:Info on a specific SDS portal}
 h4. Info on a specific SDS portal.
 
 {panel}
@@ -164,6 +198,7 @@ Example:
   </portal>
 {panel}
 
+{anchor:Change a specific SDS portal}
 h4. Change a specific SDS portal
 
 This is done with a PUT
@@ -203,6 +238,7 @@ Example:
 
 ----
 
+{anchor:Create a new SDS curnit for a portal}
 h3. Create a new SDS curnit for a portal.
 
 The url returned in the Location header is a direct link to the SDS curnit resource for this specific sds curnit.
@@ -210,7 +246,7 @@ The url returned in the Location header is a direct link to the SDS curnit resou
 {panel}
   POST 
   Content-Type: application/xml
-  http://rails.dev.concord.org/sds/curnit
+  http://rails.dev.concord.org/sds/<sds_portal_id>/curnit
 
 
   POST data:
@@ -242,12 +278,13 @@ Example: create a new curnit for portal #1
   Location: http://rails.dev.concord.org/sds/1/curnit/3
 {panel}
 
-h4. Info on all SDS curnits for portal #1
+{anchor:Info on all SDS curnits for a portal}
+h4. Info on all SDS curnits for a portal.
 
 {panel}
   GET 
   Accept: application/xml
-  http://rails.dev.concord.org/sds/1/curnit
+  http://rails.dev.concord.org/sds/<sds_portal_id>/curnit
   
   return headers:
 
@@ -291,7 +328,8 @@ Example:
   </curnits>
 {panel}
 
-h4. Info on one SDS curnit for <sds_portal_id>.
+{anchor:Info on one SDS curnit for a portal}
+h4. Info on one SDS curnit for a portal.
 
 {panel}
   GET 
@@ -332,7 +370,8 @@ Example:
 
 ----
 
-h3. Create a new SDS jnlp for <sds_portal_id>.
+{anchor:Create a new SDS jnlp for a portal}
+h3. Create a new SDS jnlp for a portal.
 
 The url returned in the Location header is a direct link to the actual SAIL jnlp resource for this specific sds jnlp.
 
@@ -361,12 +400,13 @@ The url returned in the Location header is a direct link to the actual SAIL jnlp
 
 Example:
 
-h4. Info on all SDS jnlps for portal #1.
+{anchor:Info on all SDS jnlps for a portal}
+h4. Info on all SDS jnlps for a portal.
 
 {panel}
   GET 
   Accept: application/xml
-  http://rails.dev.concord.org/sds/1/jnlp
+  http://rails.dev.concord.org/sds/<sds_portal_id>/jnlp
 
   return headers:
 
@@ -413,12 +453,13 @@ Example:
   </jnlps>
 {panel}
 
-h4. Info on one SDS jnlp for <sds_portal_id>.
+{anchor:Info on one SDS jnlp for a portal}
+h4. Info on one SDS jnlp for a portal.
 
 {panel}
   GET 
   Accept: application/xml
-  http://rails.dev.concord.org/sds/1/jnlp/<sds_jnlp_id>
+  http://rails.dev.concord.org/sds/<sds_portal_id/jnlp/<sds_jnlp_id>
 
   return headers:
 
@@ -460,7 +501,8 @@ Requesting a resource that doesn't exist:
 
 ----
 
-h3. Create a new SDS user for an SDS portal.
+{anchor:Create a new SDS user for a portal}
+h3. Create a new SDS user for a portal.
 
 The url returned in the Location header is a direct link to the actual SAIL user resource for this specific sds user. An error is returned if the portal_token already exists as a SAIL user in the portal realm.
 
@@ -506,7 +548,8 @@ Example:
   Location: http://rails.dev.concord.org/sds/1/user/4
 {panel}
 
-h4. Info on all SDS users for <sds_portal_id>.
+{anchor:Info on all SDS users for a portal}
+h4. Info on all SDS users for a portal.
 
 {panel}
   GET 
@@ -565,7 +608,8 @@ Example:
   </users>
 {panel}
 
-h4. Info on one SDS user for <sds_portal_id>.
+{anchor:Info on one SDS user for a portal}
+h4. Info on one SDS user for a portal.
 
 {panel}
   GET 
@@ -615,7 +659,8 @@ Example:
 
 ----
 
-h3. Create a new SDS offering for a portal realm.
+{anchor:Create a new SDS offering for a portal}
+h3. Create a new SDS offering for a portal.
 
 The url returned in the Location header is a direct link to the actual SDS offering resource for this specific sds offering.
 
@@ -656,7 +701,8 @@ Example:
   Location: http://rails.dev.concord.org/sds/1/offering/3
 {panel}
 
-h4. Info on all SDS offerings for <sds_portal_id>.
+{anchor:Info on all SDS offerings for a portal}
+h4. Info on all SDS offerings for a portal.
 
 {panel}
   GET 
@@ -716,7 +762,8 @@ Example:
   </offerings>
 {panel}
 
-h4. Info on one SDS offering for <sds_portal_id>.
+{anchor:Info on one SDS offering for a portal}
+h4. Info on one SDS offering for a portal.
 
 {panel}
   GET 
@@ -752,7 +799,8 @@ Example:
 
 ----
 
-h4. Create a new SDS workgroup for <sds_portal_id>.
+{anchor:Create a new SDS workgroup for an offering}
+h3. Create a new SDS workgroup for an offering.
 
 {panel}
   POST 
@@ -790,7 +838,8 @@ Example:
   Location: http://rails.dev.concord.org/sds/1/workgroup/10
 {panel}
 
-h4. Create the membership for a SDS workgroup
+{anchor:Create the membership for a workgroup}
+h4. Create the membership for a workgroup
   
 {panel}
   POST 
@@ -831,12 +880,13 @@ Example:
   Location: http://rails.dev.concord.org/sds/1/workgroup/8/membership
 {panel}
 
-h4. List the members in an SDS workgroup
+{anchor:List the members in a workgroup}
+h4. List the members in a workgroup
 
 {panel}
   GET 
   Accept: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id>workgroup/<sds_workgroup_id>/membership
+  http://rails.dev.concord.org/sds/<sds_portal_id>workgroup/<sds_workgroup_id>
 
   return headers:
 
@@ -876,7 +926,8 @@ Example:
   </workgroup-memberships>
 {panel}
 
-h4. Info on all SDS workgroups for <sds_portal_id>.
+{anchor:Info on all SDS workgroups for a portal}
+h4. Info on all SDS workgroups for a workgroup.
 
 {panel}
   GET 
@@ -940,7 +991,8 @@ Example:
   </workgroups>
 {panel}
 
-h4. Info on one SDS workgroup for <sds_portal_id>.
+{anchor:Info on one SDS workgroup for a portal}
+h4. Info on one SDS workgroup for a portal.
 
 {panel}
   GET 
@@ -988,7 +1040,8 @@ Example:
 
 ----
 
-h3. Producing a Java webstart JNLP file
+{anchor:Producing a Java Webstart JNLP}
+h3. Producing a Java Webstart JNLP file
 
 A portal id, offering id and a workgroup id are needed to produce a jnlp however the argument in the application-desc which points to a config file adds a workgroup version number. This is needed in the case where the members of a workgroup change while a client session is in progress. In this case when the session information is saved it will be related to the workgroup version in existence when the session was started.
 
@@ -1093,6 +1146,7 @@ Example:
 
 ----
 
+{anchor:Producing a config file for the Java client}
 h3. Producing a config file for the Java client.
 
 Right now the workgroup is not being passed in the config file (it is specified in the various urls) and instead the members of the workgroup are passed in as a collection of participants.
@@ -1176,7 +1230,8 @@ Example:
 
 ----
 
-h4. Saving new session bundle files for the Java client.
+{anchor:Saving new session bundle files for the Java client}
+h3. Saving new session bundle files for the Java client.
 
 {panel}
   POST 
@@ -1210,6 +1265,7 @@ Example:
   Location: http://rails.dev.concord.org/sds/1/offering/1/bundle/8/7
 {panel}
 
+{anchor:Producing a collection of session bundle files for the Java client}
 h4. Producing a collection of session bundle files for the Java client.
 
 {panel}
