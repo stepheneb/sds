@@ -11,6 +11,6 @@ class ApplicationController < ActionController::Base
   
   require 'conversions'
   require 'convert'
-  require 'from_xml'
+  require 'to_xml'
   
 end

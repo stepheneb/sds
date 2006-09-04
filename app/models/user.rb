@@ -28,6 +28,6 @@ class User < ActiveRecord::Base
     "#{name}, #{portal_token}"
   end
   
-  include FromXml # module in lib/from_xml, customizes class_instance.to_xml
+  include ToXml # module in lib/to_xml, customizes class_instance.to_xml
   
 end
