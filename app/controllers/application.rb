@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
   model :workgroup
   model :bundle
   
+  require 'conversions'
   require 'convert'
   require 'from_xml'
   
