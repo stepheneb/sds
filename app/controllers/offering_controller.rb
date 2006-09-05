@@ -134,7 +134,6 @@ class OfferingController < ApplicationController
       @headers["Content-Type"] = "text/xml"
       render :action => 'bundlelist', :layout => false
     end
-    
   end
      
 end

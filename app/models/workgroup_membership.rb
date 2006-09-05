@@ -12,9 +12,9 @@ class WorkgroupMembership < ActiveRecord::Base
   
   # because this is a associational join table the normal object is
   # a collection of workgroup_memberships in an array, this is a class
-  # method that renders the default xml representation for a wg_array
-  def self.wg_array_to_xml(wg_array)
-    wg_array.to_xml(:except => [:id, :workgroup_id, :version])
+  # method that renders the default xml representation for a wgm_array
+  def self.wg_array_to_xml(wgm_array)
+    wgm_array.to_xml(:except => [:id, :workgroup_id, :version])
   end
   
 end

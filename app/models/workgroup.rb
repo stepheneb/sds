@@ -8,13 +8,14 @@ class Workgroup < ActiveRecord::Base
   belongs_to :portal
   belongs_to :offering
   has_many :workgroup_memberships
+
+  # this creates the following possible search
+  # members = workgroup.users.version(1)
   has_many :users, :through => :workgroup_memberships do
     def version(version) 
       find :all, :conditions => ['version = ?', version] 
     end
   end
-  # this creates the following possible search
-  # members = workgroup.users.version(1)
 
   before_create :generate_uuid
   

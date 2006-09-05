@@ -33,7 +33,7 @@ h3. Table of Contents
 # [#Producing a collection of session bundle files for the Java client]
 
 ----
-*
+
 {anchor:Resources managed in the SDS}
 h3. Resources managed in the SDS:
 
@@ -518,11 +518,12 @@ The url returned in the Location header is a direct link to the actual SAIL user
       <portal-token>11264</portal-token>
       <first-name>Stephen</first-name>
       <last-name>Smith</last-name>
+      <portal-username>ssmith</portal-username>
     </user>
 
   return headers:
     
-    sucess:
+    success:
 
       HTTP/1.1 201 Created 
       Location: http://rails.dev.concord.org/sds/<sds_portal_id>/user/<sds_user_id>
@@ -539,7 +540,8 @@ The url returned in the Location header is a direct link to the actual SAIL user
 Example:
 
 {panel}
-  curl -i -H 'Content-Type: application/xml' -X POST -d '<user><portal-token>11264</portal-token><first-name>Stephen</first-name><last-name>Smith</last-name></user>' http://rails.dev.concord.org/sds/1/user
+  curl -i -H 'Content-Type: application/xml' -X POST -d '<user><portal-token>11264</portal-token><first-name>Stephen</first-name><last-name>Smith</last-name><portal-username>ssmith</portal-username>
+  </user>' http://rails.dev.concord.org/sds/1/user
   
   HTTP/1.1 201 Created 
   Date: Wed, 16 Aug 2006 01:04:44 GMT
@@ -568,6 +570,7 @@ h4. Info on all SDS users for a portal.
       <portal-token>stephen@concord.org</portal-token>
       <first-name>Stephen</first-name>
       <last-name>Bannasch</last-name>
+      <portal-username>ssmith</portal-username>
     </user>
     <user>
       <uuid>c096c6c6-2cc1-11db-92b2-0016cb92217d</uuid>
@@ -575,6 +578,7 @@ h4. Info on all SDS users for a portal.
       <portal-token>user1</portal-token>
       <first-name>Stephen</first-name>
       <last-name>Bannasch</last-name>
+      <portal-username>sbannasch2</portal-username>
     </user>
   </users>
 {panel}
@@ -597,6 +601,7 @@ Example:
       <portal-token>stephen@concord.org</portal-token>
       <first-name>Stephen</first-name>
       <last-name>Bannasch</last-name>
+      <portal-username>sbannasch</portal-username>
     </user>
     <user>
       <uuid>c096c6c6-2cc1-11db-92b2-0016cb92217d</uuid>
@@ -604,6 +609,7 @@ Example:
       <portal-token>user1</portal-token>
       <first-name>Stephen</first-name>
       <last-name>Bannasch</last-name>
+      <portal-username>sbannasch2</portal-username>
     </user>
   </users>
 {panel}
@@ -633,6 +639,7 @@ h4. Info on one SDS user for a portal.
     <portal-token>user1</portal-token>
     <first-name>Stephen</first-name>
     <last-name>Bannasch</last-name>
+    <portal-username>sbannasch</portal-username>
   </user>
 {panel}
 
@@ -654,6 +661,7 @@ Example:
     <portal-token>user1</portal-token>
     <first-name>Stephen</first-name>
     <last-name>Bannasch</last-name>
+    <portal-username>sbannasch</portal-username>
   </user>
 {panel}
 
