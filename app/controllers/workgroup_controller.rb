@@ -18,7 +18,7 @@ class WorkgroupController < ApplicationController
       @workgroups = Workgroup.find_all_in_portal(params[:pid])
       respond_to do |wants|
         wants.html
-        wants.xml { render :xml => @workgroups.to_xml }
+        wants.xml { render :xml => @workgroups.to_xml(:except => ['created_at', 'updated_at']) }
       end
     end
   end
@@ -100,7 +100,7 @@ class WorkgroupController < ApplicationController
           wants.html
           wants.xml  do
             response.headers['Location'] = url_for(:action => :show, :id => params[:id])
-            render :xml => @workgroup.to_xml
+            render :xml => @workgroup.to_xml(:except => ['created_at', 'updated_at'])
           end
         end
       elsif request.put?

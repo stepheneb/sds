@@ -2,8 +2,6 @@ h2. REST protocol for SAIL Data Services (SDS)
 
 REST web service protocols are based on the HTTP verbs POST (create), PUT (update), GET (show), and DELETE (delete) applied to  resources specified with urls. When a REST protocol is used the data exchanged is formatted as XML. The SDS implements REST-based services for communication with external portals to support the delivery of SAIL-based curriculum units. Many of the administrative services are also available as html rendered in a browser.
 
-See [Crossing borders: REST on Rails|http://www-128.ibm.com/developerworks/java/library/j-cb08016/index.html] for an example of Java code for interfacing to a REST interface.
-
 h3. Table of Contents
 # [#Resources managed in the SDS]
 # [#Create a new SDS portal relationship]
@@ -31,6 +29,14 @@ h3. Table of Contents
 # [#Producing a config file for the Java client]
 # [#Saving new session bundle files for the Java client]
 # [#Producing a collection of session bundle files for the Java client]
+
+----
+
+Rest Architecture and Tutorial links
+
+Java
+* [Great tutorial at Sun on RESTful Web Services with Java|http://java.sun.com/developer/technicalArticles/WebServices/restful/?feed=JSC] (Turadg)
+* See [Crossing borders: REST on Rails|http://www-128.ibm.com/developerworks/java/library/j-cb08016/index.html] for an example of Java code for interfacing to a REST interface.
 
 ----
 

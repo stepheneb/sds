@@ -15,6 +15,5 @@ class Offering < ActiveRecord::Base
     Offering.find(:all, :conditions => ["portal_id = ?", pid])
   end
   
-  include ToXml # module in lib/to_xml, customizes class_instance.to_xml
   
 end

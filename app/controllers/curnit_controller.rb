@@ -21,7 +21,7 @@ class CurnitController < ApplicationController
 #      @curnits = Curnit.find(:all, :conditions => ["portal_id = :pid", params])
       respond_to do |wants|
         wants.html
-        wants.xml { render :xml => @curnits.to_xml }
+        wants.xml { render :xml => @curnits.to_xml(:except => ['created_at', 'updated_at']) }
       end
     end
   end
@@ -67,7 +67,7 @@ class CurnitController < ApplicationController
           wants.html
           wants.xml  do
             response.headers['Location'] = url_for(:action => :show, :id => params[:id])
-            render :xml => @curnit.to_xml
+            render :xml => @curnit.to_xml(:except => ['created_at', 'updated_at'])
           end
         end
       elsif request.put?

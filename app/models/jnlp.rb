@@ -11,8 +11,6 @@ class Jnlp < ActiveRecord::Base
   def self.find_all_in_portal(pid)
     Jnlp.find(:all, :conditions => ["portal_id = ?", pid])
   end
-  
-  include ToXml # module in lib/to_xml, customizes class_instance.to_xml
-  
+    
 end
   

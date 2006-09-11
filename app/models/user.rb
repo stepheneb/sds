@@ -28,6 +28,5 @@ class User < ActiveRecord::Base
     "#{name}, #{portal_token}"
   end
   
-  include ToXml # module in lib/to_xml, customizes class_instance.to_xml
   
 end

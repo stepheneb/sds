@@ -18,7 +18,7 @@ class OfferingController < ApplicationController
       @offerings = Offering.find_all_in_portal(params[:pid])
       respond_to do |wants|
         wants.html
-        wants.xml { render :xml => @offerings.to_xml }
+        wants.xml { render :xml => @offerings.to_xml(:except => ['created_at', 'updated_at']) }
       end
     end
   end
@@ -64,7 +64,7 @@ class OfferingController < ApplicationController
           wants.html
           wants.xml  do
             response.headers['Location'] = url_for(:action => :show, :id => params[:id])
-            render :xml => @offering.to_xml
+            render :xml => @offering.to_xml(:except => ['created_at', 'updated_at'])
           end
         end
       elsif request.put?

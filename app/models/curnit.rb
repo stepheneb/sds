@@ -13,6 +13,10 @@ class Curnit < ActiveRecord::Base
     Curnit.find(:all, :conditions => ["portal_id = ?", pid])
   end
   
-  include ToXml # module in lib/to_xml, customizes class_instance.to_xml
-  
+#  include ToXml # module in lib/to_xml, customizes class_instance.to_xml
+ 
+#  def to_xml
+#    super(:except => ['created_at', 'updated_at'])
+#  end
+ 
 end

@@ -20,7 +20,7 @@ class JnlpController < ApplicationController
       @jnlps = Jnlp.find_all_in_portal(params[:pid])
       respond_to do |wants|
         wants.html
-        wants.xml { render :xml => @jnlps.to_xml }
+        wants.xml { render :xml => @jnlps.to_xml(:except => ['created_at', 'updated_at']) }
       end
     end
   end
@@ -66,7 +66,7 @@ class JnlpController < ApplicationController
           wants.html
           wants.xml  do
             response.headers['Location'] = url_for(:action => :show, :id => params[:id])
-            render :xml => @jnlp.to_xml
+            render :xml => @jnlp.to_xml(:except => ['created_at', 'updated_at'])
           end
         end
       elsif request.put?
