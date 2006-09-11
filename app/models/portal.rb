@@ -11,10 +11,5 @@ class Portal < ActiveRecord::Base
   has_many :workgroups
   has_many :portal_urls
 
-  
-  def to_xml
-    super(:except => ['created_at', 'updated_at'])
-  end
-
 end
 
