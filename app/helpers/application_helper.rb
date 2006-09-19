@@ -3,7 +3,7 @@ module ApplicationHelper
   
   def display_xml(obj)
     "<p><b>XML output representation: </b></p>" +
-    "<p><code>#{h(obj.to_xml)}</code></p>"
+    "<p><code>#{h(obj.to_xml(:except => ['created_at', 'updated_at']))}</code></p>"
   end
   
 end

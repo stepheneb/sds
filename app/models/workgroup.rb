@@ -2,8 +2,7 @@ class Workgroup < ActiveRecord::Base
   
   set_table_name "sds_workgroups"
 
-  validates_presence_of :portal_id, :offering_id, :portal_token, :name
-  validates_uniqueness_of :portal_token, :scope => :portal_id
+  validates_presence_of :offering_id, :name
 
   belongs_to :portal
   belongs_to :offering

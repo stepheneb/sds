@@ -2,8 +2,7 @@ class User < ActiveRecord::Base
   
   set_table_name "sds_users"
 
-  validates_presence_of :portal_id, :portal_token, :first_name, :last_name
-  validates_uniqueness_of :portal_token, :scope => :portal_id
+  validates_presence_of :first_name, :last_name
 
   belongs_to :portal
   has_and_belongs_to_many :offerings, options = { :join_table => 'sds_offerings_users'}
@@ -25,7 +24,7 @@ class User < ActiveRecord::Base
   end
   
   def identifier
-    "#{name}, #{portal_token}"
+    "#{name}"
   end
   
   

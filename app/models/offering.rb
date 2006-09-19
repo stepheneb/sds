@@ -2,8 +2,7 @@ class Offering < ActiveRecord::Base
   
   set_table_name "sds_offerings"
   
-  validates_presence_of :portal_id, :curnit_id, :jnlp_id, :name
-  validates_uniqueness_of :portal_token, :scope => :portal_id
+  validates_presence_of :curnit_id, :jnlp_id, :name
   
   belongs_to :portal
   belongs_to :curnit

@@ -510,7 +510,7 @@ Requesting a resource that doesn't exist:
 {anchor:Create a new SDS user for a portal}
 h3. Create a new SDS user for a portal.
 
-The url returned in the Location header is a direct link to the actual SAIL user resource for this specific sds user. An error is returned if the portal_token already exists as a SAIL user in the portal realm.
+The url returned in the Location header is a direct link to the actual SAIL user resource for this specific sds user.
 
 {panel}
     POST 
@@ -521,7 +521,6 @@ The url returned in the Location header is a direct link to the actual SAIL user
   POST data:
 
     <user>
-      <portal-token>11264</portal-token>
       <first-name>Stephen</first-name>
       <last-name>Smith</last-name>
       <portal-username>ssmith</portal-username>
@@ -546,7 +545,7 @@ The url returned in the Location header is a direct link to the actual SAIL user
 Example:
 
 {panel}
-  curl -i -H 'Content-Type: application/xml' -X POST -d '<user><portal-token>11264</portal-token><first-name>Stephen</first-name><last-name>Smith</last-name><portal-username>ssmith</portal-username>
+  curl -i -H 'Content-Type: application/xml' -X POST -d '<user><first-name>Stephen</first-name><last-name>Smith</last-name><portal-username>ssmith</portal-username>
   </user>' http://rails.dev.concord.org/sds/1/user
   
   HTTP/1.1 201 Created 
@@ -573,18 +572,14 @@ h4. Info on all SDS users for a portal.
     <user>
       <uuid>1846687e-2cc0-11db-8906-0016cb92217d</uuid>
       <id>2</id>
-      <portal-token>stephen@concord.org</portal-token>
       <first-name>Stephen</first-name>
       <last-name>Bannasch</last-name>
-      <portal-username>ssmith</portal-username>
     </user>
     <user>
       <uuid>c096c6c6-2cc1-11db-92b2-0016cb92217d</uuid>
       <id>3</id>
-      <portal-token>user1</portal-token>
       <first-name>Stephen</first-name>
       <last-name>Bannasch</last-name>
-      <portal-username>sbannasch2</portal-username>
     </user>
   </users>
 {panel}
@@ -604,18 +599,14 @@ Example:
     <user>
       <uuid>1846687e-2cc0-11db-8906-0016cb92217d</uuid>
       <id>2</id>
-      <portal-token>stephen@concord.org</portal-token>
       <first-name>Stephen</first-name>
       <last-name>Bannasch</last-name>
-      <portal-username>sbannasch</portal-username>
     </user>
     <user>
       <uuid>c096c6c6-2cc1-11db-92b2-0016cb92217d</uuid>
       <id>3</id>
-      <portal-token>user1</portal-token>
       <first-name>Stephen</first-name>
       <last-name>Bannasch</last-name>
-      <portal-username>sbannasch2</portal-username>
     </user>
   </users>
 {panel}
@@ -642,10 +633,8 @@ h4. Info on one SDS user for a portal.
   <user>
     <uuid>c096c6c6-2cc1-11db-92b2-0016cb92217d</uuid>
     <id>3</id>
-    <portal-token>user1</portal-token>
     <first-name>Stephen</first-name>
     <last-name>Bannasch</last-name>
-    <portal-username>sbannasch</portal-username>
   </user>
 {panel}
 
@@ -664,10 +653,8 @@ Example:
   <user>
     <uuid>c096c6c6-2cc1-11db-92b2-0016cb92217d</uuid>
     <id>3</id>
-    <portal-token>user1</portal-token>
     <first-name>Stephen</first-name>
     <last-name>Bannasch</last-name>
-    <portal-username>sbannasch</portal-username>
   </user>
 {panel}
 
@@ -688,7 +675,6 @@ The url returned in the Location header is a direct link to the actual SDS offer
 
     <offering>
       <name>Airbag Incomplete</name>
-      <portal-token>11369</portal-token>
       <curnit-id>1</curnit-id>
       <jnlp-id>6</jnlp-id>
     </offering>
@@ -706,7 +692,7 @@ The url returned in the Location header is a direct link to the actual SDS offer
 Example:
 
 {panel}
-  curl -i -H 'Content-Type: application/xml' -X POST -d '<offering><name>Airbag Incomplete</name><portal-token>11369</portal-token><curnit-id>1</curnit-id><jnlp-id>6</jnlp-id></offering>' http://rails.dev.concord.org/sds/1/offering
+  curl -i -H 'Content-Type: application/xml' -X POST -d '<offering><name>Airbag Incomplete</name><curnit-id>1</curnit-id><jnlp-id>6</jnlp-id></offering>' http://rails.dev.concord.org/sds/1/offering
 
   HTTP/1.1 201 Created 
   Date: Wed, 16 Aug 2006 02:33:28 GMT
@@ -734,14 +720,12 @@ h4. Info on all SDS offerings for a portal.
       <name>Airbag Complete</name>
       <curnit-id>1</curnit-id>
       <id>1</id>
-      <portal-token>11367</portal-token>
       <jnlp-id>6</jnlp-id>
     </offering>
     <offering>
       <name>Air Bag Test</name>
       <curnit-id>2</curnit-id>
       <id>2</id>
-      <portal-token>11368</portal-token>
       <jnlp-id>6</jnlp-id>
     </offering>
   </offerings>
@@ -763,14 +747,12 @@ Example:
       <name>Airbag Complete</name>
       <curnit-id>1</curnit-id>
       <id>1</id>
-      <portal-token>11367</portal-token>
       <jnlp-id>6</jnlp-id>
     </offering>
     <offering>
       <name>Air Bag Test</name>
       <curnit-id>2</curnit-id>
       <id>2</id>
-      <portal-token>11368</portal-token>
       <jnlp-id>6</jnlp-id>
     </offering>
   </offerings>
@@ -806,7 +788,6 @@ Example:
     <name>Airbag Incomplete</name>
     <curnit-id>1</curnit-id>
     <id>3</id>
-    <portal-token>11369</portal-token>
     <jnlp-id>6</jnlp-id>
   </offering>
 {panel}
@@ -827,7 +808,6 @@ h3. Create a new SDS workgroup for an offering.
   <workgroup>
     <name>Pineapples</name>
     <offering-id>1</offering-id>
-    <portal-token>11672</portal-token>
   </workgroup>
     
   return headers:
@@ -843,7 +823,7 @@ h3. Create a new SDS workgroup for an offering.
 Example:
 
 {panel}
-  curl -i -H 'Content-Type: application/xml' -X POST -d '<workgroup><name>Pineapples</name><offering-id>1</offering-id><portal-token>11673</portal-token></workgroup>' http://rails.dev.concord.org/sds/1/workgroup
+  curl -i -H 'Content-Type: application/xml' -X POST -d '<workgroup><name>Pineapples</name><offering-id>1</offering-id></workgroup>' http://rails.dev.concord.org/sds/1/workgroup
 
   HTTP/1.1 201 Created 
   Date: Wed, 16 Aug 2006 07:43:39 GMT
@@ -961,7 +941,6 @@ h4. Info on all SDS workgroups for a workgroup.
         <uuid>4bf7c82a-2ced-11db-92b2-0016cb92217d</uuid>
         <id>8</id>
         <version>1</version>
-        <portal-token>11670</portal-token>
         <offering-id>1</offering-id>
       </workgroup>
       <workgroup>
@@ -969,7 +948,6 @@ h4. Info on all SDS workgroups for a workgroup.
         <uuid>5ea6e6f4-2ced-11db-92b2-0016cb92217d</uuid>
         <id>9</id>
         <version>1</version>
-        <portal-token>11671</portal-token>
         <offering-id>1</offering-id>
       </workgroup>
     </workgroups>
@@ -991,7 +969,6 @@ Example:
       <uuid>4bf7c82a-2ced-11db-92b2-0016cb92217d</uuid>
       <id>8</id>
       <version>1</version>
-      <portal-token>11670</portal-token>
       <offering-id>1</offering-id>
     </workgroup>
     <workgroup>
@@ -999,7 +976,6 @@ Example:
       <uuid>5ea6e6f4-2ced-11db-92b2-0016cb92217d</uuid>
       <id>9</id>
       <version>1</version>
-      <portal-token>11671</portal-token>
       <offering-id>1</offering-id>
     </workgroup>
   </workgroups>
@@ -1025,7 +1001,6 @@ h4. Info on one SDS workgroup for a portal.
       <uuid>4bf7c82a-2ced-11db-92b2-0016cb92217d</uuid>
       <id>8</id>
       <version>1</version>
-      <portal-token>11670</portal-token>
       <offering-id>1</offering-id>
     </workgroup>
 {panel}
@@ -1047,7 +1022,6 @@ Example:
     <uuid>4bf7c82a-2ced-11db-92b2-0016cb92217d</uuid>
     <id>8</id>
     <version>1</version>
-    <portal-token>11670</portal-token>
     <offering-id>1</offering-id>
   </workgroup>
 {panel}
