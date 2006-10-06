@@ -1,7 +1,7 @@
 <%= link_to 'List', :action => 'list'  %> | 
 <%= link_to 'Edit', :action => 'edit' %>
 
-<table cellpadding="3" cellspacing="4">
+<table cellpadding="2" cellspacing="1">
   <tr><td><b>Id</b><td><%= @offering.id.to_s %></td></tr>
   <tr><td><b>Name</b><td><%= @offering.name %></td></tr>
   <tr><td><b>Curnit</b><td><%= @offering.curnit.id %></td><td><%= @offering.curnit.name %></td><td><%= @offering.curnit.url %></td></tr>
@@ -9,9 +9,9 @@
   <tr><td><b>Created at</b><td><%= @offering.created_at.to_s %></td></tr>
   <tr><td><b>Updated at</b><td><%= @offering.updated_at.to_s %></td></tr>
 </table>
-
-<h4>Workgroups:</h4>
-<table cellpadding="3" cellspacing="4">
+<p />
+<b>Workgroups:</b>
+<table cellpadding="1" cellspacing="1">
   <tr>
     <td><b>Id</b></td>
     <td><b>Name</b></td>
@@ -20,7 +20,7 @@
     <tr>
       <td><%= w.id.to_s %></td>
       <td><%= w.name %></td>
-      <td><%= link_to 'Run', :controller => 'offering', :action => 'jnlp', :id => @offering.id, :wid => w.id, :only_path => false %> | 
+      <td><%= link_to 'Run', :controller => 'offering', :action => 'jnlp', :id => @offering.id, :wid => w.id, :type => 'workgroup', :only_path => false %> | 
           <%= link_to 'Show', :controller => 'workgroup', :action => 'show', :id => w.id %> | 
           <%= link_to 'Edit', :controller => 'workgroup', :action => 'edit', :id => w.id %> 
       </td>

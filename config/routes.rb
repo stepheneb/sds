@@ -15,7 +15,9 @@ ActionController::Routing::Routes.draw do |map|
 
 # offering: java web start services
 
-  map.connect ':pid/offering/:id/jnlp/:wid', :controller => 'offering', :action => 'jnlp'
+  map.connect ':pid/offering/:id/jnlp/:wid', :controller => 'offering', :action => 'jnlp', :type => 'workgroup'
+  map.connect ':pid/offering/:id/jnlp/user/:uid', :controller => 'offering', :action => 'jnlp', :type => 'user'
+  map.connect ':pid/offering/:id/jnlp/workgroup/:wid', :controller => 'offering', :action => 'jnlp', :type => 'workgroup'
   map.connect ':pid/offering/:id/config/:wid/:version', :controller => 'offering', :action => 'config'
   map.connect ':pid/offering/:id/bundle/:wid/:version', :controller => 'offering', :action => 'bundle'
 

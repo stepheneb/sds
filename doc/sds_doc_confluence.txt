@@ -1,5 +1,7 @@
 h2. REST protocol for SAIL Data Services (SDS)
 
+The initial implementation of the SAIL Data Service has been created using the Ruby on Rails web framework and is located here: http://rails.dev.concord.org/sds. The source code is in a Subversion repository located here: http://svn.rails.dev.concord.org/svn/sds/trunk/.
+
 REST web service protocols are based on the HTTP verbs POST (create), PUT (update), GET (show), and DELETE (delete) applied to  resources specified with urls. When a REST protocol is used the data exchanged is formatted as XML. The SDS implements REST-based services for communication with external portals to support the delivery of SAIL-based curriculum units. Many of the administrative services are also available as html rendered in a browser.
 
 h3. Table of Contents

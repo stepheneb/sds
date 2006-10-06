@@ -11,7 +11,7 @@ class Workgroup < ActiveRecord::Base
   # this creates the following possible search
   # members = workgroup.users.version(1)
   has_many :users, :through => :workgroup_memberships do
-    def version(version) 
+    def version(version)
       find :all, :conditions => ['version = ?', version] 
     end
   end

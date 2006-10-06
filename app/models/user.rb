@@ -7,7 +7,18 @@ class User < ActiveRecord::Base
   belongs_to :portal
   has_and_belongs_to_many :offerings, options = { :join_table => 'sds_offerings_users'}
   has_many :workgroup_memberships
+  
+  # this creates the following possible search
+  # workgroups = user.workgroups?
   has_many :workgroups, :through => :workgroup_memberships
+
+  def workgroup?
+    self.workgroups.length != 0
+  end
+  
+  def workgroup
+    self.workgroups.sort {|a,b| a.id <=> b.id}[0]
+  end
   
   before_create :generate_uuid
   
@@ -26,6 +37,5 @@ class User < ActiveRecord::Base
   def identifier
     "#{name}"
   end
-  
   
 end

@@ -89,31 +89,44 @@ class OfferingController < ApplicationController
   end
 
   def destroy
-    id = params[:id]
-    begin
-      Offering.find(id).destroy
-      flash[:notice] = "Offering #{id.to_s} was successfully deleted."
-    rescue
-      flash[:notice] = "Error deleting Offering #{id.to_s}." 
-    end
-    redirect_to :action => :list
+#    id = params[:id]
+#    begin
+#      Offering.find(id).destroy
+#      flash[:notice] = "Offering #{id.to_s} was successfully deleted."
+#    rescue
+#      flash[:notice] = "Error deleting Offering #{id.to_s}." 
+#    end
+#    redirect_to :action => :list
   end
 
   def jnlp
-    @offering = Offering.find(params[:id])
-    @workgroup = Workgroup.find(params[:wid])
-    @headers["Content-Type"] = "application/x-java-jnlp-file"
-    @headers["Cache-Control"] = "public"
-    @headers["Content-Disposition"] = "attachment; filename=testjnlp.jnlp"
-    filename = "testjnlp"
-    render :action => 'jnlp', :layout => false
+    begin
+      @offering = Offering.find(params[:id])
+      case params[:type]
+      when 'user'
+        @workgroup = User.find(params[:uid]).workgroup
+      when 'workgroup'
+        @workgroup = Workgroup.find(params[:wid])
+      end
+      @headers["Content-Type"] = "application/x-java-jnlp-file"
+      @headers["Cache-Control"] = "public"
+      @headers["Content-Disposition"] = "attachment; filename=testjnlp.jnlp"
+      filename = "testjnlp"
+      render :action => 'jnlp', :layout => false
+    rescue
+      render(:text => "", :status => 404) # Not Found
+    end
   end
   
   def config
-    @offering = Offering.find(params[:id])
-    @workgroup = Workgroup.find(params[:wid])
-    @version = params[:version]
-    render :action => 'config', :layout => false
+    begin
+      @offering = Offering.find(params[:id])
+      @workgroup = Workgroup.find(params[:wid])
+      @version = params[:version]
+      render :action => 'config', :layout => false
+    rescue
+      render(:text => "", :status => 404) # Not Found
+    end
   end
   
   def bundle
@@ -130,9 +143,13 @@ class OfferingController < ApplicationController
         render(:text => "", :status => 400) # Bad Request
       end
     else
-      @bundles = Bundle.find_by_offering_and_workgroup(params[:id], params[:wid])
-      @headers["Content-Type"] = "text/xml"
-      render :action => 'bundlelist', :layout => false
+      begin
+        @bundles = Bundle.find_by_offering_and_workgroup(params[:id], params[:wid])
+        @headers["Content-Type"] = "text/xml"
+        render :action => 'bundlelist', :layout => false
+      rescue
+        render(:text => "", :status => 404) # Not Found
+      end
     end
   end
      
