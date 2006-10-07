@@ -65,6 +65,7 @@ ActionController::Routing::Routes.draw do |map|
 # curnit
 
   map.connect ':pid/curnit/', :controller => 'curnit', :action => 'list'
+#  map.connect ':pid/curnit/:id/jnlp/:jid', :controller => 'curnit', :action => 'jnlp'
   map.connect ':pid/curnit/list', :controller => 'curnit', :action => 'list'
   map.connect ':pid/curnit/new', :controller => 'curnit', :action => 'new'
   map.connect ':pid/curnit/create', :controller => 'curnit', :action => 'create'

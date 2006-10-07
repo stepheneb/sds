@@ -1033,13 +1033,27 @@ Example:
 {anchor:Producing a Java Webstart JNLP}
 h3. Producing a Java Webstart JNLP file
 
-A portal id, offering id and a workgroup id are needed to produce a jnlp however the argument in the application-desc which points to a config file adds a workgroup version number. This is needed in the case where the members of a workgroup change while a client session is in progress. In this case when the session information is saved it will be related to the workgroup version in existence when the session was started.
+Before the SDS will generate a valid jnlp for running a SAIl curnit an sds Offering must be made which consists of references to a curnit and a template jnlp used to run the curnit. In addition at least one sds workgroup associated with the Offering must be created. Once these resources are created you can construct a url to start the curnit by either specifying the workgroup or a user in an existing workgroup.
+
+# implicit workgroup
+http://rails.dev.concord.org/sds/<sds_portal_id>/offering/<sds_offering_id>/jnlp/<sds_workgroup_id>
+# explicit workgroup
+http://rails.dev.concord.org/sds/<sds_portal_id>/offering/<sds_offering_id>/jnlp/workgroup/<sds_workgroup_id>
+# explicit user
+http://rails.dev.concord.org/sds/<sds_portal_id>/offering/<sds_offering_id>/jnlp/user/<sds_user_id>
+
+A workgroup id or user id are needed to produce a jnlp however the argument in the application-desc which points to a config file adds a workgroup version number. This is needed in the case where the members of a workgroup change while a client session is in progress. In this case when the session information is saved it will be related to the workgroup version in existence when the session was started.
 
 {panel}
   GET
   Accept: application/xml
   http://rails.dev.concord.org/sds/<sds_portal_id>/offering/<sds_offering_id>/jnlp/<sds_workgroup_id>
 
+  OR
+  
+  http://rails.dev.concord.org/sds/<sds_portal_id>/offering/<sds_offering_id>/jnlp/workgroup/<sds_workgroup_id>
+  http://rails.dev.concord.org/sds/<sds_portal_id>/offering/<sds_offering_id>/jnlp/user/<sds_user_id>
+  
   return headers:
 
     HTTP/1.1 200 OK 

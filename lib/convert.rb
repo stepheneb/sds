@@ -1,6 +1,6 @@
 module ConvertXml
   def ConvertXml.xml_to_hash(xml_string)
-    ConvertXml.undasherize_keys(XmlSimple.xml_in(xml_string, 'forcearray'   => false))
+    ConvertXml.undasherize_keys(XmlSimple.xml_in(xml_string, 'forcearray' => false))
   end
 
   def ConvertXml.undasherize_keys(params)
