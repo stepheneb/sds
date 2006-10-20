@@ -37,7 +37,7 @@ xml.jnlp("spec" => jattr['spec'], "codebase" => jattr['codebase'], "href" => hre
     xml.vendor("Concord Consortium")
     xml.homepage("href" => homepage_url)
     xml.description("Preview Pas Pedagogica")
-    xml.icon("href" => "sail_orangecirc_64.gif", "height" => "64", "width" => "64")
+    xml.icon("href" => image_url("sail_orangecirc_64.gif", :only_path => false), "height" => "64", "width" => "64")
     xml << nl + "<offline-allowed/>" 
   }
   xml << security.to_s
