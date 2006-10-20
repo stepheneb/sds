@@ -19,7 +19,10 @@ class ApplicationController < ActionController::Base
   private
 
   def log_referrer
-    logger.info("\nREFERRER: " + request.env["HTTP_REFERER"] + "\n")
+    if request.env["HTTP_REFERER"]
+      refer = request.env["HTTP_REFERER"]
+      logger.info("\nREFERRER: " + refer.to_s + "\n")
+    end
   end
  
 end
