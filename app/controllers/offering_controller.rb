@@ -1,5 +1,7 @@
 class OfferingController < ApplicationController
 
+  before_filter :log_referrer
+
   layout "standard"
 
   def list

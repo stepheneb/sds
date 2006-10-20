@@ -1240,7 +1240,7 @@ h3. Saving new session bundle files for the Java client.
 {panel}
   POST 
   Content-Type: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id>/offering/<sds_workgroup_id>/bundle/<sds_workgroup_id>/<sds_workgroup_version>
+  http://rails.dev.concord.org/sds/<sds_portal_id>/offering/<sds_offering_id>/bundle/<sds_workgroup_id>/<sds_workgroup_version>
 
 
   POST data:

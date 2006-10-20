@@ -15,5 +15,11 @@ class ApplicationController < ActionController::Base
   require 'conversions'
   require 'convert'
   require 'to_xml'
-  
+ 
+  private
+
+  def log_referrer
+    logger.info("\nREFERRER: " + request.env["HTTP_REFERER"] + "\n")
+  end
+ 
 end

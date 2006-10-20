@@ -90,16 +90,29 @@ class CurnitController < ApplicationController
       render(:text => "", :status => 404) # Not Found
     end
   end
+
+  def jnlp
+    begin
+      @curnit = Curnit.find(params[:id])
+      @headers["Content-Type"] = "application/x-java-jnlp-file"
+      @headers["Cache-Control"] = "public"
+      @headers["Content-Disposition"] = "attachment; filename=testjnlp.jnlp"
+      filename = "testjnlp"
+      render :action => 'jnlp', :layout => false
+    rescue
+      render(:text => "", :status => 404) # Not Found
+    end
+  end
   
   def destroy
-    id = params[:id]
-    begin
-      Curnit.find(id).destroy
-      flash[:notice] = "Curnit #{id.to_s} was successfully deleted."
-    rescue
-      flash[:notice] = "Error deleting Curnit #{id.to_s}." 
-    end
-    redirect_to :action => :list
+#    id = params[:id]
+#    begin
+#      Curnit.find(id).destroy
+#      flash[:notice] = "Curnit #{id.to_s} was successfully deleted."
+#    rescue
+#      flash[:notice] = "Error deleting Curnit #{id.to_s}." 
+#    end
+#    redirect_to :action => :list
   end
 
 end
