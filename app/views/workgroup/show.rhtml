@@ -29,14 +29,11 @@
 <p><code><%= h(WorkgroupMembership.wg_array_to_xml(@membership_array)) %></code></p>
 
 <h4>Session bundles:</h4>
-<table cellpadding="3" cellspacing="4">
-  <tr><td>Workgroup version</td><td>Created</td><td>Content</td>
-  <% @workgroup.bundles.each do |bund| %>
-    <tr>
-      <td><%= bund.workgroup_version.to_s %></td>
-      <td><%= bund.created_at.to_s %></td>
-      <td><%= h(bund.content.to_s) %></td>
-    </tr>
-  <% end %>
-</table>
+<% @workgroup.bundles.each do |bund| %>
+  Workgroup membership version: <%= bund.workgroup_version.to_s %>, Created at: <%= bund.created_at.to_s %><br />
+  <div style="background-color: #eee; padding: 10px; border: 2px solid grey; margin: 15px; font: smaller monospaced sans-serif;" >
+    <%= h(bund.content.to_s) %>
+  </div>
+<% end %>
+
 
