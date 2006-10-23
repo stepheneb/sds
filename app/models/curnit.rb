@@ -1,4 +1,5 @@
 class Curnit < ActiveRecord::Base
+  require 'net/http'
 
   set_table_name "sds_curnits"
   
@@ -12,10 +13,12 @@ class Curnit < ActiveRecord::Base
     Curnit.find(:all, :conditions => ["portal_id = ?", pid])
   end
   
-#  include ToXml # module in lib/to_xml, customizes class_instance.to_xml
- 
-#  def to_xml
-#    super(:except => ['created_at', 'updated_at'])
-#  end
+  def get_curnit_last_modified
+    uri = URI.parse(url)
+    Net::HTTP.start(uri.host, uri.port) do |http|
+      curnit_head = http.head(uri.path, 'User-Agent' => '')
+      Time::httpdate(curnit_head['Last-Modified'])
+    end
+  end
  
 end

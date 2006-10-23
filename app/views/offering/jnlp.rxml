@@ -1,5 +1,7 @@
 require "rexml/document"
-jnlp = `curl -s #{@offering.jnlp.url}`
+
+jnlp = @offering.jnlp.get_jnlp
+
 jnlp = REXML::Document.new jnlp
 jattr = jnlp.root.attributes
 info = jnlp.root.elements["information"]

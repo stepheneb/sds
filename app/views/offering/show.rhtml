@@ -9,6 +9,9 @@
   <tr><td><b>Created at</b><td><%= @offering.created_at.to_s %></td></tr>
   <tr><td><b>Updated at</b><td><%= @offering.updated_at.to_s %></td></tr>
 </table>
+<p>
+  <b>Jnlp last built by Maven at: </b><%= @offering.jnlp.get_jnlp_last_modified %>.<br />
+  <b>Curnit last converted to SAIL: </b><%= @offering.curnit.get_curnit_last_modified %>.<br />
 <p />
 <b>Workgroups:</b>
 <table cellpadding="1" cellspacing="1">

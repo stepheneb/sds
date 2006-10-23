@@ -32,5 +32,8 @@ class Workgroup < ActiveRecord::Base
     Workgroup.find(:all, :conditions => ["portal_id = ?", pid])
   end
   
+  def bundles
+    Bundle.find(:all, :conditions => ["workgroup_id = :workgroup", {:workgroup => id}])
+  end
 
 end
