@@ -33,6 +33,12 @@
   Workgroup membership version: <%= bund.workgroup_version.to_s %>, Created at: <%= bund.created_at.to_s %><br />
   <div style="background-color: #eee; padding: 10px; border: 2px solid grey; margin: 15px; font: smaller monospaced sans-serif;" >
     <%= h(bund.content.to_s) %>
+    <% bund.socks.each do |s| %>
+      <div style="background-color: #ccc; padding: 10px; border: 1px solid grey; margin: 10px; font: smaller monospaced sans-serif;" >
+        <p>Sock ms offset: <%= s.ms_offset %>, Pod uuid: <%= s.pod.uuid %>, Rim name: <%= s.pod.rim_name %></p>
+        <%= s.value %>
+      </div>
+      <% end %>
   </div>
 <% end %>
 

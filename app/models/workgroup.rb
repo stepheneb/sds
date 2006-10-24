@@ -33,7 +33,7 @@ class Workgroup < ActiveRecord::Base
   end
   
   def bundles
-    Bundle.find(:all, :conditions => ["workgroup_id = :workgroup", {:workgroup => id}])
+    Bundle.find(:all, :conditions => ['workgroup_id = ?', id])
   end
 
 end
