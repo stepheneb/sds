@@ -11,7 +11,7 @@ xm.entry 'xml:base' => url_for(:controller => 'offering', :action => 'list', :on
   xm.title     strip_tags(workgroup.name)
   
   xm << %{<content type="html">\n}
-  xm << %{<p>Workgroup Sessions: #{workgroup.bundles.length.to_s}.\n}
+  xm << h(%{<p>Workgroup Sessions: #{workgroup.bundles.length.to_s}.\n</p>})
   xm << h(%{<p>Workgroup: "#{workgroup.name}", <em>(id: #{workgroup.id})</em><br />
     Users: #{member_names}, <em>(ids: #{members.collect {|m| m.id}.join(', ')})</em>. <br />
     Offering: "#{workgroup.offering.name}", <em>(id: #{workgroup.offering.id})</em><br />
