@@ -11,14 +11,17 @@ xm.entry 'xml:base' => url_for(:controller => 'offering', :action => 'list', :on
   xm.title     strip_tags(workgroup.name)
   
   xm << %{<content type="html">\n}
-  xm << h(%{<p>Data returned by Workgroup: #{workgroup.id}: <b>#{workgroup.name}</b>: <b>#{member_names}</b>, from Wise run: <b>#{workgroup.offering.name}</b>, of the Project <b>#{workgroup.offering.curnit.name}</b>.})
+  xm << h(%{<p>Workgroup: <b>#{workgroup.name}</b> (SDS id: #{workgroup.id})<br />Members: <b>#{member_names}</b><br />Wise run: <b>#{workgroup.offering.name}</b><br />Project <b>#{workgroup.offering.curnit.name}</b>.})
   workgroup.bundles.each do |b| 
+    xm << h(%{<div style="background-color: #BBFFEE; padding: 10px; border: 1px solid grey; margin: 10px; font: 10pt sans-serif;">})
+    xm << h(%{<p>Bundle id: #{b.id}, Workgroup membership version: #{b.workgroup_version.to_s}, Created at: #{b.created_at.to_s}.</p>})
     b.socks.each do |s|
-      xm << h(%{<div style="background-color: #ccc; padding: 10px; border: 1px solid grey; margin: 10px; font: smaller monospaced sans-serif;" >})
       xm << h(%{<p>Sock ms offset: #{s.ms_offset}, Pod uuid: #{s.pod.uuid}, Rim name: #{s.pod.rim_name}</p>})
+      xm << h(%{<div style="background-color: #99FFCC; padding: 10px; border: 1px solid grey; margin: 10px; font: smaller sans-serif;">})
       xm << h(REXML::Document.new(CGI.unescapeHTML(s.value)).to_s)
       xm << h(%{</div>})
     end
+    xm << h(%{</div>})
   end
   xm << %{</content>}
 end
