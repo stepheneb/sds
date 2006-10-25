@@ -16,11 +16,11 @@ xm.entry 'xml:base' => url_for(:controller => 'offering', :action => 'list', :on
     Wise run: "#{workgroup.offering.name}", <em>(SDS offering id: #{workgroup.offering.id})</em><br />
     Project "#{workgroup.offering.curnit.name}" <em>(SDS curnit id: #{workgroup.offering.curnit.id})</em>.})
   workgroup.bundles.each do |b| 
-    xm << h(%{<div style="background-color: #BBFFEE; padding: 10px; border: 1px solid grey; margin: 10px; font: smaller sans-serif;">})
+    xm << h(%{<hr /><div style="background-color: #BBFFEE; padding: 10px; border: 1px solid grey; margin: 10px; font: smaller sans-serif;">})
     xm << h(%{#{b.created_at.to_s}, Bundle id: #{b.id}, Workgroup membership version: #{b.workgroup_version.to_s}.<br />})
     b.socks.each do |s|
       xm << h(%{Pod UUID: #{s.pod.uuid}, Rim name: #{s.pod.rim_name}, Sock id: #{s.id}, ms offset: #{s.ms_offset}.<br />})
-      xm << h(%{<div style="background-color: #99FFCC; padding: 10px; border: 1px solid grey; margin: 10px; font: sans-serif;">})
+      xm << h(%{<div style="background-color: #99FFCC; padding: 10px; border: 1px dotted grey; margin: 10px 10px 5px 5px; font: sans-serif;">})
       xm << CGI.escapeHTML("<pre>#{CGI.escapeHTML(CGI.unescapeHTML(s.value))}</pre>")
       xm << h(%{</div>})
     end
