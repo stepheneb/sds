@@ -14,5 +14,4 @@ class Offering < ActiveRecord::Base
     Offering.find(:all, :conditions => ["portal_id = ?", pid])
   end
   
-  
 end

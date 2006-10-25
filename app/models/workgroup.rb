@@ -1,12 +1,11 @@
-class Workgroup < ActiveRecord::Base
-  
+class Workgroup < ActiveRecord::Base  
   set_table_name "sds_workgroups"
-
-  validates_presence_of :offering_id, :name
-
   belongs_to :portal
   belongs_to :offering
   has_many :workgroup_memberships
+  has_many :bundles
+  
+  validates_presence_of :offering_id, :name
 
   # this creates the following possible search
   # members = workgroup.users.version(1)

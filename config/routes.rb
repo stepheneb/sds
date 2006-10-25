@@ -15,7 +15,7 @@ ActionController::Routing::Routes.draw do |map|
 
 # offering: atom feed services
 
-  map.connect ':pid/offering/:id/jnlp/:wid/atom', :controller => 'offering', :action => 'atom', :type => 'workgroup'
+  map.connect ':pid/offering/:id/atom', :controller => 'offering', :action => 'atom', :type => 'offering'
 
 # offering: java web start services
 

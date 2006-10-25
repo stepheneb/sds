@@ -19,7 +19,7 @@ xm.entry 'xml:base' => url_for(:controller => 'offering', :action => 'list', :on
     xm << h(%{<hr /><div style="background-color: #BBFFEE; padding: 10px; border: 1px solid grey; margin: 10px; font: 9px sans-serif;">})
     xm << h(%{Bundle: #{b.id}, #{b.created_at.to_s}, Workgroup membership version: #{b.workgroup_version.to_s}.<br />})
     b.socks.each do |s|
-      xm << h(%{Pod: #{s.pod.id}, <em>(UUID: #{s.pod.uuid})</em>, Rim name: #{s.pod.rim_name}<br />Sock: #{s.id}, ms offset: #{s.ms_offset}.<br />})
+      xm << h(%{<br />Pod: #{s.pod.id}, <em>(UUID: #{s.pod.uuid})</em><br />Rim name: #{s.pod.rim_name}<br />Sock: #{s.id}, ms offset: #{s.ms_offset}.<br />})
       xm << h(%{<div style="background-color: #99FFCC; padding: 10px; border: 1px dotted grey; margin: 10px 10px 5px 5px; font: sans-serif;">})
       begin
         value = CGI.unescapeHTML(s.value)
