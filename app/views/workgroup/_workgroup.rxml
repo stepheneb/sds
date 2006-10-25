@@ -12,16 +12,23 @@ xm.entry 'xml:base' => url_for(:controller => 'offering', :action => 'list', :on
   
   xm << %{<content type="html">\n}
   xm << h(%{<p>Workgroup: "#{workgroup.name}", <em>(id: #{workgroup.id})</em><br />
-    Member: #{member_names}, <em>(ids: #{members.collect {|m| m.id}.join(', ')})</em>. <br />
+    Users: #{member_names}, <em>(ids: #{members.collect {|m| m.id}.join(', ')})</em>. <br />
     Offering: "#{workgroup.offering.name}", <em>(id: #{workgroup.offering.id})</em><br />
     Curnit: "#{workgroup.offering.curnit.name}" <em>(id: #{workgroup.offering.curnit.id}), last updated: #{workgroup.offering.curnit.get_curnit_last_modified}</em>.})
   workgroup.bundles.each do |b| 
     xm << h(%{<hr /><div style="background-color: #BBFFEE; padding: 10px; border: 1px solid grey; margin: 10px; font: 9px sans-serif;">})
     xm << h(%{Bundle: #{b.id}, #{b.created_at.to_s}, Workgroup membership version: #{b.workgroup_version.to_s}.<br />})
     b.socks.each do |s|
-      xm << h(%{Pod UUID: #{s.pod.uuid}, Rim name: #{s.pod.rim_name}, Sock id: #{s.id}, ms offset: #{s.ms_offset}.<br />})
+      xm << h(%{Pod: #{s.pod.id}, <em>(UUID: #{s.pod.uuid})</em>, Rim name: #{s.pod.rim_name}<br />Sock: #{s.id}, ms offset: #{s.ms_offset}.<br />})
       xm << h(%{<div style="background-color: #99FFCC; padding: 10px; border: 1px dotted grey; margin: 10px 10px 5px 5px; font: sans-serif;">})
-      xm << CGI.escapeHTML("<pre>#{CGI.escapeHTML(CGI.unescapeHTML(s.value))}</pre>")
+      begin
+        value = CGI.unescapeHTML(s.value)
+        # try and convert to xml, will generate an error if not possible
+        hash = XmlSimple.new().xml_in(CGI.unescapeHTML(s.value), {'keeproot' => true})
+        value = XmlSimple.xml_out(hash, {'keeproot' => true})
+      rescue
+      end
+      xm << CGI.escapeHTML("<pre>#{CGI.escapeHTML(value)}</pre>")
       xm << h(%{</div>})
     end
     xm << h(%{</div>})
