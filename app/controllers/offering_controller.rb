@@ -2,7 +2,7 @@ class OfferingController < ApplicationController
 
   before_filter :log_referrer
 
-  layout "standard"
+  layout "standard", :except => [ :atom ] 
 
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
@@ -121,6 +121,7 @@ class OfferingController < ApplicationController
   end
   
   def atom
+    @offering = Offering.find(params[:id])
     @workgroups = Workgroup.find_all_in_offering(params[:id])
     @headers["Content-Type"] = "application/atom+xml"
   end

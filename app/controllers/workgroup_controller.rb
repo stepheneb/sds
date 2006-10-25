@@ -1,6 +1,6 @@
 class WorkgroupController < ApplicationController
 
-  layout "standard", :except => [ :rss, :atom ] 
+  layout "standard", :except => [ :atom ] 
   
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
