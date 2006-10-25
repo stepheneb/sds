@@ -12,12 +12,12 @@ xm.entry 'xml:base' => url_for(:controller => 'offering', :action => 'list', :on
   
   xm << %{<content type="html">\n}
   xm << h(%{<p>Workgroup: #{workgroup.name}, <em>(SDS workgroup id: #{workgroup.id})</em><br />
-    Members: #{members.collect {|m| m.name + ", (SDS id: " + m.id.to_s + "); "}.join(', ')}<br />
-    Wise run: #{workgroup.offering.name} (SDS offering id: #{workgroup.offering.id})<br />
-    Project #{workgroup.offering.curnit.name} (SDS curnit id: #{workgroup.offering.curnit.id}).})
+    Members: #{members.collect {|m| m.name + ", <em>(SDS id: " + m.id.to_s + ")</em>; "}.join(', ')}<br />
+    Wise run: #{workgroup.offering.name} <em>(SDS offering id: #{workgroup.offering.id})</em><br />
+    Project #{workgroup.offering.curnit.name} <em>(SDS curnit id: #{workgroup.offering.curnit.id})</em>.})
   workgroup.bundles.each do |b| 
-    xm << h(%{<div style="background-color: #BBFFEE; padding: 10px; border: 1px solid grey; margin: 10px; font: 9pt sans-serif;">})
-    xm << h(%{<p>Created at: #{b.created_at.to_s}, Bundle id: #{b.id}, Workgroup membership version: #{b.workgroup_version.to_s}.</p>})
+    xm << h(%{<div style="background-color: #BBFFEE; padding: 10px; border: 1px solid grey; margin: 10px; font: smaller sans-serif;">})
+    xm << h(%{#{b.created_at.to_s}, Bundle id: #{b.id}, Workgroup membership version: #{b.workgroup_version.to_s}.<br />})
     b.socks.each do |s|
       xm << h(%{Pod UUID: #{s.pod.uuid}, Rim name: #{s.pod.rim_name}, Sock id: #{s.id}, ms offset: #{s.ms_offset}.<br />})
       xm << h(%{<div style="background-color: #99FFCC; padding: 10px; border: 1px solid grey; margin: 10px; font: smaller sans-serif;">})
