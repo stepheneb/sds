@@ -18,7 +18,8 @@ xm.entry 'xml:base' => url_for(:controller => 'offering', :action => 'list', :on
     b.socks.each do |s|
       xm << h(%{Pod UUID: #{s.pod.uuid}, Rim name: #{s.pod.rim_name}, Sock id: #{s.id}, ms offset: #{s.ms_offset}.<br />})
       xm << h(%{<div style="background-color: #99FFCC; padding: 10px; border: 1px solid grey; margin: 10px; font: smaller sans-serif;">})
-      xm << h(REXML::Document.new(CGI.unescapeHTML(s.value)).to_s)
+#      xm << h(REXML::Document.new(CGI.unescapeHTML(s.value)).to_s)
+      xm << h(CGI.unescapeHTML(s.value))
       xm << h(%{</div>})
     end
     xm << h(%{</div>})
