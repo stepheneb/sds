@@ -31,6 +31,10 @@ class Workgroup < ActiveRecord::Base
   def self.find_all_in_portal(pid)
     Workgroup.find(:all, :conditions => ["portal_id = ?", pid])
   end
+
+  def self.find_all_in_offering(oid)
+    Workgroup.find(:all, :conditions => ["offering_id = ?", oid])
+  end
   
   def bundles
     Bundle.find(:all, :conditions => ['workgroup_id = ?', id])

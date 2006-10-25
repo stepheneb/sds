@@ -1,0 +1,23 @@
+xm.entry 'xml:base' => url_for(:controller => 'offering', :action => 'list', :only_path => false).to_s do
+  xm.author do
+    xm.name members.collect {|m| m.name}.join(', ')
+  end
+  xm.id        "tag:#{request.host_with_port},#{workgroup.updated_at.to_s}:#{workgroup.id}"
+  xm.published workgroup.created_at.xmlschema
+  xm.updated   workgroup.updated_at.xmlschema
+  xm.link "rel" => "alternate", "type" => "text/html", 
+    "href" => url_for(:controller => 'workgroup', :action => 'show', :id => workgroup.id, :only_path => false).to_s
+  xm.title     strip_tags(workgroup.name)
+  
+  xm << %{<content type="html">\n}
+  xm << CGI.escapeHTML("<p>Just a bit of content ...</p>")
+  workgroup.bundles.each do |b| 
+    b.socks.each do |s|
+      xm << CGI.escapeHTML(%{<div style="background-color: #ccc; padding: 10px; border: 1px solid grey; margin: 10px; font: smaller monospaced sans-serif;" >})
+      xm << CGI.escapeHTML(%{<p>Sock ms offset: #{s.ms_offset}, Pod uuid: #{s.pod.uuid}, Rim name: #{s.pod.rim_name}</p>})
+      xm << CGI.escapeHTML(REXML::Document.new(CGI.unescapeHTML(s.value)).to_s)
+      xm << CGI.escapeHTML(%{</div>})
+    end
+  end
+  xm << %{</content>}
+end

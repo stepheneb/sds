@@ -20,6 +20,9 @@ ActionController::Routing::Routes.draw do |map|
   map.connect ':pid/offering/:id/jnlp/workgroup/:wid', :controller => 'offering', :action => 'jnlp', :type => 'workgroup'
   map.connect ':pid/offering/:id/config/:wid/:version', :controller => 'offering', :action => 'config'
   map.connect ':pid/offering/:id/bundle/:wid/:version', :controller => 'offering', :action => 'bundle'
+#  map.connect ':pid/offering/:id/atom', :controller => 'offering', :action => 'jnlp', :type => 'workgroup'
+#  map.connect ':pid/offering/:id/atom/:wid', :controller => 'offering', :action => 'jnlp', :type => 'workgroup'
+#  map.connect ':pid/offering/:id/atom/:wid/:version', :controller => 'offering', :action => 'jnlp', :type => 'workgroup'
 
 # workgroup
 
@@ -30,6 +33,9 @@ ActionController::Routing::Routes.draw do |map|
   map.connect ':pid/workgroup/edit/:id', :controller => 'workgroup', :action => 'edit'
 #  map.connect ':pid/workgroup/destroy/:id', :controller => 'workgroup', :action => 'destroy'
   map.connect ':pid/workgroup/:id/membership', :controller => 'workgroup', :action => 'membership'
+  map.connect ':pid/workgroup/atom', :controller => 'workgroup', :action => 'atom'
+#  map.connect ':pid/workgroup/rss', :controller => 'workgroup', :action => 'rss'
+#  map.connect ':pid/workgroup/:id/rss', :controller => 'workgroup', :action => 'rss'
   map.connect ':pid/workgroup/:id', :controller => 'workgroup', :action => 'show'
 
 # offering: administrative

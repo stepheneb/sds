@@ -1,6 +1,6 @@
 class WorkgroupController < ApplicationController
 
-  layout "standard"
+  layout "standard", :except => [ :rss, :atom ] 
   
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
@@ -130,6 +130,18 @@ class WorkgroupController < ApplicationController
     else
       render(:text => "", :status => 404) # Not Found
     end
+  end
+
+  def atom
+    @workgroups = Workgroup.find_all_in_portal(params[:pid])
+    @headers["Content-Type"] = "application/atom+xml"
+  end
+
+  def rss
+    @workgroup = Workgroup.find(params[:id])
+    @members = @workgroup.users.version(@workgroup.version) # array of User objects
+    @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects
+    @headers["Content-Type"] = "application/rss+xml"
   end
 
   def destroy
