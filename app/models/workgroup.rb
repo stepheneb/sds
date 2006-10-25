@@ -29,11 +29,11 @@ class Workgroup < ActiveRecord::Base
   end
   
   def self.find_all_in_portal(pid)
-    Workgroup.find(:all, :conditions => ["portal_id = ?", pid])
+    Workgroup.find(:all, :order => "created_at DESC", :conditions => ["portal_id = ?", pid])
   end
 
   def self.find_all_in_offering(oid)
-    Workgroup.find(:all, :conditions => ["offering_id = ?", oid])
+    Workgroup.find(:all, :order => "created_at DESC", :conditions => ["offering_id = ?", oid])
   end
   
   def bundles

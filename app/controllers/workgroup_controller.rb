@@ -137,13 +137,6 @@ class WorkgroupController < ApplicationController
     @headers["Content-Type"] = "application/atom+xml"
   end
 
-  def rss
-    @workgroup = Workgroup.find(params[:id])
-    @members = @workgroup.users.version(@workgroup.version) # array of User objects
-    @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects
-    @headers["Content-Type"] = "application/rss+xml"
-  end
-
   def destroy
     id = params[:id]
     begin
