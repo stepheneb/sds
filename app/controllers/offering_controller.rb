@@ -120,6 +120,11 @@ class OfferingController < ApplicationController
     end
   end
   
+  def atom
+    @workgroups = Workgroup.find_all_in_offering(params[:id])
+    @headers["Content-Type"] = "application/atom+xml"
+  end
+  
   def config
     begin
       @offering = Offering.find(params[:id])
