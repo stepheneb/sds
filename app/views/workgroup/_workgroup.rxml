@@ -12,7 +12,7 @@ xm.entry 'xml:base' => url_for(:controller => 'offering', :action => 'list', :on
   
   xm << %{<content type="html">\n}
   xm << h(%{<p>Workgroup: #{workgroup.name}, <em>(SDS workgroup id: #{workgroup.id})</em><br />
-    Members: #{members.collect {|m| m.name + ", <em>(SDS id: " + m.id.to_s + ")</em>; "}.join(', ')}<br />
+    Members: #{member_names}, <em>(SDS ids: #{members.collect {|m| m.id}.join(', ')})</em>; "<br />
     Wise run: #{workgroup.offering.name} <em>(SDS offering id: #{workgroup.offering.id})</em><br />
     Project #{workgroup.offering.curnit.name} <em>(SDS curnit id: #{workgroup.offering.curnit.id})</em>.})
   workgroup.bundles.each do |b| 
