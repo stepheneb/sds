@@ -10,13 +10,13 @@ xm.entry 'xml:base' => url_for(:controller => 'offering', :action => 'list', :on
   xm.title     strip_tags(workgroup.name)
   
   xm << %{<content type="html">\n}
-  xm << CGI.escapeHTML("<p>Just a bit of content ...</p>")
+  xm << h(%{<p>Data returned by Workgroup: #{workgroup.id}: <b>#{workgroup.name}</b>, with the following #{members.length > 1 ? "members" : "member"}: <b>#{members.collect {|m| m.name}.join(', ')}</b>, from Wise run: <b>#{workgroup.offering.name}</b>, of the Project <b>#{workgroup.offering.curnit.name}</b>.})
   workgroup.bundles.each do |b| 
     b.socks.each do |s|
-      xm << CGI.escapeHTML(%{<div style="background-color: #ccc; padding: 10px; border: 1px solid grey; margin: 10px; font: smaller monospaced sans-serif;" >})
-      xm << CGI.escapeHTML(%{<p>Sock ms offset: #{s.ms_offset}, Pod uuid: #{s.pod.uuid}, Rim name: #{s.pod.rim_name}</p>})
-      xm << CGI.escapeHTML(REXML::Document.new(CGI.unescapeHTML(s.value)).to_s)
-      xm << CGI.escapeHTML(%{</div>})
+      xm << h(%{<div style="background-color: #ccc; padding: 10px; border: 1px solid grey; margin: 10px; font: smaller monospaced sans-serif;" >})
+      xm << h(%{<p>Sock ms offset: #{s.ms_offset}, Pod uuid: #{s.pod.uuid}, Rim name: #{s.pod.rim_name}</p>})
+      xm << h(REXML::Document.new(CGI.unescapeHTML(s.value)).to_s)
+      xm << h(%{</div>})
     end
   end
   xm << %{</content>}

@@ -37,7 +37,7 @@ class Workgroup < ActiveRecord::Base
   end
   
   def bundles
-    Bundle.find(:all, :conditions => ['workgroup_id = ?', id])
+    Bundle.find(:all, :order => "created_at DESC", :conditions => ['workgroup_id = ?', id])
   end
 
 end
