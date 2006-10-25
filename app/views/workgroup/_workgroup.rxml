@@ -11,10 +11,10 @@ xm.entry 'xml:base' => url_for(:controller => 'offering', :action => 'list', :on
   xm.title     strip_tags(workgroup.name)
   
   xm << %{<content type="html">\n}
-  xm << h(%{<p>Workgroup: "#{workgroup.name}", <em>(SDS workgroup id: #{workgroup.id})</em><br />
-    Members: #{member_names}, <em>(SDS ids: #{members.collect {|m| m.id}.join(', ')})</em>. <br />
-    Wise run: "#{workgroup.offering.name}", <em>(SDS offering id: #{workgroup.offering.id})</em><br />
-    Project "#{workgroup.offering.curnit.name}" <em>(SDS curnit id: #{workgroup.offering.curnit.id})</em>.})
+  xm << h(%{<p>Workgroup: "#{workgroup.name}", <em>(id: #{workgroup.id})</em><br />
+    Member: #{member_names}, <em>(ids: #{members.collect {|m| m.id}.join(', ')})</em>. <br />
+    Offering: "#{workgroup.offering.name}", <em>(id: #{workgroup.offering.id})</em><br />
+    Curnit: "#{workgroup.offering.curnit.name}" <em>(id: #{workgroup.offering.curnit.id}), last updated: #{workgroup.offering.curnit.get_curnit_last_modified}</em>.})
   workgroup.bundles.each do |b| 
     xm << h(%{<hr /><div style="background-color: #BBFFEE; padding: 10px; border: 1px solid grey; margin: 10px; font: 9px sans-serif;">})
     xm << h(%{Bundle: #{b.id}, #{b.created_at.to_s}, Workgroup membership version: #{b.workgroup_version.to_s}.<br />})
