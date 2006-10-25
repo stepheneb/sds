@@ -8,7 +8,7 @@ xm.entry 'xml:base' => url_for(:controller => 'offering', :action => 'list', :on
   xm.updated   workgroup.updated_at.xmlschema
   xm.link "rel" => "alternate", "type" => "text/html", 
     "href" => url_for(:controller => 'workgroup', :action => 'show', :id => workgroup.id, :only_path => false).to_s
-  xm.title     strip_tags(workgroup.name)
+  xm.title     strip_tags("#{workgroup.name} (#{workgroup.bundles.length.to_s})")
   
   xm << %{<content type="html">\n}
   xm << h(%{<p>Workgroup Sessions: #{workgroup.bundles.length.to_s}.\n</p>})
