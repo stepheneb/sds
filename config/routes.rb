@@ -13,9 +13,12 @@ ActionController::Routing::Routes.draw do |map|
   # -- just remember to delete public/index.html.
   # map.connect '', :controller => "welcome"
 
-# offering: java web start services
+# offering: atom feed services
 
   map.connect ':pid/offering/:id/jnlp/:wid/atom', :controller => 'offering', :action => 'atom', :type => 'workgroup'
+
+# offering: java web start services
+
   map.connect ':pid/offering/:id/jnlp/:wid', :controller => 'offering', :action => 'jnlp', :type => 'workgroup'
   map.connect ':pid/offering/:id/jnlp/user/:uid', :controller => 'offering', :action => 'jnlp', :type => 'user'
   map.connect ':pid/offering/:id/jnlp/workgroup/:wid', :controller => 'offering', :action => 'jnlp', :type => 'workgroup'
@@ -24,6 +27,16 @@ ActionController::Routing::Routes.draw do |map|
 #  map.connect ':pid/offering/:id/atom', :controller => 'offering', :action => 'jnlp', :type => 'workgroup'
 #  map.connect ':pid/offering/:id/atom/:wid', :controller => 'offering', :action => 'jnlp', :type => 'workgroup'
 #  map.connect ':pid/offering/:id/atom/:wid/:version', :controller => 'offering', :action => 'jnlp', :type => 'workgroup'
+
+# offering: administrative
+
+  map.connect ':pid/offering', :controller => 'offering', :action => 'list'
+  map.connect ':pid/offering/list', :controller => 'offering', :action => 'list'
+  map.connect ':pid/offering/new', :controller => 'offering', :action => 'new'
+  map.connect ':pid/offering/create', :controller => 'offering', :action => 'create'
+  map.connect ':pid/offering/edit/:id', :controller => 'offering', :action => 'edit'
+#  map.connect ':pid/offering/destroy/:id', :controller => 'offering', :action => 'destroy'
+  map.connect ':pid/offering/:id', :controller => 'offering', :action => 'show'
 
 # workgroup
 
@@ -36,16 +49,6 @@ ActionController::Routing::Routes.draw do |map|
   map.connect ':pid/workgroup/:id/membership', :controller => 'workgroup', :action => 'membership'
   map.connect ':pid/workgroup/atom', :controller => 'workgroup', :action => 'atom'
   map.connect ':pid/workgroup/:id', :controller => 'workgroup', :action => 'show'
-
-# offering: administrative
-
-  map.connect ':pid/offering', :controller => 'offering', :action => 'list'
-  map.connect ':pid/offering/list', :controller => 'offering', :action => 'list'
-  map.connect ':pid/offering/new', :controller => 'offering', :action => 'new'
-  map.connect ':pid/offering/create', :controller => 'offering', :action => 'create'
-  map.connect ':pid/offering/edit/:id', :controller => 'offering', :action => 'edit'
-#  map.connect ':pid/offering/destroy/:id', :controller => 'offering', :action => 'destroy'
-  map.connect ':pid/offering/:id', :controller => 'offering', :action => 'show'
 
 # user
 
