@@ -1,6 +1,7 @@
 xm.entry 'xml:base' => url_for(:controller => 'offering', :action => 'list', :only_path => false).to_s do
+  member_names = members.collect {|m| m.name}.join(', ')
   xm.author do
-    xm.name members.collect {|m| m.name}.join(', ')
+    xm.name member_names
   end
   xm.id        "tag:#{request.host_with_port},#{workgroup.updated_at.to_s}:#{workgroup.id}"
   xm.published workgroup.created_at.xmlschema
@@ -10,7 +11,7 @@ xm.entry 'xml:base' => url_for(:controller => 'offering', :action => 'list', :on
   xm.title     strip_tags(workgroup.name)
   
   xm << %{<content type="html">\n}
-  xm << h(%{<p>Data returned by Workgroup: #{workgroup.id}: <b>#{workgroup.name}</b>, with the following #{members.length > 1 ? "members" : "member"}: <b>#{members.collect {|m| m.name}.join(', ')}</b>, from Wise run: <b>#{workgroup.offering.name}</b>, of the Project <b>#{workgroup.offering.curnit.name}</b>.})
+  xm << h(%{<p>Data returned by Workgroup: #{workgroup.id}: <b>#{workgroup.name}</b>: <b>#{member_names}</b>, from Wise run: <b>#{workgroup.offering.name}</b>, of the Project <b>#{workgroup.offering.curnit.name}</b>.})
   workgroup.bundles.each do |b| 
     b.socks.each do |s|
       xm << h(%{<div style="background-color: #ccc; padding: 10px; border: 1px solid grey; margin: 10px; font: smaller monospaced sans-serif;" >})
