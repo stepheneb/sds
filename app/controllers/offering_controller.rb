@@ -139,12 +139,14 @@ class OfferingController < ApplicationController
   
   def bundle
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
-      begin
+      begin 
+        raise "bundle too large" if request.raw_post > 65534
         @bundle = Bundle.create!(
           :offering_id => params[:id],
           :workgroup_id => params[:wid],
           :workgroup_version => params[:version],
           :content => request.raw_post)
+        response.headers['Content-MD5'] = Base64.b64encode(Digest::MD5.digest(@bundle.content))
         response.headers['Location'] = url_for(:action => :bundle)
         render(:xml => "", :status => 201) # Created
       rescue

@@ -6,6 +6,7 @@ REST web service protocols are based on the HTTP verbs POST (create), PUT (updat
 
 h3. Table of Contents
 # [#Resources managed in the SDS]
+# [#Accessing SDS resources with Atom feeds]
 # [#Create a new SDS portal relationship]
 #* [#Info on all SDS portals]
 # [#Info on a specific SDS portal]
@@ -78,6 +79,24 @@ When the HTTP operation is a PUT or POST and the HTTP Content-Type header is set
 In the case of HTTP GET or POST commands if the appropriate header is not set to 'application/xml' the SDS will assume that an html page is requested and will render the appropriate UI in html. In the examples below I use 'wise' as an example of an SDS portal relationship. 
 
 At this time all of the following resources are also editable through a browser using http/html interactions. This is probably needed only for testing.
+
+----
+
+{anchor:Accessing SDS resources with Atom feeds}
+h3. Accessing SDS resources with Atom feeds
+
+Collections of workgroup data are accessible as Atom news feeds by adding "/atom" to the url. These feeds are viewable in News Aggregators as well as the web browsers Safari and Firefox 2.0. Earlier versions of Firefox do not have this capability. I don't know he state of viewing news feeds on IE or Opera.
+
+The plan is that any resource on the SDS which can be interpreted as referring to a collection of user data will also be accessible as a news feed. So for example accessing this url in a browser:
+* http://rails.dev.concord.org/sds/1/workgroups
+will display a list of Workgroups defined for SDS portal realm 1. While accessing this url:
+* http://rails.dev.concord.org/sds/1/workgroups/atom
+Will instead display a newsfeed of all the workgroups and all the data sent back by workgroup sessions.
+
+This url is used to display information about a specific Offering (the Wise term would be Run):
+* http://rails.dev.concord.org/sds/1/offering/2
+While adding "/atom" on the end will produce instead a news feed of just the workgroups and their data for the offering with id 2.
+* http://rails.dev.concord.org/sds/1/offering/2/atom
 
 ----
 
