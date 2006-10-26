@@ -4,9 +4,10 @@ class Workgroup < ActiveRecord::Base
   belongs_to :offering
   has_many :workgroup_memberships
   has_many :bundles
-  
-  validates_presence_of :offering_id, :name
 
+  validates_presence_of :offering, :name
+  validates_associated :offering
+  
   # this creates the following possible search
   # members = workgroup.users.version(1)
   has_many :users, :through => :workgroup_memberships do

@@ -4,11 +4,15 @@ class OfferingController < ApplicationController
 
   layout "standard", :except => [ :atom ] 
 
+  BUNDLE_SIZE_LIMIT = 131072-1
+
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
       begin
-        u = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
-        @offering = Offering.new(u)
+        xml_parms = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
+        @offering = Offering.new(xml_parms)
+        @offering.curnit = Curnit.find(xml_parms['curnit_id'])
+        @offering.jnlp = Curnit.find(xml_parms['jnlp_id'])
         if @offering.save!
           response.headers['Location'] = url_for(:action => :show, :id => @offering.id)
           render(:xml => "", :status => 201) # Created
@@ -140,7 +144,7 @@ class OfferingController < ApplicationController
   def bundle
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
       begin 
-        raise "bundle too large" if request.raw_post > 65534
+        raise "bundle too large" if request.raw_post.length > BUNDLE_SIZE_LIMIT
         @bundle = Bundle.create!(
           :offering_id => params[:id],
           :workgroup_id => params[:wid],

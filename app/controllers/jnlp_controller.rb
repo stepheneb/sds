@@ -5,8 +5,9 @@ class JnlpController < ApplicationController
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
       begin
-        j = ConvertXml.xml_to_hash(request.raw_post).merge({ "portal_id" => params[:pid]})
-        @jnlp = Jnlp.new(j)
+        xml_parms = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
+        @jnlp = Jnlp.new(xml_parms)
+        @jnlp.portal = Portal.find(xml_parms['portal_id'])
         if @jnlp.save
           response.headers['Location'] = url_for(:action => :show, :id => @jnlp.id)
           render(:xml => "", :status => 201) # Created

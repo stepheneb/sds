@@ -427,6 +427,16 @@ The url returned in the Location header is a direct link to the actual SAIL jnlp
 
 Example:
 
+{panel}
+curl -i -H 'Content-Type: application/xml' -X POST -d '<jnlp><name>testing</name><url>http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/basic-emf.jnlp</url></jnlp>' http://rails.dev.concord.org/sds/1/curnit
+
+  HTTP/1.1 201 Created 
+  Date: Tue, 15 Aug 2006 22:39:36 GMT
+  Content-Type: application/xml
+  Content-Length: 0
+  Location: http://rails.dev.concord.org/sds/1/curnit/3
+{panel}
+
 {anchor:Info on all SDS jnlps for a portal}
 h4. Info on all SDS jnlps for a portal.
 

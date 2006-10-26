@@ -5,8 +5,9 @@ class CurnitController < ApplicationController
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
       begin
-        c = ConvertXml.xml_to_hash(request.raw_post).merge({ "portal_id" => params[:pid]})
-        @curnit = Curnit.new(c)
+        xml_parms = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
+        @curnit = Curnit.new(xml_parms)
+        @curnit.portal = Portal.find(xml_parms['portal_id'])
         if @curnit.save
           response.headers['Location'] = url_for(:action => :show, :id => @curnit.id)
           render(:xml => "", :status => 201) # Created
