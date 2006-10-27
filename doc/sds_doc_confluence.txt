@@ -6,6 +6,7 @@ REST web service protocols are based on the HTTP verbs POST (create), PUT (updat
 
 h3. Table of Contents
 # [#Resources managed in the SDS]
+# [#Interpreting Response Headers]
 # [#Accessing SDS resources with Atom feeds]
 # [#Create a new SDS portal relationship]
 #* [#Info on all SDS portals]
@@ -82,6 +83,62 @@ At this time all of the following resources are also editable through a browser 
 
 ----
 
+{anchor:Interpreting Response Headers}
+h3. Interpreting Response Headers
+
+In general if the url you are using to access the REST API is misspelled the following error is returned in an HTTP header:
+* HTTP/1.1 404 Not Found 
+
+*Creation*
+When a new resource creation request is made with an HTTP POST to a url referencing a collection of resources the following status codes are returned in the HTTP headers indicating success or failure:
+* Success
+** HTTP/1.1 201 Created 
+** Location: http://localhost:3000/1/jnlp/8
+* Failure
+** HTTP/1.1 400 Bad Request
+** Failure can occur if a required static or relational element of the resource is missing.
+
+*Read*: a single resource
+When a request is made to read a single existing resource with an HTTP GET to a url referencing that specific resource the following status codes are returned in the HTTP headers indicating success or failure:
+* Success
+** HTTP/1.1 200 OK
+** Content-Type: application/xml
+** Content-Length: 1577 
+* Failure
+** HTTP/1.1 400 Bad Request
+
+*Read*: a collection of resources
+When a request is made to read a collection of resources with an HTTP GET to a url referencing a collection of resources the following status codes are returned in the HTTP headers indicating success:
+* Success
+** HTTP/1.1 200 OK  
+It is not a failure if there are no members of the resource collection. In this case an empty xml element which is the pluralized form of he sigular element name is returned. For example if there were no jnlp resources defined this element would be returned as content: "<jnlps />". 
+
+
+*Update*
+When an existing resource update request is made with an HTTP PUT to a url referencing that specific resource the following status codes are returned in the HTTP headers indicating success or failure:
+* Success
+** HTTP/1.1 201 Created 
+** Location: http://localhost:3000/1/jnlp/8
+* Failure
+** HTTP/1.1 400 Bad Request
+
+*Delete*
+Determined status of request from returned headers
+
+s => 201) # Created
+
+
+
+
+ => 400) # Bad Request
+
+
+
+> 204) # No Content
+
+
+404) # Not Found
+  
 {anchor:Accessing SDS resources with Atom feeds}
 h3. Accessing SDS resources with Atom feeds
 

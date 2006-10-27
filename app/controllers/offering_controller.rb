@@ -24,7 +24,7 @@ class OfferingController < ApplicationController
       @offerings = Offering.find_all_in_portal(params[:pid])
       respond_to do |wants|
         wants.html
-        wants.xml { render :xml => @offerings.to_xml(:except => ['created_at', 'updated_at']) }
+        wants.xml { render :xml => (@offerings.empty? ? "<offerings />" : @offerings.to_xml(:except => ['created_at', 'updated_at'])) }
       end
     end
   end
@@ -46,25 +46,26 @@ class OfferingController < ApplicationController
     end
   end
 
-  def new
-   @offering = Offering.new
-  end
-
   def create
-    begin
-      u = params[:offering].merge({ "portal_id" => params[:pid]})
-      @offering = Offering.create!(u)
-      flash[:notice] = "Offering #{@offering.id} was successfully created."
-      redirect_to :action => 'list'
-    rescue
-      flash[:notice] = "Error creating Offering." 
-      redirect_to :action => :list
+    if request.post?
+      begin
+        parms = params[:offering].merge({ "portal_id" => params[:pid]})
+        @offering = Offering.create!(parms)
+        flash[:notice] = "Offering #{@offering.id} was successfully created."
+        redirect_to :action => 'list'
+      rescue
+        flash[:notice] = "Error creating Offering." 
+        redirect_to :action => :list
+      end
+    else
+      @offering = Offering.new
     end
   end
 
   def show
-    if Offering.exists?(params[:id])
-      @offering = Offering.find(params[:id])
+    begin
+      p = Portal.find(params[:pid])
+      @offering = p.find_in_offerings(params[:id])
       if request.get?
         respond_to do |wants|
           wants.html
@@ -89,7 +90,7 @@ class OfferingController < ApplicationController
         @offering.destroy
         render(:text => "", :status => 204) # No Content
       end
-    else
+    rescue
       render(:text => "", :status => 404) # Not Found
     end
   end

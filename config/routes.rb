@@ -32,7 +32,6 @@ ActionController::Routing::Routes.draw do |map|
 
   map.connect ':pid/offering', :controller => 'offering', :action => 'list'
   map.connect ':pid/offering/list', :controller => 'offering', :action => 'list'
-  map.connect ':pid/offering/new', :controller => 'offering', :action => 'new'
   map.connect ':pid/offering/create', :controller => 'offering', :action => 'create'
   map.connect ':pid/offering/edit/:id', :controller => 'offering', :action => 'edit'
 #  map.connect ':pid/offering/destroy/:id', :controller => 'offering', :action => 'destroy'
@@ -42,7 +41,6 @@ ActionController::Routing::Routes.draw do |map|
 
   map.connect ':pid/workgroup', :controller => 'workgroup', :action => 'list'
   map.connect ':pid/workgroup/list', :controller => 'workgroup', :action => 'list'
-  map.connect ':pid/workgroup/new', :controller => 'workgroup', :action => 'new'
   map.connect ':pid/workgroup/create', :controller => 'workgroup', :action => 'create'
   map.connect ':pid/workgroup/edit/:id', :controller => 'workgroup', :action => 'edit'
 #  map.connect ':pid/workgroup/destroy/:id', :controller => 'workgroup', :action => 'destroy'
@@ -54,7 +52,6 @@ ActionController::Routing::Routes.draw do |map|
 
   map.connect ':pid/user', :controller => 'user', :action => 'list'
   map.connect ':pid/user/list', :controller => 'user', :action => 'list'
-  map.connect ':pid/user/new', :controller => 'user', :action => 'new'
   map.connect ':pid/user/create', :controller => 'user', :action => 'create'
   map.connect ':pid/user/edit/:id', :controller => 'user', :action => 'edit'
 #  map.connect ':pid/user/destroy/:id', :controller => 'user', :action => 'destroy'
@@ -64,7 +61,6 @@ ActionController::Routing::Routes.draw do |map|
 
   map.connect ':pid/jnlp/', :controller => 'jnlp', :action => 'list'
   map.connect ':pid/jnlp/list', :controller => 'jnlp', :action => 'list'
-  map.connect ':pid/jnlp/new', :controller => 'jnlp', :action => 'new'
   map.connect ':pid/jnlp/create', :controller => 'jnlp', :action => 'create'
   map.connect ':pid/jnlp/edit/:id', :controller => 'jnlp', :action => 'edit'
 #  map.connect ':pid/jnlp/destroy/:id', :controller => 'jnlp', :action => 'destroy'
@@ -75,7 +71,6 @@ ActionController::Routing::Routes.draw do |map|
   map.connect ':pid/curnit/', :controller => 'curnit', :action => 'list'
 #  map.connect ':pid/curnit/:id/jnlp/:jid', :controller => 'curnit', :action => 'jnlp'
   map.connect ':pid/curnit/list', :controller => 'curnit', :action => 'list'
-  map.connect ':pid/curnit/new', :controller => 'curnit', :action => 'new'
   map.connect ':pid/curnit/create', :controller => 'curnit', :action => 'create'
   map.connect ':pid/curnit/edit/:id', :controller => 'curnit', :action => 'edit'
 #  map.connect ':pid/curnit/destroy/:id', :controller => 'curnit', :action => 'destroy'
@@ -85,7 +80,6 @@ ActionController::Routing::Routes.draw do |map|
 
   map.connect 'portal', :controller => 'portal', :action => 'list'
   map.connect 'portal/list', :controller => 'portal', :action => 'list'
-  map.connect 'portal/new', :controller => 'portal', :action => 'new'
   map.connect 'portal/create', :controller => 'portal', :action => 'create'
   map.connect 'portal/edit/:id', :controller => 'portal', :action => 'edit'
 #  map.connect 'portal/destroy/:id', :controller => 'portal', :action => 'destroy'
@@ -94,7 +88,7 @@ ActionController::Routing::Routes.draw do |map|
   # Install the default route as the lowest priority.
 #  map.connect ':controller/:action/:id'
   
-  map.connect ':pid', :controller => 'curnit', :action => 'list'
+  map.connect ':pid', :controller => 'home', :action => 'index'
   
   map.connect '', :controller => "home", :action => 'index'
 

@@ -3,26 +3,24 @@ class JnlpController < ApplicationController
   layout "standard"
 
   def list
-    if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
-      begin
+    begin
+      raise unless request.post? || request.get?
+      if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
         xml_parms = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
         @jnlp = Jnlp.new(xml_parms)
         @jnlp.portal = Portal.find(xml_parms['portal_id'])
-        if @jnlp.save
-          response.headers['Location'] = url_for(:action => :show, :id => @jnlp.id)
-          render(:xml => "", :status => 201) # Created
-        else
-          raise
+        @jnlp.save!
+        response.headers['Location'] = url_for(:action => :show, :id => @jnlp.id)
+        render(:xml => "", :status => 201) # Created
+      else
+        @jnlps = Jnlp.find_all_in_portal(params[:pid])
+        respond_to do |wants|
+          wants.html
+          wants.xml { render :xml => (@jnlps.empty? ? "<jnlps />" : @jnlps.to_xml(:except => ['created_at', 'updated_at'])) }
         end
-      rescue
-        render(:text => "", :status => 400) # Bad Request
       end
-    else
-      @jnlps = Jnlp.find_all_in_portal(params[:pid])
-      respond_to do |wants|
-        wants.html
-        wants.xml { render :xml => @jnlps.to_xml(:except => ['created_at', 'updated_at']) }
-      end
+    rescue
+      render(:text => "", :status => 400) # Bad Request
     end
   end
 
@@ -43,25 +41,26 @@ class JnlpController < ApplicationController
     end
   end
 
-  def new
-   @jnlp = Jnlp.new
-  end
-
   def create
-    begin
-      c = params[:jnlp].merge({ "portal_id" => params[:pid]})
-      @jnlp = Jnlp.create!(c)
-      flash[:notice] = "Jnlp #{@jnlp.id} was successfully created."
-      redirect_to :action => 'list'
-    rescue
-      flash[:notice] = "Error creating Jnlp}." 
-      redirect_to :action => :list
+    if request.post?
+      begin
+        parms = params[:jnlp].merge({ "portal_id" => params[:pid]})
+        @jnlp = Jnlp.create!(parms)
+        flash[:notice] = "Jnlp #{@jnlp.id} was successfully created."
+        redirect_to :action => 'list'
+      rescue
+        flash[:notice] = "Error creating Jnlp}." 
+        redirect_to :action => :list
+      end
+    else
+      @jnlp = Jnlp.new
     end
   end
 
   def show
-    if Jnlp.exists?(params[:id])
-      @jnlp = Jnlp.find(params[:id])
+    begin
+      p = Portal.find(params[:pid])
+      @jnlp = p.find_in_jnlps(params[:id])
       if request.get?
         respond_to do |wants|
           wants.html
@@ -86,7 +85,7 @@ class JnlpController < ApplicationController
         @jnlp.destroy
         render(:text => "", :status => 204) # No Content
       end
-    else
+    rescue
       render(:text => "", :status => 404) # Not Found
     end
   end

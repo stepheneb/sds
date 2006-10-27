@@ -18,7 +18,7 @@ class UserController < ApplicationController
       @users = User.find_all_in_portal(params[:pid])
       respond_to do |wants|
         wants.html
-        wants.xml { render :xml => @users.to_xml(:except => ['created_at', 'updated_at']) }
+        wants.xml { render :xml => (@users.empty? ? "<users />" : @users.to_xml(:except => ['created_at', 'updated_at'])) }
       end
     end
   end
@@ -40,25 +40,26 @@ class UserController < ApplicationController
     end
   end
 
-  def new
-   @user = User.new
-  end
-
   def create
-    begin
-      u = params[:user].merge({ "portal_id" => params[:pid]})
-      @user = User.create!(u)
-      flash[:notice] = "User #{@user.id} was successfully created."
-      redirect_to :action => 'list'
-    rescue
-      flash[:notice] = "Error creating User." 
-      redirect_to :action => :list
+    if request.post?
+      begin
+        parms = params[:user].merge({ "portal_id" => params[:pid]})
+        @user = User.create!(parms)
+        flash[:notice] = "User #{@user.id} was successfully created."
+        redirect_to :action => 'list'
+      rescue
+        flash[:notice] = "Error creating User." 
+        redirect_to :action => :list
+      end
+    else
+      @user = User.new
     end
   end
 
   def show
-    if User.exists?(params[:id])
-      @user = User.find(params[:id])
+    begin
+      p = Portal.find(params[:pid])
+      @user = p.find_in_users(params[:id])
       if request.get?
         respond_to do |wants|
           wants.html
@@ -83,7 +84,7 @@ class UserController < ApplicationController
         @user.destroy
         render(:text => "", :status => 204) # No Content
       end
-    else
+    rescue
       render(:text => "", :status => 404) # Not Found
     end
   end

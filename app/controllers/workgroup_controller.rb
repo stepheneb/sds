@@ -18,7 +18,7 @@ class WorkgroupController < ApplicationController
       @workgroups = Workgroup.find_all_in_portal(params[:pid])
       respond_to do |wants|
         wants.html
-        wants.xml { render :xml => @workgroups.to_xml(:except => ['created_at', 'updated_at']) }
+        wants.xml { render :xml => (@workgroups.empty? ? "<workgroups />" :@workgroups.to_xml(:except => ['created_at', 'updated_at'])) }
       end
     end
   end
@@ -78,29 +78,30 @@ class WorkgroupController < ApplicationController
     end
   end
 
-  def new
-   @workgroup = Workgroup.new
-  end
-
   def create
-    begin
-      w = params[:workgroup].merge({ "portal_id" => params[:pid]}).merge({ "version" => "0"})
-      @workgroup = Workgroup.create!(w)
-      users = params[:users]
-      users.each do |u|
-        @workgroup.workgroup_memberships.create!(:user_id => u, :version => @workgroup.version)
+    if request.post?
+      begin
+        parms = params[:workgroup].merge({ "portal_id" => params[:pid]}).merge({ "version" => "0"})
+        @workgroup = Workgroup.create!(parms)
+        users = params[:users]
+        users.each do |u|
+          @workgroup.workgroup_memberships.create!(:user_id => u, :version => @workgroup.version)
+        end
+        flash[:notice] = "Workgroup #{@workgroup.id} was successfully created."
+        redirect_to :action => 'list'
+      rescue
+        flash[:notice] = "Error creating Workgroup." 
+        redirect_to :action => :list
       end
-      flash[:notice] = "Workgroup #{@workgroup.id} was successfully created."
-      redirect_to :action => 'list'
-    rescue
-      flash[:notice] = "Error creating Workgroup." 
-      redirect_to :action => :list
+    else
+      @workgroup = Workgroup.new
     end
   end
 
   def show
-    if Workgroup.exists?(params[:id])
-      @workgroup = Workgroup.find(params[:id])
+    begin
+      p = Portal.find(params[:pid])
+      @workgroup = p.find_in_workgroups(params[:id])
       @members = @workgroup.users.version(@workgroup.version) # array of User objects
       @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects
       if request.get?
@@ -127,7 +128,7 @@ class WorkgroupController < ApplicationController
         @workgroup.destroy
         render(:text => "", :status => 204) # No Content
       end
-    else
+    rescue
       render(:text => "", :status => 404) # Not Found
     end
   end

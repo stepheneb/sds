@@ -15,6 +15,7 @@ class ApplicationController < ActionController::Base
   require 'conversions'
   require 'convert'
   require 'to_xml'
+  require 'net/http'
  
   private
 

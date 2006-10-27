@@ -8,21 +8,17 @@ class CurnitController < ApplicationController
         xml_parms = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
         @curnit = Curnit.new(xml_parms)
         @curnit.portal = Portal.find(xml_parms['portal_id'])
-        if @curnit.save
-          response.headers['Location'] = url_for(:action => :show, :id => @curnit.id)
-          render(:xml => "", :status => 201) # Created
-        else
-          raise
-        end
+        @curnit.save!
+        response.headers['Location'] = url_for(:action => :show, :id => @curnit.id)
+        render(:xml => "", :status => 201) # Created
       rescue
         render(:text => "", :status => 400) # Bad Request
       end
     else
       @curnits = Curnit.find_all_in_portal(params[:pid])
-#      @curnits = Curnit.find(:all, :conditions => ["portal_id = :pid", params])
       respond_to do |wants|
         wants.html
-        wants.xml { render :xml => @curnits.to_xml(:except => ['created_at', 'updated_at']) }
+        wants.xml { render :xml => (@curnits.empty? ? "<curnits />" : @curnits.to_xml(:except => ['created_at', 'updated_at'])) }
       end
     end
   end
@@ -44,25 +40,26 @@ class CurnitController < ApplicationController
     end
   end
 
-  def new
-   @curnit = Curnit.new
-  end
-
   def create
-    begin
-      c = params[:curnit].merge({ "portal_id" => params[:pid]})
-      @curnit = Curnit.create!(c)
-      flash[:notice] = "Curnit #{@curnit.id} was successfully created."
-      redirect_to :action => 'list'
-    rescue
-      flash[:notice] = "Error creating Curnit." 
-      redirect_to :action => :list
+    if request.post?
+      begin
+        c = params[:curnit].merge({ "portal_id" => params[:pid]})
+        @curnit = Curnit.create!(c)
+        flash[:notice] = "Curnit #{@curnit.id} was successfully created."
+        redirect_to :action => 'list'
+      rescue
+        flash[:notice] = "Error creating Curnit." 
+        redirect_to :action => :list
+      end
+    else
+      @curnit = Curnit.new
     end
   end
 
   def show
-    if Curnit.exists?(params[:id])
-      @curnit = Curnit.find(params[:id])
+    begin
+      p = Portal.find(params[:pid])
+      @curnit = p.find_in_curnits(params[:id])
       if request.get?
         respond_to do |wants|
           wants.html
@@ -87,7 +84,7 @@ class CurnitController < ApplicationController
         @curnit.destroy
         render(:text => "", :status => 204) # No Content
       end
-    else
+    rescue
       render(:text => "", :status => 404) # Not Found
     end
   end

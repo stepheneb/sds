@@ -1,6 +1,4 @@
-class Jnlp < ActiveRecord::Base
-  require 'net/http'
-  
+class Jnlp < ActiveRecord::Base  
   set_table_name "sds_jnlps"
   
   validates_presence_of :name, :url

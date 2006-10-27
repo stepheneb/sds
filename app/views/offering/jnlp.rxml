@@ -36,7 +36,7 @@ xml.jnlp("spec" => jattr['spec'], "codebase" => jattr['codebase'], "href" => hre
 #  xml << info.to_s
   xml.information {
     xml.title("Wise 3.0")
-    xml.vendor("Concord Consortium")
+    xml.vendor("Created by the TELS Project and Concord Consortium")
     xml.homepage("href" => homepage_url)
     xml.description("Wise 3.0, based on SAIL")
     xml.icon("href" => image_url("panda_64.png", :only_path => false), "height" => "64", "width" => "64")
