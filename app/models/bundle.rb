@@ -26,7 +26,6 @@ class Bundle < ActiveRecord::Base
       REXML::Document.new(sp_xml.to_s).elements.to_a('//sockEntries').each do |se_xml|
         value = se_xml.attributes["value"].to_s
         ms_offset = se_xml.attributes["millisecondsOffset"].to_i
-        breakpoint
         s = Sock.create(:bundle_id => self.id, :pod_id => p.id, :value => value, :ms_offset => ms_offset, 
           :duplicate => (if p.socks.empty? then false else p.socks.last.value == value end))
       end      
