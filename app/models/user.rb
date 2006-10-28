@@ -27,7 +27,11 @@ class User < ActiveRecord::Base
   end
   
   def self.find_all_in_portal(pid)
-    User.find(:all, :conditions => ["portal_id = ?", pid], :order => "last_name")
+    User.find(:all, :order => "created_at DESC", :conditions => ["portal_id = ?", pid])
+  end
+
+  def self.find_all_in_offering(oid)
+    User.find(:all, :order => "created_at DESC", :conditions => ["offering_id = ?", oid])
   end
   
   def name

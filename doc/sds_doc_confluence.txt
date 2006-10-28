@@ -111,7 +111,7 @@ When a request is made to read a single existing resource with an HTTP GET to a 
 When a request is made to read a collection of resources with an HTTP GET to a url referencing a collection of resources the following status codes are returned in the HTTP headers indicating success:
 * Success
 ** HTTP/1.1 200 OK  
-It is not a failure if there are no members of the resource collection. In this case an empty xml element which is the pluralized form of he sigular element name is returned. For example if there were no jnlp resources defined this element would be returned as content: "<jnlps />". 
+It is not a failure if there are no members of the resource collection. In this case an empty xml element which is the pluralized form of he sigular element name is returned. For example if there were no jnlp resources defined this empty element would be returned as content: "<jnlps />". 
 
 
 *Update*
@@ -1353,6 +1353,7 @@ Example:
   Content-Type: application/xml
   Content-Length: 0
   Location: http://rails.dev.concord.org/sds/1/offering/1/bundle/8/7
+  Content-Md5: C0LhalzTHn3vcOe41KY1xA==
 {panel}
 
 {anchor:Producing a collection of session bundle files for the Java client}
