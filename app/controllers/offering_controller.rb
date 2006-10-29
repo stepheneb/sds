@@ -143,13 +143,12 @@ class OfferingController < ApplicationController
   end
   
   def bundle
-#    breakpoint
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
       begin 
         raise "bundle too large" if request.raw_post.length > BUNDLE_SIZE_LIMIT
         @bundle = Bundle.create!(:offering_id => params[:id], :workgroup_id => params[:wid],
           :workgroup_version => params[:version], :content => request.raw_post)
-        response.headers['Content-MD5'] = Base64.b64encode(Digest::MD5.digest(@bundle.content))
+        response.headers['Content-md5'] = Base64.b64encode(Digest::MD5.digest(@bundle.content))
         response.headers['Location'] = url_for(:action => :bundle)
         render(:xml => "", :status => 201) # Created
       rescue
