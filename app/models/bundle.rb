@@ -12,6 +12,7 @@ class Bundle < ActiveRecord::Base
     Sock.delete_all
     Bundle.find(:all, :order => "created_at ASC").each { |b| b.process_sockParts }
     Sock.export_to_file_system
+    ""
   end
   
   def after_create
