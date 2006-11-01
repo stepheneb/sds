@@ -24,6 +24,10 @@ ActionController::Routing::Routes.draw do |map|
   map.connect ':pid/offering/:id/jnlp/workgroup/:wid', :controller => 'offering', :action => 'jnlp', :type => 'workgroup'
   map.connect ':pid/offering/:id/config/:wid/:version', :controller => 'offering', :action => 'config'
   map.connect ':pid/offering/:id/bundle/:wid/:version', :controller => 'offering', :action => 'bundle'
+
+  map.connect ':pid/offering/:id/errorbundle_create', :controller => 'offering', :action => 'errorbundle_create'
+  map.connect ':pid/offering/:id/errorbundle/:ebid', :controller => 'offering', :action => 'errorbundle', :ebid => 'ebid'
+
 #  map.connect ':pid/offering/:id/atom', :controller => 'offering', :action => 'jnlp', :type => 'workgroup'
 #  map.connect ':pid/offering/:id/atom/:wid', :controller => 'offering', :action => 'jnlp', :type => 'workgroup'
 #  map.connect ':pid/offering/:id/atom/:wid/:version', :controller => 'offering', :action => 'jnlp', :type => 'workgroup'

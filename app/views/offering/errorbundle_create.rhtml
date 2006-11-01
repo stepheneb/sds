@@ -1,0 +1,8 @@
+
+<%= error_messages_for("errorbundle") %> 
+<% form_for(:errorbundle, :url => {:action => 'errorbundle_create'}, :html => { :multipart => true }) do |form| %> 
+  Upload your errorbundle: <p />
+  <%= form.file_field("uploaded_data") %><p />
+  Comment: <%= form.text_field("comment", :size => 72) %><p /> 
+  <%= submit_tag("Upload file") %>
+<% end %> 

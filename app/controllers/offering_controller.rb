@@ -164,19 +164,42 @@ class OfferingController < ApplicationController
       end
     end
   end
-     
+
+
+  # ccurl -F upload=@localfilename -F press=OK
+  def errorbundle
+    if request.post?
+      o = Offering.find(params[:id])
+      breakpoint
+      @errorbundle = Errorbundle.new(params[:errorbundle].merge({ "ip_address" => request.env['REMOTE_HOST']}))
+      @errorbundle.offering_id = o.id
+      if @errorbundle.create
+        response.headers['Content-md5'] = Base64.b64encode(Digest::MD5.digest(@errorbundle.data))
+        response.headers['Location'] = url_for(:action => :errorbundle, :ebid => @errorbundle.id)
+        render(:xml => "", :status => 201) # Created
+      else
+        render(:text => "", :status => 400) # Bad Request
+      end
+    else
+      if request.get?
+        @errorbundle = Errorbundle.find(params[:ebid])
+        send_data(@errorbundle.data, :filename => @errorbundle.name, :type => @errorbundle.content_type, :disposition => 'inline')
+      end
+    end
+  end
+  
+  def errorbundle_create
+    if request.post?
+      o = Offering.find(params[:id])
+      @errorbundle = Errorbundle.new(params[:errorbundle])
+      @errorbundle.offering_id = o.id
+      if @errorbundle.create
+        flash[:notice] = "Errorbundle #{@errorbundle.id} was successfully created."
+      else
+        flash[:notice] = "Error creating Errorbundle." 
+      end
+    else
+      @errorbundle = Errorbundle.new
+    end
+  end
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
