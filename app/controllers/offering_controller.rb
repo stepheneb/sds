@@ -2,6 +2,8 @@ class OfferingController < ApplicationController
 
   before_filter :log_referrer
 
+  after_filter :compress 
+
   layout "standard", :except => [ :atom ] 
 
   BUNDLE_SIZE_LIMIT = 131072-1
@@ -115,8 +117,9 @@ class OfferingController < ApplicationController
       when 'workgroup'
         @workgroup = Workgroup.find(params[:wid])
       end
+      # last mod
       @headers["Content-Type"] = "application/x-java-jnlp-file"
-      @headers["Cache-Control"] = "public"
+      @headers["Cache-Control"] = "no-cache"
       @headers["Content-Disposition"] = "attachment; filename=testjnlp.jnlp"
       filename = "testjnlp"
       render :action => 'jnlp', :layout => false
@@ -202,4 +205,24 @@ class OfferingController < ApplicationController
       @errorbundle = Errorbundle.new
     end
   end
+
+  protected 
+
+  def compress 
+    accepts = request.env['HTTP_ACCEPT_ENCODING'] 
+    return unless accepts && accepts =~ /(x-gzip|gzip)/ 
+    encoding = $1 
+    output = StringIO.new 
+    def output.close # Zlib does a close. Bad Zlib... 
+      rewind 
+    end 
+    gz = Zlib::GzipWriter.new(output) 
+    gz.write(response.body) 
+    gz.close 
+    if output.length < response.body.length 
+      response.body = output.string 
+      response.headers['Content-Encoding'] = encoding 
+    end 
+  end 
+
 end

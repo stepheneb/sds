@@ -91,10 +91,11 @@ class CurnitController < ApplicationController
 
   def jnlp
     begin
+      
       @curnit = Curnit.find(params[:id])
-      @headers["Content-Type"] = "application/x-java-jnlp-file"
-      @headers["Cache-Control"] = "public"
-      @headers["Content-Disposition"] = "attachment; filename=testjnlp.jnlp"
+      response.headers["Content-Type"] = "application/x-java-jnlp-file"
+      response.headers["Cache-Control"] = "no-cache"
+      response.headers["Content-Disposition"] = "attachment; filename=testjnlp.jnlp"
       filename = "testjnlp"
       render :action => 'jnlp', :layout => false
     rescue

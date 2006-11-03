@@ -31,7 +31,7 @@ resources = []
 jnlp.elements.each("//resources") { |e| resources << e } 
 
 xml.instruct! :xml, :version=>"1.0", :encoding=>"UTF-8"
-xml.jnlp("spec" => jattr['spec'], "codebase" => jattr['codebase'], "href" => href_url) {
+xml.jnlp("spec" => jattr['spec'], "codebase" => jattr['codebase']) {
 
 #  xml << info.to_s
   xml.information {
