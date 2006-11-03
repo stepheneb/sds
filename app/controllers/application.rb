@@ -17,6 +17,14 @@ class ApplicationController < ActionController::Base
   require 'to_xml'
   require 'net/http'
  
+  after_filter :calc_contant_length 
+ 
+  protected
+  
+  def calc_contant_length
+    response.headers['Content-Length'] = response.body.length
+  end
+  
   private
 
   def log_referrer
