@@ -4,7 +4,7 @@
 <%= text_field 'offering', 'name', :size => 60  %></p>
 
 <p><label for="offering_curnit">Curnit: </label><br/>
-<%= select 'offering', 'curnit_id',  Curnit.find_all_in_portal(params[:pid]).map { |p| [p.name, p.id] }  %></p>
+<%= select 'offering', 'curnit_id',  Curnit.find_all_in_portal(params[:pid]).map { |p| ["#{p.id}: #{p.name}", p.id] }  %></p>
 
 <p><label for="offering_jnlp">Jnlp: </label><br/>
-<%= select 'offering', 'jnlp_id',  Jnlp.find_all_in_portal(params[:pid]).map { |p| [p.name, p.id] }  %></p>
+<%= select 'offering', 'jnlp_id',  Jnlp.find_all_in_portal(params[:pid]).map { |p| ["#{p.id}: #{p.name}", p.id] }  %></p>

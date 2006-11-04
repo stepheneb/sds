@@ -4,7 +4,7 @@
 <%= text_field 'workgroup', 'name', :size => 60  %></p>
 
 <p><label for="workgroup_offering">Offering: </label><br/>
-<%= select 'workgroup', 'offering_id',  Offering.find_all_in_portal(params[:pid]).map { |p| [p.name, p.id] }  %></p>
+<%= select 'workgroup', 'offering_id',  Offering.find_all_in_portal(params[:pid]).map { |p| ["#{p.id}: #{p.name}", p.id] }  %></p>
 
 <p>Membership (version: <%= @workgroup.version %>):</p>
 <%=
