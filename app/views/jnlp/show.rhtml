@@ -11,3 +11,19 @@
 </table>
 
 <%= display_xml(@jnlp) %>
+
+<table cellpadding="1" cellspacing="1">
+  <tr>
+    <td><b>Offering Id</b></td>
+    <td><b>Offering Name</b></td>
+  </tr>
+  <% @jnlp.offerings.each do |o| %>
+    <tr>
+      <td><%= o.id.to_s %></td>
+      <td><%= o.name %></td>
+      <td><%= link_to 'Show', :controller => 'workgroup', :action => 'show', :id => o.id %> | 
+          <%= link_to 'Edit', :controller => 'workgroup', :action => 'edit', :id => o.id %> 
+      </td>
+    </tr>
+  <% end %>
+</table>

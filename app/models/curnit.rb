@@ -10,7 +10,7 @@ class Curnit < ActiveRecord::Base
   has_many :pods
 
   def self.find_all_in_portal(pid)
-    Curnit.find(:all, :conditions => ["portal_id = ?", pid])
+    Curnit.find(:all, :order => "created_at DESC", :conditions => ["portal_id = ?", pid])
   end
   
   def get_curnit_last_modified

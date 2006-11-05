@@ -9,11 +9,11 @@
   <% for jnlp in @jnlps %>
     <tr>
       <td><%= jnlp.id.to_s %></td>
-      <td><%= jnlp.name %></td>
-      <td><%= jnlp.url %></td>
-      <td>
+      <td><%= jnlp.name %><br />
         <%= link_to 'Show', :action => 'show', :id => jnlp %> | 
-        <%= link_to 'Edit', :action => 'edit', :id => jnlp %>  
+        <%= link_to 'Edit', :action => 'edit', :id => jnlp %></td>
+      <td><%= jnlp.url %><br />
+        <em>(<%= jnlp.offerings.length.to_s %> offerings, created: <%= jnlp.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em>
       </td>
     </tr>
   <% end %>

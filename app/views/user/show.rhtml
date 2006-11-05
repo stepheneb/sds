@@ -11,3 +11,24 @@
 </table>
 
 <%= display_xml(@user) %>
+
+<table cellpadding="1" cellspacing="1">
+  <tr>
+    <td><b>Id</b></td>
+    <td><b>Name</b></td>
+    <td><b>Offering Id</b></td>
+    <td><b>Offering Name</b></td>
+  </tr>
+  <% @user.workgroups.each do |w| %>
+    <tr>
+      <td><%= w.id.to_s %></td>
+      <td><%= w.name %></td>
+      <td><%= w.offering.id.to_s %></td>
+      <td><%= w.offering.name %></td>
+      <td><%= link_to 'Run', :controller => 'offering', :action => 'jnlp', :id => w.offering.id, :wid => w.id, :type => 'workgroup', :only_path => false %> | 
+          <%= link_to 'Show', :controller => 'workgroup', :action => 'show', :id => w.id %> | 
+          <%= link_to 'Edit', :controller => 'workgroup', :action => 'edit', :id => w.id %> 
+      </td>
+    </tr>
+  <% end %>
+</table>

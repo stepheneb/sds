@@ -8,12 +8,12 @@
   </tr>
   <% for curnit in @curnits %>
     <tr>
-      <td><%= curnit.id.to_s %></td>
-      <td><%= curnit.name %></td>
-      <td><%= curnit.url %></td>
-      <td>
+      <td><%= curnit.id.to_s %><br /> </td>
+      <td><%= curnit.name %><br />
         <%= link_to 'Show', :action => 'show', :id => curnit %> | 
-        <%= link_to 'Edit', :action => 'edit', :id => curnit %>
+        <%= link_to 'Edit', :action => 'edit', :id => curnit %></td>
+      <td><%= curnit.url %><br />
+        <em>(<%= curnit.offerings.length.to_s %> offerings, created: <%= curnit.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em><br />
       </td>
     </tr>
   <% end %>

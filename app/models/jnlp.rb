@@ -7,7 +7,7 @@ class Jnlp < ActiveRecord::Base
   has_many :offerings
 
   def self.find_all_in_portal(pid)
-    Jnlp.find(:all, :conditions => ["portal_id = ?", pid])
+    Jnlp.find(:all, :order => "created_at DESC", :conditions => ["portal_id = ?", pid])
   end
   
   def get_jnlp
