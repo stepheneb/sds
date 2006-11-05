@@ -12,6 +12,7 @@
       <td>
         <%= link_to 'Show/Run', :action => 'show', :id => offering %> | 
         <%= link_to 'Edit', :action => 'edit', :id => offering %>  
+        <em>(created: <%= offering.created_at.strftime("%a %b %d %H:%M %Z %Y") %>, workgroups: <%= offering.workgroups.length.to_s %>)</em>
       </td>
     </tr>
   <% end %>
