@@ -119,7 +119,8 @@ class OfferingController < ApplicationController
       end
       # last mod
       @headers["Content-Type"] = "application/x-java-jnlp-file"
-      @headers["Cache-Control"] = "no-cache"
+#      @headers["Cache-Control"] = "no-cache"
+      @headers["Cache-Control"] = "max-age=1"
       @headers["Content-Disposition"] = "attachment; filename=testjnlp.jnlp"
       filename = "testjnlp"
       render :action => 'jnlp', :layout => false
@@ -153,6 +154,8 @@ class OfferingController < ApplicationController
           :workgroup_version => params[:version], :content => request.raw_post)
         response.headers['Content-md5'] = Base64.b64encode(Digest::MD5.digest(@bundle.content))
         response.headers['Location'] = url_for(:action => :bundle)
+#        response.headers['Cache-Control'] = 'no-cache'
+        response.headers['Cache-Control'] = 'public'
         render(:xml => "", :status => 201) # Created
       rescue
         render(:text => "", :status => 400) # Bad Request
@@ -169,7 +172,6 @@ class OfferingController < ApplicationController
   end
 
 
-  # ccurl -F upload=@localfilename -F press=OK
   def errorbundle
     if request.post?
       o = Offering.find(params[:id])
