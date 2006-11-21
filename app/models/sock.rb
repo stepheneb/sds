@@ -74,17 +74,22 @@ class Sock < ActiveRecord::Base
   
   def save_to_file_system
     begin
-      File.open("socks/raw/sock_#{self.id.to_s}_#{self.pas_type}_#{self.encoding}", "w") { |f| f.write self.value }
-      File.open("socks/decoded/sock_#{self.id.to_s}_#{self.pas_type}.#{self.extension}", "w") { |f| f.write self.text }
-    rescue
-      File.open("public/socks/raw/sock_#{self.id.to_s}_#{self.pas_type}_#{self.encoding}", "w") { |f| f.write self.value }
-      File.open("public/socks/decoded/sock_#{self.id.to_s}_#{self.pas_type}.#{self.extension}", "w") { |f| f.write self.text }
+      File.open("raw/sock_#{self.id.to_s}_#{self.pas_type}_#{self.encoding}", "w") { |f| f.write self.value }
+      File.open("decoded/sock_#{self.id.to_s}_#{self.pas_type}.#{self.extension}", "w") { |f| f.write self.text }
     end
   end
   
   def self.export_to_file_system
-    Sock.find_all.each { |s| s.save_to_file_system }
+    puts "Exporting #{Socks.count.to_s} Socks to file system\nprocessing (x100): "
+    process_count = 0
+    Sock.find(:all, :order => "created_at ASC").each do |s|
+      s.save_to_file_system
+      process_count += 1
+      if process_count == 100
+        print '.'
+        process_count = 0
+      end
+    end
   end
-  
-  
+
 end

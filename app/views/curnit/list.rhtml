@@ -1,20 +1,22 @@
-<%= link_to 'New Curnit', :action => 'create', :pid => params[:pid] %>
+<span class='create'><%= link_to 'New Curnit', :action => 'create', :pid => params[:pid] %></span>
 
 <table cellpadding="3" cellspacing="3">
   <tr>
+    <td></td>
     <td><b>Id</b></td>
     <td><b>Name</b></td>
     <td><b>Url</b></td>
   </tr>
   <% for curnit in @curnits %>
     <tr>
-      <td><%= curnit.id.to_s %><br /> </td>
-      <td><%= curnit.name %><br />
-        <%= link_to 'Show', :action => 'show', :id => curnit %> | 
-        <%= link_to 'Edit', :action => 'edit', :id => curnit %></td>
-      <td><%= curnit.url %><br />
-        <em>(<%= curnit.offerings.length.to_s %> offerings, created: <%= curnit.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em><br />
-      </td>
+      <td width=200><%= link_to 'Show', :action => 'show', :id => curnit %> | <%= link_to 'Edit', :action => 'edit', :id => curnit %></td>
+      <td><%= curnit.id.to_s %></td>
+      <td><%= curnit.name %></td>
+      <td><%= curnit.url %></td>
     </tr>
+      <td></td>
+      <td colspan="3">
+        <em>(<%= pluralize(curnit.offerings.length, "offering") %>, created: <%= curnit.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em>
+        </td>
   <% end %>
 </table>

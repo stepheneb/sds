@@ -88,20 +88,6 @@ class CurnitController < ApplicationController
       render(:text => "", :status => 404) # Not Found
     end
   end
-
-  def jnlp
-    begin
-      
-      @curnit = Curnit.find(params[:id])
-      response.headers["Content-Type"] = "application/x-java-jnlp-file"
-      response.headers["Cache-Control"] = "no-cache"
-      response.headers["Content-Disposition"] = "attachment; filename=testjnlp.jnlp"
-      filename = "testjnlp"
-      render :action => 'jnlp', :layout => false
-    rescue
-      render(:text => "", :status => 404) # Not Found
-    end
-  end
   
   def destroy
 #    id = params[:id]

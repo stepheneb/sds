@@ -10,7 +10,10 @@ security = jnlp.root.elements["security"]
 nl = "\n"
 href_url =     @controller.url_for(:controller => 'offering', :action => 'jnlp', :id => @offering.id, :wid => @workgroup.id, :version => @version, :only_path => false).to_s
 homepage_url = @controller.url_for(:controller => 'offering', :action => 'show', :id => @offering.id, :only_path => false).to_s
-config_url =   @controller.url_for(:controller => "offering", :action => "config", :id => @offering.id, :wid => @workgroup.id, :version => @workgroup.version, :only_path => false).to_s
+config_url =   @controller.url_for(:controller => "offering", 
+  :action => "config", :id => @offering.id, :wid => @workgroup.id, 
+  :version => @workgroup.version, :savedata => @savedata, :only_path => false).to_s
+  
 sds_launcher = "net.sf.sail.emf.launch.EMFLauncher2"
 
 # if there is a file-based launcher convert to an sds launcher
@@ -40,7 +43,7 @@ xml.jnlp("spec" => jattr['spec'], "codebase" => jattr['codebase']) {
     xml.homepage("href" => homepage_url)
     xml.description("Wise 3.0, based on SAIL")
     xml.icon("href" => image_url("panda_64.png", :only_path => false), "height" => "64", "width" => "64")
-    xml << nl + "<offline-allowed/>" 
+#    xml << nl + "<offline-allowed/>" 
   }
   xml << security.to_s
   

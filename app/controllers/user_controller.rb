@@ -92,7 +92,7 @@ class UserController < ApplicationController
   def destroy
     id = params[:id]
     begin
-      User.find(id).destroy
+      SdsUser.find(id).destroy
       flash[:notice] = "User #{id.to_s} was successfully deleted."
     rescue
       flash[:notice] = "Error deleting User #{id.to_s}." 

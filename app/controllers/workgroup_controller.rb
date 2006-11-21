@@ -128,8 +128,8 @@ class WorkgroupController < ApplicationController
         @workgroup.destroy
         render(:text => "", :status => 204) # No Content
       end
-    rescue
-      render(:text => "", :status => 404) # Not Found
+#    rescue
+#      render(:text => "", :status => 404) # Not Found
     end
   end
 

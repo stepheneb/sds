@@ -19,19 +19,21 @@ xml.java("version" => "1.4.0", "class" => "java.beans.XMLDecoder") {
         }
       }
     }
-    xml.void("property" => "bundlePoster") {
-      xml.object("class" => "net.sf.sail.emf.launch.BundlePoster") {
-        xml.void("property" => "postUrl") {
-          xml.string(@controller.url_for(
-                                  :controller => "offering", 
-                                  :action => "bundle", 
-                                  :id => @offering.id, 
-                                  :wid => @workgroup.id,
-                                  :version => @version,
-                                  :only_path => false))
+    if @savedata
+      xml.void("property" => "bundlePoster") {
+        xml.object("class" => "net.sf.sail.emf.launch.BundlePoster") {
+          xml.void("property" => "postUrl") {
+            xml.string(@controller.url_for(
+                                    :controller => "offering", 
+                                    :action => "bundle", 
+                                    :id => @offering.id, 
+                                    :wid => @workgroup.id,
+                                    :version => @version,
+                                    :only_path => false))
+          }
         }
       }
-    }
+    end
   }
   xml.object("class" => "net.sf.sail.core.service.impl.LauncherServiceImpl")
   xml.object("class" => "net.sf.sail.emf.launch.EMFSailDataStoreService2")

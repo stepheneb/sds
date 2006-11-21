@@ -1,17 +1,23 @@
 <%= link_to 'List', :action => 'list'  %> | 
 <%= link_to 'Edit', :action => 'edit' %>
 
-<table cellpadding="3" cellspacing="4">
-  <% for column in User.columns %>
-    <tr>
-      <td><%= h column.human_name %></td>
-      <td><%= h @user.send(column.name) %></td>
-    </tr>
-  <% end %>
+<table cellpadding="3" cellspacing="3">
+  <tr>
+    <td><b>Id</b></td>
+    <td><b>Portal</b></td>
+    <td><b>Name</b></td>
+  </tr>
+  <tr>
+    <td><%= @user.id.to_s %></td>
+    <td><%= @user.portal.id.to_s %></td>
+    <td><%= @user.name %></td>
+    <td>
+      <em>(<%= pluralize(@user.workgroups.uniq.length, "workgroup")%>, created: <%= @user.created_at.strftime("%a %b %d %H:%M %Z %Y") %>, UUID: <%= @user.uuid %>)</em>
+    </td>
+  </tr>
 </table>
 
-<%= display_xml(@user) %>
-
+Workgroups
 <table cellpadding="1" cellspacing="1">
   <tr>
     <td><b>Id</b></td>
@@ -32,3 +38,7 @@
     </tr>
   <% end %>
 </table>
+
+<hr />
+
+<%= display_xml(@user) %>

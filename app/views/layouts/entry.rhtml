@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+    <% page_title = "SDS: #{@controller.controller_name.capitalize}" %>
+    <head>
+        <title><%= page_title %></title>
+        <%= stylesheet_link_tag "sds" %>
+    </head>
+    <body>
+      <div id="banner">
+        <a href="http://www.telscenter.org/confluence/display/SAIL">
+          <%= image_tag("sail_orangecirc_64.gif") %></a>
+          SAIL Data Service
+      </div>
+      
+      <h3><%= page_title %></h3>
+      <div id="menubar">
+        <div id="actions">        
+        </div>
+        <div id="actionlogin">
+          <%= link_to 'Login', :controller => 'sds_user', :action => 'login' %>
+        </div>
+      </div>
+
+      <p style="color: green"><%= flash[:notice] %></p>
+      <div id="content">
+        <%= yield %>
+      </div>
+    </body>
+</html>

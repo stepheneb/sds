@@ -1,0 +1,29 @@
+<div id="pageheader"><span class="PageTitle">User Listing</span></div>
+
+<table width="90%" cellpadding="5" cellspacing="0">
+    <% odd_or_even = 0
+    for user in @users 
+        odd_or_even = 1 - odd_or_even
+    %>
+    <tr valign="top" class="ListLine<%= odd_or_even %>">
+        <% if current_sds_user.email == 'stephen@concord.org'%>
+        <td align="Listactions">
+            <%= link_to 'Edit', :action => 'edit', :id => user %><br />
+            <%= link_to 'Delete', { :action => 'destroy', :id => user }, :confirm => 'Are you sure?', :post => true %>
+        </td>
+        <% end %>
+        <td width="80%">
+            <span class="ListTitle"><%= h(user.first_name) %> <%= h(user.last_name) %></span><br />
+            Username: <%= user.login %>, Probeware: <%= user.vendor_interface.name %>
+        </td>
+    </tr>
+    <% end %>
+</table>
+
+<br />
+<p><%= link_to "Back", :controller => 'page' %></p>
+
+<%= link_to 'Previous page', { :page => @user_pages.current.previous } if @user_pages.current.previous %>
+<%= link_to 'Next page', { :page => @user_pages.current.next } if @user_pages.current.next %> 
+
+

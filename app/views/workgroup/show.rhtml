@@ -1,45 +1,39 @@
 <%= link_to 'List', :action => 'list'  %> | 
 <%= link_to 'Edit', :action => 'edit' %>
 
-<table cellpadding="3" cellspacing="4">
-  <tr><td><b>Id</b><td><%= @workgroup.id.to_s %></td></tr>
-  <tr><td><b>Name</b><td><%= @workgroup.name %></td></tr>
-  <tr><td><b>Offering</b><td><%= @workgroup.offering.name %></td></tr>
-  <tr><td><b>Version</b><td><%= @workgroup.version.to_s %></td></tr>
-  <tr><td><b>Uuid</b><td><%= @workgroup.uuid %></td></tr>
-  <tr><td><b>Created at</b><td><%= @workgroup.created_at.to_s %></td></tr>
-  <tr><td><b>Updated at</b><td><%= @workgroup.updated_at.to_s %></td></tr>
-</table>
-<%= display_xml(@workgroup) %>
+<% member_names = @members.collect {|m| m.name}.join(', ')%>
+<p>
+  <%= %{<p>Workgroup: "#{@workgroup.name}", <em>(id: #{@workgroup.id})</em><br />
+    Members: #{member_names}, <em>(ids: #{@members.collect {|m| m.id}.join(', ')})</em>. <br />
+    Offering: "#{@workgroup.offering.name}", <em>(id: #{@workgroup.offering.id})</em><br />
+    Curnit: "#{@workgroup.offering.curnit.name}" <em>(id: #{@workgroup.offering.curnit.id}), last updated: #{@workgroup.offering.curnit.get_curnit_last_modified}</em>.} %>
+</p>
 
-<h4>Membership:</h4>
-<table cellpadding="3" cellspacing="4">
-  <tr>
-    <td><b>Id</b></td>
-    <td><b>Name</b></td>
-  </tr>
-  <% @members.each do |m| %>
-    <tr>
-      <td><%= m.id.to_s %></td>
-      <td><%= m.name %></td>
-    </tr>
-  <% end %>
-</table>
-<p><b>XML output representation: </b></p>
-<p><code><%= h(WorkgroupMembership.wg_array_to_xml(@membership_array)) %></code></p>
 
-<h4>Session bundles:</h4>
-<% @workgroup.bundles.each do |bund| %>
-  Bundle id:  <%= bund.id %>, Workgroup membership version: <%= bund.workgroup_version.to_s %>, Created at: <%= bund.created_at.to_s %><br />
-  <div style="background-color: #eee; padding: 10px; border: 2px solid grey; margin: 15px; font: smaller monospaced sans-serif;" >
-    <%= h(bund.content.to_s) %>
-    <% bund.socks.each do |s| %>
-      <div style="background-color: #ccc; padding: 10px; border: 1px solid grey; margin: 10px; font: smaller monospaced sans-serif;" >
-        <p>Sock ms offset: <%= s.ms_offset %>, Pod uuid: <%= s.pod.uuid %>, Rim name: <%= s.pod.rim_name %></p>
-        <%= h(REXML::Document.new(CGI.unescapeHTML(s.value)).to_s) %>
+<% @workgroup.bundles.each do |b| %>
+  <hr />
+  <div style="background-color: #BBFFEE; padding: 10px; border: 1px solid gray; margin: 10px; font: 9px sans-serif;">
+    <%= %{#{b.created_at.to_s}<br >Bundle: #{b.id}<br />Workgroup membership version: #{b.workgroup_version.to_s}.<br />}%>
+    <% b.socks.each do |s| %>
+      <%= %{<br />Pod: #{s.pod.id}: UUID: #{s.pod.uuid})<br />Rim name: #{s.pod.rim_name}<br />Sock: #{s.id}#{if s.duplicate then " <em>duplicate</em>" end}, ms offset: #{s.ms_offset}.<br />} %>
+      <div style="background-color: #99FFCC; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px font: sans-serif;">
+        <% begin
+            value = CGI.unescapeHTML(s.value)
+            # try and convert to xml, will generate an error if not possible
+            hash = XmlSimple.new().xml_in(CGI.unescapeHTML(s.value), {'keeproot' => true})
+            value = XmlSimple.xml_out(hash, {'keeproot' => true})
+        rescue
+        end %>
+        <pre><%= CGI.escapeHTML(value) %></pre>
       </div>
-      <% end %>
+    <% end %>
   </div>
 <% end %>
 
+<hr />
+
+<%= display_xml(@workgroup) %>
+
+XML output representation:
+<p><code><%= h(WorkgroupMembership.wg_array_to_xml(@membership_array)) %></code></p>
 

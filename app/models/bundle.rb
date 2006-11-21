@@ -10,7 +10,11 @@ class Bundle < ActiveRecord::Base
   def self.rebuild_pods_and_socks
     Pod.delete_all
     Sock.delete_all
-    Bundle.find(:all, :order => "created_at ASC").each { |b| b.process_sockParts }
+    puts "Bundles to process: #{Bundle.count.to_s}\nprocessing: "
+    Bundle.find(:all, :order => "created_at ASC").each do |b|
+      b.process_sockParts
+      print '.'
+    end
     Sock.export_to_file_system
     ""
   end

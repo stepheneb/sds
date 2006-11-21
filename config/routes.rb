@@ -19,10 +19,14 @@ ActionController::Routing::Routes.draw do |map|
 
 # offering: java web start services
 
-  map.connect ':pid/offering/:id/jnlp/:wid', :controller => 'offering', :action => 'jnlp', :type => 'workgroup'
-  map.connect ':pid/offering/:id/jnlp/user/:uid', :controller => 'offering', :action => 'jnlp', :type => 'user'
-  map.connect ':pid/offering/:id/jnlp/workgroup/:wid', :controller => 'offering', :action => 'jnlp', :type => 'workgroup'
-  map.connect ':pid/offering/:id/config/:wid/:version', :controller => 'offering', :action => 'config'
+  map.connect ':pid/offering/:id/jnlp/:wid', :controller => 'offering', :action => 'jnlp', :type => 'workgroup', :savedata => true
+  map.connect ':pid/offering/:id/jnlp/:wid/view', :controller => 'offering', :action => 'jnlp', :type => 'workgroup', :savedata => nil
+  map.connect ':pid/offering/:id/jnlp/user/:uid', :controller => 'offering', :action => 'jnlp', :type => 'user', :savedata => true
+  map.connect ':pid/offering/:id/jnlp/user/:uid/view', :controller => 'offering', :action => 'jnlp', :type => 'user', :savedata => nil
+  map.connect ':pid/offering/:id/jnlp/workgroup/:wid', :controller => 'offering', :action => 'jnlp', :type => 'workgroup', :savedata => true
+  map.connect ':pid/offering/:id/jnlp/user/:uid/view', :controller => 'offering', :action => 'jnlp', :type => 'user', :savedata => nil
+  map.connect ':pid/offering/:id/config/:wid/:version', :controller => 'offering', :action => 'config', :savedata => true
+  map.connect ':pid/offering/:id/config/:wid/:version/view', :controller => 'offering', :action => 'config', :savedata => nil
   map.connect ':pid/offering/:id/bundle/:wid/:version', :controller => 'offering', :action => 'bundle'
 
   map.connect ':pid/offering/:id/errorbundle_create', :controller => 'offering', :action => 'errorbundle_create'
@@ -91,9 +95,11 @@ ActionController::Routing::Routes.draw do |map|
 
   # Install the default route as the lowest priority.
 #  map.connect ':controller/:action/:id'
+
+  map.connect 'sds_user/:action', :controller => 'sds_user'
   
   map.connect ':pid', :controller => 'home', :action => 'index'
   
-  map.connect '', :controller => "home", :action => 'index'
+  map.connect '', :controller => "home", :action => 'index', :pid => nil
 
 end

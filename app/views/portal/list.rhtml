@@ -10,7 +10,7 @@
 <%= link_to 'New portal', :action => 'create' %>
 
 <p style="color: green"><%= flash[:notice] %></p>
-<table width="90%" cellpadding="4" cellspacing="0">
+<table cellpadding="3" cellspacing="0">
   <tr>
     <% 0..3.times do |i| %>
       <td><b><%= Portal.columns[i].human_name %></b></td>
@@ -22,9 +22,8 @@
         <td><%=h portal.send(Portal.columns[i].name) %></td>
       <% end %>
         <td>
-          <%= link_to 'Show', :action => 'show', :id => portal %> | 
-          <%= link_to 'Edit', :action => 'edit', :id => portal %> | 
-          <%= link_to 'Manage', :controller => 'offering', :action => 'list', :pid => portal.id %> 
+          <%= link_to 'Manage', :controller => 'offering', :action => 'list', :pid => portal.id %> |
+          <%= link_to 'Edit', :action => 'edit', :id => portal %>
         </td>
     </tr>
   <% end %>

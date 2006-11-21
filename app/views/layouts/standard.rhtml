@@ -1,20 +1,58 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
         "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
-  <% p = Portal.find(params[:pid])
-    pagetitle = "SDS: Portal: #{p.name} (#{p.id.to_s}), #{controller.controller_name.capitalize}" %>
+    <% page_title = "SDS: #{@controller.controller_name.capitalize}"
+      page_title = page_title + 's' unless page_title == 'SDS: Home' %>
     <head>
-        <title><%= pagetitle %></title>
+        <title><%= page_title %></title>
+        <%= stylesheet_link_tag "sds" %>
     </head>
     <body>
-      <h3><%= pagetitle %></h3>
-      <%= link_to 'Curnits', :controller => 'curnit', :action => 'list' %> | 
-      <%= link_to 'Jnlps', :controller => 'jnlp', :action => 'list' %> | 
-      <%= link_to 'Users', :controller => 'user', :action => 'list' %> | 
-      <%= link_to 'Offerings', :controller => 'offering', :action => 'list' %> | 
-      <%= link_to 'Workgroups', :controller => 'workgroup', :action => 'list' %>
-      <hr>
+      <div id="banner">
+        <a href="http://www.telscenter.org/confluence/display/SAIL">
+          <%= image_tag("sail_orangecirc_64.gif") %></a>
+          SAIL Data Service
+      </div>
+      <div id="titlebar">
+        <div id="titlebar_left">
+          <h3><%= page_title %></h3>
+        </div>
+        <div id="titlebar_right">
+          <% if p = params[:pid] %>
+            <h4>Portal <%= p.to_s %></h4>
+          <% end %>
+        </div>
+      </div>
+      <div id="menubar">
+        <div id="menubar_left">
+          <span class="active">        
+            <%= link_to 'Home', :controller => 'home', :action => 'index' %> | 
+          </span>
+          <% if params[:pid] %>
+            <span class="active">        
+            <%= link_to 'Portals', :controller => 'portal', :action => 'list' %> | 
+            <%= link_to 'Curnits', :controller => 'curnit', :action => 'list' %> | 
+            <%= link_to 'Jnlps', :controller => 'jnlp', :action => 'list' %> | 
+            <%= link_to 'Users', :controller => 'user', :action => 'list' %> | 
+            <%= link_to 'Offerings', :controller => 'offering', :action => 'list' %> | 
+            <%= link_to 'Workgroups', :controller => 'workgroup', :action => 'list' %>
+            </span>
+          <% else %>
+            <span class="inactive">Portals | Curnits | Jnlps | Users | Offerings | Workgroups</span>
+          <% end %>
+        </div>
+        <div id="menubar_right">
+          <% if logged_in? %>
+            <span class="salutation">Welcome <%= current_sds_user.name %>,</span> <%= link_to 'Logout', :controller => 'sds_user', :action => 'logout' %>
+          <% else %>
+            <%= link_to 'Login', :controller => 'sds_user', :action => 'login' %>
+          <% end %>
+        </div>
+      </div>
+
       <p style="color: green"><%= flash[:notice] %></p>
-      <%= yield %>
+      <div id="content">
+        <%= yield %>
+      </div>
     </body>
 </html>

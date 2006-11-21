@@ -3,18 +3,16 @@
 <table cellpadding="3" cellspacing="3">
   <tr>
     <td><b>Id</b></td>
-    <td><b>First Name</b></td>
-    <td><b>Last Name</b></td>
+    <td><b>Name</b></td>
   </tr>
-  <% for user in @users %>
+  <% @users.each do |user| %>
     <tr>
       <td><%= user.id.to_s %></td>
-      <td><%= user.first_name %></td>
-      <td><%= user.last_name %></td>
+      <td><%= user.name %></td>
       <td>
         <%= link_to 'Show', :action => 'show', :id => user %> | 
         <%= link_to 'Edit', :action => 'edit', :id => user %>  
-        <em>(<%= user.workgroups.length.to_s %>: workgroups, created: <%= user.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em>
+        <em>(<%= pluralize(user.workgroups.uniq.length, "workgroup")%>, created: <%= user.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em>
       </td>
     </tr>
   <% end %>

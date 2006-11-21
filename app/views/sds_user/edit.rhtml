@@ -1,0 +1,8 @@
+<h1>Editing user</h1>
+
+<% form_for :user , :url => { :action => :register} do |f| -%>
+    <%= render :partial => 'form' %>
+    <%= submit_tag "Save changes" %>
+<% end -%>
+
+<p><%= link_to "Back", :controller => 'page' %></p>

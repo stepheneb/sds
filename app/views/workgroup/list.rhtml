@@ -1,18 +1,23 @@
 <%= link_to 'New Workgroup', :action => 'create', :pid => params[:pid] %>
 
-<table cellpadding="3" cellspacing="3">
+<p />
+<table cellpadding=3 cellspacing=0>
+  <% odd_or_even = 0 %>
   <tr>
     <td><b>Id</b></td>
     <td><b>Name</b></td>
+    <td><b>Version</b></td>
   </tr>
   <% for workgroup in @workgroups %>
-    <tr>
+    <% odd_or_even = 1 - odd_or_even %>
+    <tr  valign="middle" class="ListLine<%= odd_or_even %>">
       <td><%= workgroup.id.to_s %></td>
       <td><%= workgroup.name %></td>
+      <td><%= workgroup.version.to_s %></td>
       <td><%= link_to 'Show', :action => 'show', :id => workgroup %> | 
           <%= link_to 'Edit', :action => 'edit', :id => workgroup %>
       </td>
-      <td><em>(<%= workgroup.users.length.to_s %>: members, created: <%= workgroup.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em></td>
+      <td><em>(<%= pluralize(workgroup.users.uniq.length, "member")%>, created: <%= workgroup.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em></td>
     </tr>
   <% end %>
 </table>

@@ -1,0 +1,353 @@
+body { background-color: #fff; color: #333; }
+
+body, p, ol, ul, {
+  font-family: verdana, arial, helvetica, sans-serif;
+  font-size:   11px;
+  line-height: 14px;
+}
+
+h3 {
+  font-family: verdana, arial, helvetica, sans-serif;	
+}
+
+#banner {
+  background: #fec;
+  padding-top: 5px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid;
+  font: bold small-caps 20px/20px "verdana", serif;
+  color: #282;
+  text-align: center;
+}
+
+#banner img {
+  float: left;
+  border:0px;
+}
+
+#activity {
+}
+
+#activity img {
+  float: left;
+  border:0px;
+}
+
+#main {
+  margin-left: 14em;
+  padding-top: 2em;
+  padding-left: 2em;
+  background: white;
+}
+
+#content {
+  margin-left: 5px;
+  padding-left: 5px;
+  margin-right: 2em;
+  padding-right: 1em;
+  font-family: verdana, arial, helvetica, sans-serif;
+  font-size: 10pt;
+  background: white;
+}
+
+#content code {
+  font-weight: lighter;
+  font-size: x-small;
+}
+
+pre {
+  font-weight: lighter;
+  font-size: x-small;
+  background-color: #eee;
+  padding: 10px;
+}
+
+
+
+#content a {
+  color: #282;
+  font-weight: lighter;
+  font:normal 10pt;
+}
+
+#content a:hover { 
+	color: #30c230; 
+}
+
+
+#document {
+  margin-left: 5px;
+  padding-left: 5px;
+  width:90%;
+  background: white;
+}
+
+#document a {
+  font-weight: bold;
+}
+
+#notice {
+  border: 2px solid red;
+  padding: 1em;
+  margin-bottom: 2em;
+  background-color: #f0f0f0;
+  font: bold smaller sans-serif;
+}
+
+a {
+  color: #282;
+  text-decoration: none;
+  font: bold 10pt sans-serif;
+}
+
+a:visited { 
+	color: #282; 
+}
+
+a:hover { 
+	color: #30c230; 
+}
+
+#titlebar {
+  font-family: verdana, arial, helvetica, sans-serif;
+  padding-top: 0px;
+  margin-top: 0px;
+  padding-bottom: 0px;
+  margin-bottom: 0px;
+  font: bold 14pt;
+}
+
+#titlebar h3{
+  padding-top: 5px;
+  margin-top: 0px;
+  padding-bottom: 5px;
+  margin-bottom: 0px;
+  font: bold 14pt;
+}
+
+#titlebar h4{
+  padding-top: 5px;
+  margin-top: 0px;
+  padding-bottom: 5px;
+  margin-bottom: 0px;
+  font: bold 12pt;
+}
+
+#titlebar_left {
+  float: left;
+  margin-left: 0;;
+}
+
+#titlebar_right {
+  float: right;
+  text-align: right;
+}
+
+#menubar {
+  padding-top: 20px;
+  margin-top: 20px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom:2px solid #aaa;
+}
+
+#menubar_right a {
+  color: #282;
+  font-family: verdana, arial, helvetica, sans-serif;
+  text-decoration: none;
+  font-size: small;
+}
+
+#menubar_left a {
+  color: #282;
+  font-family: verdana, arial, helvetica, sans-serif;
+  text-decoration: none;
+  font-size: small;
+}
+
+#menubar p {
+  color: #282;
+  font-family: verdana, arial, helvetica, sans-serif;
+  text-decoration: none;
+  font-size: small;
+}
+
+.salutation {
+  color: #161;
+  font-family: verdana, arial, helvetica, sans-serif;
+  text-decoration: none;
+  font-size: small;
+}
+
+
+.active {
+  color: #282;
+  font-family: verdana, arial, helvetica, sans-serif;
+  text-decoration: none;
+  font-size: small;
+}
+
+.inactive {
+  color: #464;
+  font-family: verdana, arial, helvetica, sans-serif;
+  text-decoration: none;
+  font-size: small;
+}
+
+#menubar a:hover { 
+	color: #30c230; 
+}
+
+#menubar_left {
+  float: left;
+  float: top;
+}
+
+#menubar_right {
+  float: right;
+  text-align: right;
+}
+
+
+td {
+  font-family: verdana, arial, helvetica, sans-serif;
+  font-size:   10px;
+  line-height: 20px;
+  margin-left: 5px;
+}
+
+#pageheader {
+  padding-bottom: 1em;
+}
+
+.PageTitle {
+  color: #244;
+  font-family: verdana, arial, helvetica, sans-serif;
+  font-size:   30px;
+  font-weight: bold;
+  text-align: left;
+}
+
+.ListTitle {
+	color:	#244;
+	font-weight: bold;
+	font-size: larger;
+}
+
+.ListActions {
+	font-size: x-small;
+	text-align: left;
+	padding-left: 1em;
+}
+
+.ListLine0 {
+	background: #f8d0f8;
+}
+
+.ListLine1 {
+	background: #fec;
+}
+
+.DataTable {
+	border-collapse: collapse;
+	padding: 5px;
+	margin: 0px;
+	border-top:3px solid #282;;
+	border-left:3px solid #282;
+	border-right:3px solid #282;
+	border-bottom:3px solid #282;
+}
+
+.DataTable thead {
+	border-collapse: collapse;
+	padding: 5px;
+	margin: 0px;
+	border-bottom:2px solid #282;
+}
+
+.DataTable th { 
+	background: #b5f1b4;
+	text-align: left;
+	font-weight: normal;
+	font-size: x-small;
+}
+
+.DataTable td { 
+	text-align: left;
+	font-weight: normal;
+	font-size: x-small;
+	padding: 2px;
+	border-top:1px solid #aaa;
+	border-left:1px solid #aaa;
+	border-right:1px solid #aaa;
+	border-bottom:1px solid #aaa;
+}
+
+.DataTableRow0 {
+	padding: 5px;
+	margin: 0px; 
+	background: #e0f8f8;
+}
+
+.DataTableRow1 {
+	padding: 5px;
+	margin: 0px;
+	background: #f8b0f8; 
+}
+
+
+.fieldWithErrors {
+  padding: 2px;
+  background-color: red;
+  display: table;
+}
+
+#errorExplanation {
+  width: 400px;
+  border: 2px solid red;
+  padding: 7px;
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+  background-color: #f0f0f0;
+}
+
+#errorExplanation h2 {
+  text-align: left;
+  font-weight: bold;
+  padding: 5px 5px 5px 15px;
+  font-size: 12px;
+  margin: -7px;
+  background-color: #c00;
+  color: #fff;
+}
+
+#errorExplanation p {
+  color: #333;
+  margin-bottom: 0;
+  padding: 5px;
+}
+
+#errorExplanation ul li {
+  font-size: 12px;
+  list-style: square;
+}
+
+div.uploadStatus {
+  margin: 5px;
+}
+
+div.progressBar {
+  margin: 5px;
+}
+
+div.progressBar div.border {
+  background-color: #fff;
+  border: 1px solid gray;
+  width: 100%;
+}
+
+div.progressBar div.background {
+  background-color: #333;
+  height: 18px;
+  width: 0%;
+}

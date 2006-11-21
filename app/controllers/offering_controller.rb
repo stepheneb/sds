@@ -2,7 +2,7 @@ class OfferingController < ApplicationController
 
   before_filter :log_referrer
 
-  after_filter :compress 
+  after_filter :compress, :only => [:bundle]
 
   layout "standard", :except => [ :atom ] 
 
@@ -19,8 +19,8 @@ class OfferingController < ApplicationController
           response.headers['Location'] = url_for(:action => :show, :id => @offering.id)
           render(:xml => "", :status => 201) # Created
         end
-      rescue
-        render(:text => "", :status => 400) # Bad Request
+#      rescue
+#        render(:text => "", :status => 400) # Bad Request
       end
     else
       @offerings = Offering.find_all_in_portal(params[:pid])
@@ -85,15 +85,15 @@ class OfferingController < ApplicationController
           else
             raise
           end
-        rescue
-          render(:text => "", :status => 400) # Bad Request
+#        rescue
+#          render(:text => "", :status => 400) # Bad Request
         end
       elsif request.delete?
         @offering.destroy
         render(:text => "", :status => 204) # No Content
       end
-    rescue
-      render(:text => "", :status => 404) # Not Found
+#    rescue
+#      render(:text => "", :status => 404) # Not Found
     end
   end
 
@@ -117,7 +117,8 @@ class OfferingController < ApplicationController
       when 'workgroup'
         @workgroup = Workgroup.find(params[:wid])
       end
-      # last mod
+      @savedata = params[:savedata]
+      # need last mod?
       @headers["Content-Type"] = "application/x-java-jnlp-file"
 #      @headers["Cache-Control"] = "no-cache"
       @headers["Cache-Control"] = "max-age=1"
@@ -140,6 +141,7 @@ class OfferingController < ApplicationController
       @offering = Offering.find(params[:id])
       @workgroup = Workgroup.find(params[:wid])
       @version = params[:version]
+      @savedata = params[:savedata]
       render :action => 'config', :layout => false
     rescue
       render(:text => "", :status => 404) # Not Found
@@ -175,7 +177,6 @@ class OfferingController < ApplicationController
   def errorbundle
     if request.post?
       o = Offering.find(params[:id])
-      breakpoint
       @errorbundle = Errorbundle.new(params[:errorbundle].merge({ "ip_address" => request.env['REMOTE_HOST']}))
       @errorbundle.offering_id = o.id
       if @errorbundle.create
@@ -211,6 +212,7 @@ class OfferingController < ApplicationController
   protected 
 
   def compress 
+    return unless request.get?
     accepts = request.env['HTTP_ACCEPT_ENCODING'] 
     return unless accepts && accepts =~ /(x-gzip|gzip)/ 
     encoding = $1 
