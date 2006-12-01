@@ -12,7 +12,7 @@ href_url =     @controller.url_for(:controller => 'offering', :action => 'jnlp',
 homepage_url = @controller.url_for(:controller => 'offering', :action => 'show', :id => @offering.id, :only_path => false).to_s
 config_url =   @controller.url_for(:controller => "offering", 
   :action => "config", :id => @offering.id, :wid => @workgroup.id, 
-  :version => @workgroup.version, :savedata => @savedata, :only_path => false).to_s
+  :version => @workgroup.version, :savedata => @savedata, :only_path => false).to_s + "?"  + hash_to_url_params(request.query_parameters())
   
 sds_launcher = "net.sf.sail.emf.launch.EMFLauncher2"
 
