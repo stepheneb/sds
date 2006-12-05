@@ -1,7 +1,6 @@
 xm.entry 'xml:base' => url_for(:controller => 'offering', :action => 'list', :only_path => false).to_s do
-  member_names = members.collect {|m| m.name}.join(', ')
   xm.author do
-    xm.name member_names
+    xm.name workgroup.member_names
   end
   xm.id        "tag:#{request.host_with_port},#{workgroup.updated_at.to_s}:#{workgroup.id}"
   xm.published workgroup.created_at.xmlschema
@@ -13,7 +12,7 @@ xm.entry 'xml:base' => url_for(:controller => 'offering', :action => 'list', :on
   xm << %{<content type="html">\n}
   xm << h(%{<p>Workgroup Sessions: #{workgroup.bundles.length.to_s}.\n</p>})
   xm << h(%{<p>Workgroup: "#{workgroup.name}", <em>(id: #{workgroup.id})</em><br />
-    Users: #{member_names}, <em>(ids: #{members.collect {|m| m.id}.join(', ')})</em>. <br />
+    Users: #{workgroup.member_names}, <em>(ids: #{workgroup.members.collect {|m| m.id}.join(', ')})</em>. <br />
     Offering: "#{workgroup.offering.name}", <em>(id: #{workgroup.offering.id})</em><br />
     Curnit: "#{workgroup.offering.curnit.name}" <em>(id: #{workgroup.offering.curnit.id}), last updated: #{workgroup.offering.curnit.get_curnit_last_modified}</em>.})
   workgroup.bundles.each do |b| 

@@ -1,0 +1,261 @@
+>> w = Workgroup.find(86)
+=> #<Workgroup:0x286d914 @attributes={"name"=>"wisegroup-169881", "updated_at"=>"2006-11-07 16:37:38", "portal_id"=>"3", "uuid"=>"2ff898e6-6ea8-11db-8514-0014c2c34555", "id"=>"86", "version"=>"2", "offering_id"=>"63", "created_at"=>"2006-11-07 16:37:37"}>
+>> w.bundles_count
+=> 1
+>> w.bundles[0].socks.length
+=> 191
+>> w.bundles[0].socks[0].pod
+=> #<Pod:0x2715648 @attributes={"curnit_id"=>"10", "uuid"=>"cccccccc-0001-9530-0000-000000000000", "id"=>"328", "rim_shape"=>"text", "rim_name"=>"curnit_map"}>
+>> w.bundles[0].socks[0].pod.id
+=> 328
+>> w.bundles[0].socks[1].pod.id
+=> 282
+>> w.bundles[0].socks[2].pod.id
+=> 282
+>> w.bundles[0].socks.find_all_by_pod_id(282).length
+=> 98
+>> w.bundles[0].socks[2].pod.rim_name
+=> "navigation_log"
+>> w.bundles[0].socks.collect {|s| s.pod}.uniq.length
+=> 16
+>> w.bundles[0].socks.collect {|s| s.pod}.uniq.each {|p| puts "#{p.uuid}: #{p.rim_name}: #{p.rim_shape}" }; nil
+cccccccc-0001-9530-0000-000000000000: curnit_map: text
+cccccccc-0001-9530-0000-000000000000: navigation_log: text
+cccccccc-0001-9530-0000-000000000000: session_state: text
+dddddddd-6004-0003-0000-000000000000: undefined4: text
+dddddddd-6004-0003-0000-000000000000: undefined5: text
+dddddddd-6004-0005-0000-000000000000: undefined6: text
+dddddddd-6004-0005-0000-000000000000: undefined7: text
+dddddddd-6004-0005-0000-000000000000: undefined8: text
+dddddddd-6004-0007-0000-000000000000: undefined9: text
+dddddddd-6004-0012-0000-000000000000: undefined10: text
+dddddddd-6004-0012-0000-000000000000: undefined11: text
+dddddddd-6004-0012-0000-000000000000: undefined12: text
+dddddddd-6004-0013-0000-000000000000: otrunk_drawing: bytearray
+dddddddd-6004-0015-0000-000000000000: undefined14: text
+dddddddd-6004-0015-0000-000000000000: undefined15: text
+dddddddd-6004-0015-0000-000000000000: undefined16: text
+
+>> w = Workgroup.find(89)
+=> #<Workgroup:0x28fdb54 @attributes={"name"=>"wisegroup-169884", "updated_at"=>"2006-11-07 16:38:42", "portal_id"=>"3", "uuid"=>"5659ca78-6ea8-11db-8514-0014c2c34555", "id"=>"89", "version"=>"2", "offering_id"=>"63", "created_at"=>"2006-11-07 16:38:41"}>
+>> w.bundles_count
+=> 4
+
+Here are the session start and stop times:
+
+1) <sessionBundles ... start="2006-11-07T13:48:15.738-0800" stop="2006-11-07T14:00:10.080-0800" ... >
+2) <sessionBundles ... start="2006-11-07T14:00:32.429-0800" stop="2006-11-07T14:13:55.559-0800" ... >
+3) <sessionBundles ... start="2006-11-07T14:14:18.692-0800" stop="2006-11-07T14:15:23.740-0800" ... >
+4) <sessionBundles ... start="2006-11-07T14:15:50.644-0800" stop="2006-11-07T15:05:31.493-0800" ... >
+
+session durations (minutes:seconds) -- there was no overlap:
+1) 11:55
+2) 13:23
+3)  1:05
+4) 49:41
+
+>> w.bundles.collect {|b| b.socks}.length
+=> 4
+>> w.bundles.collect {|b| b.socks}[0].length
+=> 109
+>> w.bundles.collect {|b| b.socks}.join.length
+=> 3264
+>> w.bundles.collect {|b| b.socks}[1].length
+=> 6
+>> w.bundles.collect {|b| b.socks}[2].length
+=> 42
+>> w.bundles.collect {|b| b.socks}[3].length
+=> 35
+>> w.bundles.collect {|b| b.socks}.flatten.length
+=> 192
+>> w.bundles.collect {|b| b.socks}.flatten.collect {|s| s.pod}.uniq.each {|p| puts "#{p.uuid}: #{p.rim_name}: #{p.rim_shape}" }; nil
+cccccccc-0001-9530-0000-000000000000: curnit_map: text
+cccccccc-0001-9530-0000-000000000000: navigation_log: text
+cccccccc-0001-9530-0000-000000000000: session_state: text
+dddddddd-6004-0012-0000-000000000000: undefined10: text
+dddddddd-6004-0012-0000-000000000000: undefined11: text
+dddddddd-6004-0012-0000-000000000000: undefined12: text
+dddddddd-6004-0013-0000-000000000000: otrunk_drawing: bytearray
+dddddddd-6004-0015-0000-000000000000: undefined14: text
+dddddddd-6004-0015-0000-000000000000: undefined15: text
+dddddddd-6004-0018-0000-000000000000: undefined17: text
+dddddddd-6004-0018-0000-000000000000: undefined18: text
+dddddddd-6004-0018-0000-000000000000: undefined19: text
+dddddddd-6004-0020-0000-000000000000: undefined20: text
+dddddddd-6004-0020-0000-000000000000: undefined21: text
+dddddddd-6004-0020-0000-000000000000: undefined22: text
+dddddddd-6004-0021-0000-000000000000: otrunk_drawing: bytearray
+dddddddd-6004-0023-0000-000000000000: undefined24: text
+dddddddd-6004-0023-0000-000000000000: undefined25: text
+dddddddd-6004-0023-0000-000000000000: undefined26: text
+dddddddd-6004-0023-0000-000000000000: undefined27: text
+dddddddd-6004-0026-0000-000000000000: undefined28: text
+dddddddd-6004-0026-0000-000000000000: undefined29: text
+dddddddd-6004-0026-0000-000000000000: undefined30: text
+dddddddd-6004-0026-0000-000000000000: undefined31: text
+dddddddd-6004-0027-0000-000000000000: model.activity.data: text
+dddddddd-6004-0027-0000-000000000000: findingsData: bytearray
+dddddddd-6004-0027-0000-000000000000: trialData: bytearray
+dddddddd-6004-0003-0000-000000000000: undefined4: text
+dddddddd-6004-0003-0000-000000000000: undefined5: text
+dddddddd-6004-0005-0000-000000000000: undefined6: text
+dddddddd-6004-0005-0000-000000000000: undefined7: text
+dddddddd-6004-0005-0000-000000000000: undefined8: text
+dddddddd-6004-0007-0000-000000000000: undefined9: text
+
+>> socks = w.bundles.collect {|b| b.socks}.flatten.collect ; socks.length
+=> 192
+>> pods = socks.collect {|s| s.pod}.uniq ; pods.length
+=> 33
+>> pods.each {|p| puts "#{p.id.to_s}: #{socks.find_all {|s| s.pod == p}.length.to_s}: #{p.rim_name}: #{p.uuid}: #{p.rim_shape}" }; nil
+328: 4: curnit_map: cccccccc-0001-9530-0000-000000000000: text
+282: 96: navigation_log: cccccccc-0001-9530-0000-000000000000: text
+283: 50: session_state: cccccccc-0001-9530-0000-000000000000: text
+290: 3: undefined10: dddddddd-6004-0012-0000-000000000000: text
+291: 3: undefined11: dddddddd-6004-0012-0000-000000000000: text
+292: 3: undefined12: dddddddd-6004-0012-0000-000000000000: text
+239: 3: otrunk_drawing: dddddddd-6004-0013-0000-000000000000: bytearray
+293: 1: undefined14: dddddddd-6004-0015-0000-000000000000: text
+294: 1: undefined15: dddddddd-6004-0015-0000-000000000000: text
+296: 1: undefined17: dddddddd-6004-0018-0000-000000000000: text
+297: 1: undefined18: dddddddd-6004-0018-0000-000000000000: text
+298: 1: undefined19: dddddddd-6004-0018-0000-000000000000: text
+299: 2: undefined20: dddddddd-6004-0020-0000-000000000000: text
+300: 2: undefined21: dddddddd-6004-0020-0000-000000000000: text
+301: 2: undefined22: dddddddd-6004-0020-0000-000000000000: text
+232: 2: otrunk_drawing: dddddddd-6004-0021-0000-000000000000: bytearray
+256: 1: undefined24: dddddddd-6004-0023-0000-000000000000: text
+302: 1: undefined25: dddddddd-6004-0023-0000-000000000000: text
+303: 1: undefined26: dddddddd-6004-0023-0000-000000000000: text
+304: 1: undefined27: dddddddd-6004-0023-0000-000000000000: text
+261: 1: undefined28: dddddddd-6004-0026-0000-000000000000: text
+305: 1: undefined29: dddddddd-6004-0026-0000-000000000000: text
+306: 1: undefined30: dddddddd-6004-0026-0000-000000000000: text
+307: 1: undefined31: dddddddd-6004-0026-0000-000000000000: text
+233: 1: model.activity.data: dddddddd-6004-0027-0000-000000000000: text
+237: 1: findingsData: dddddddd-6004-0027-0000-000000000000: bytearray
+238: 1: trialData: dddddddd-6004-0027-0000-000000000000: bytearray
+285: 1: undefined4: dddddddd-6004-0003-0000-000000000000: text
+286: 1: undefined5: dddddddd-6004-0003-0000-000000000000: text
+284: 1: undefined6: dddddddd-6004-0005-0000-000000000000: text
+287: 1: undefined7: dddddddd-6004-0005-0000-000000000000: text
+288: 1: undefined8: dddddddd-6004-0005-0000-000000000000: text
+289: 1: undefined9: dddddddd-6004-0007-0000-000000000000: text
+
+Here's more detail about the pods that had three versions of content:
+
+>> socks.find_all {|s| s.pod_id == 290}.sort {|a,b| a.created_at <=> b.created_at}.each {|s| puts "#{s.id.to_s}: #{s.created_at.to_s}: #{s.value}"}; nil
+3392: Tue Nov 07 17:14:11 PST 2006: 2-5
+4083: Tue Nov 07 18:05:48 PST 2006: it moves at a constant speed during the 3rd second
+4082: Tue Nov 07 18:05:48 PST 2006: 3
+=> nil
+>> socks.find_all {|s| s.pod_id == 291}.sort {|a,b| a.created_at <=> b.created_at}.each {|s| puts "#{s.id.to_s}: #{s.created_at.to_s}: #{s.value}"}; nil
+3393: Tue Nov 07 17:14:12 PST 2006: 1 
+4085: Tue Nov 07 18:05:48 PST 2006: the airbag speeds up during the 1st and 2nd seconds
+4084: Tue Nov 07 18:05:48 PST 2006: 1-2
+=> nil
+>> socks.find_all {|s| s.pod_id == 292}.sort {|a,b| a.created_at <=> b.created_at}.each {|s| puts "#{s.id.to_s}: #{s.created_at.to_s}: #{s.value}"}; nil
+3394: Tue Nov 07 17:14:12 PST 2006: 5-end
+4087: Tue Nov 07 18:05:48 PST 2006: the airbag slows down during the 4th second
+4086: Tue Nov 07 18:05:48 PST 2006: 3-4
+
+Looking at the socks saved for this workgroup for pod 290 (uuid: dddddddd-6004-0012-0000-000000000000, rim_name: undefined10) more closely:
+
+Here's a partial curnit map listing (* the number attributes are sequenced from 0 so this step is in activity 2):
+<activity podUUID="dddddddd-6004-0009-0000-000000000000" number="1" title="Study the airbag&apos;s motion">
+  ...
+  <step podUUID="dddddddd-6004-0012-0000-000000000000" number="2" title="3: Describe the airbag&apos;s motion" classname="org.telscenter.pas.steps.Note" type="Note" />
+
+And here are the three versions scattered over two different sessions:
+
+Session #2
+<sessionBundles ... start="2006-11-07T14:00:32.429-0800" stop="2006-11-07T14:13:55.559-0800" ... >
+  ...
+	<sockParts podId="dddddddd-6004-0012-0000-000000000000" rimName="undefined10">
+		<sockEntries value="2-5" millisecondsOffset="262757" />
+	</sockParts>
+
+Session #4
+<sessionBundles ... start="2006-11-07T14:15:50.644-0800" stop="2006-11-07T15:05:31.493-0800" ...>
+	...
+  <sockParts podId="dddddddd-6004-0012-0000-000000000000" rimName="undefined10">
+  	<sockEntries value="3" millisecondsOffset="81779" />
+  	<sockEntries value="it moves at a constant speed during the 3rd second" millisecondsOffset="1223192" />
+  </sockParts>
+
+Note that the answer was first revised about 1 minute into the fourth session and then revised once more at about the 20 minute mark.
+
+Here's a look at the other three pods that had two versions:
+
+>> socks.find_all {|s| s.pod_id == 299}.sort {|a,b| a.created_at <=> b.created_at}.each {|s| puts "#{s.id.to_s}: #{s.created_at.to_s}: #{s.value}"}; nil
+4095: Tue Nov 07 18:05:50 PST 2006: 4
+4096: Tue Nov 07 18:05:50 PST 2006: the driver moves at a constant speed during the 4th second
+=> nil
+>> socks.find_all {|s| s.pod_id == 300}.sort {|a,b| a.created_at <=> b.created_at}.each {|s| puts "#{s.id.to_s}: #{s.created_at.to_s}: #{s.value}"}; nil
+4097: Tue Nov 07 18:05:50 PST 2006: 3
+4098: Tue Nov 07 18:05:50 PST 2006: the driver speeds up during the 3rd second
+=> nil
+>> socks.find_all {|s| s.pod_id == 301}.sort {|a,b| a.created_at <=> b.created_at}.each {|s| puts "#{s.id.to_s}: #{s.created_at.to_s}: #{s.value}"}; nil
+4099: Tue Nov 07 18:05:50 PST 2006: 5
+4100: Tue Nov 07 18:05:50 PST 2006: the driver slows down during the 5th second
+
+----
+
+>> w = Workgroup.find(91)
+=> #<Workgroup:0x14055b4 @attributes={"name"=>"wisegroup-169886", "updated_at"=>"2006-11-07 16:38:52", "portal_id"=>"3", "uuid"=>"5bf51f14-6ea8-11db-8514-0014c2c34555", "id"=>"91", "version"=>"2", "offering_id"=>"63", "created_at"=>"2006-11-07 16:38:51"}>
+>> socks = w.bundles.collect {|b| b.socks}.flatten.collect ; socks.length
+=> 138
+>> pods = socks.collect {|s| s.pod}.uniq ; pods.length
+=> 27
+>> pods.each {|p| puts "#{p.id.to_s}: #{socks.find_all {|s| s.pod == p}.length.to_s}: #{p.rim_name}: #{p.uuid}: #{p.rim_shape}" }; nil
+328: 2: curnit_map: cccccccc-0001-9530-0000-000000000000: text
+282: 68: navigation_log: cccccccc-0001-9530-0000-000000000000: text
+283: 39: session_state: cccccccc-0001-9530-0000-000000000000: text
+296: 1: undefined17: dddddddd-6004-0018-0000-000000000000: text
+297: 1: undefined18: dddddddd-6004-0018-0000-000000000000: text
+298: 1: undefined19: dddddddd-6004-0018-0000-000000000000: text
+299: 1: undefined20: dddddddd-6004-0020-0000-000000000000: text
+300: 1: undefined21: dddddddd-6004-0020-0000-000000000000: text
+301: 1: undefined22: dddddddd-6004-0020-0000-000000000000: text
+232: 5: otrunk_drawing: dddddddd-6004-0021-0000-000000000000: bytearray
+239: 2: otrunk_drawing: dddddddd-6004-0013-0000-000000000000: bytearray
+256: 1: undefined24: dddddddd-6004-0023-0000-000000000000: text
+302: 1: undefined25: dddddddd-6004-0023-0000-000000000000: text
+303: 1: undefined26: dddddddd-6004-0023-0000-000000000000: text
+304: 1: undefined27: dddddddd-6004-0023-0000-000000000000: text
+285: 1: undefined4: dddddddd-6004-0003-0000-000000000000: text
+286: 1: undefined5: dddddddd-6004-0003-0000-000000000000: text
+284: 1: undefined6: dddddddd-6004-0005-0000-000000000000: text
+287: 1: undefined7: dddddddd-6004-0005-0000-000000000000: text
+288: 1: undefined8: dddddddd-6004-0005-0000-000000000000: text
+289: 1: undefined9: dddddddd-6004-0007-0000-000000000000: text
+290: 1: undefined10: dddddddd-6004-0012-0000-000000000000: text
+291: 1: undefined11: dddddddd-6004-0012-0000-000000000000: text
+292: 1: undefined12: dddddddd-6004-0012-0000-000000000000: text
+293: 1: undefined14: dddddddd-6004-0015-0000-000000000000: text
+294: 1: undefined15: dddddddd-6004-0015-0000-000000000000: text
+295: 1: undefined16: dddddddd-6004-0015-0000-000000000000: text
+
+>> socks.find_all {|s| s.pod.rim_name =~ /undefined*/}.sort {|a,b| a.created_at <=> b.created_at}.each {|s| puts "#{s.id.to_s}: #{s.created_at.to_s}: #{s.value}"}; nil
+3478: Tue Nov 07 17:35:12 PST 2006: the velocity slows down quicker than it increases because the air in the bag has completely expanded.
+3477: Tue Nov 07 17:35:12 PST 2006: Through segment A and E, the airbag is not moving. Segment B, the airbag is increasing in velocity. In C segment the airbag has a constant velocity. In segment D the airbag's velocity is decreasing.
+3476: Tue Nov 07 17:35:12 PST 2006: we considered 0 to be the time when the bag started to move, and they left it until 1.5 seconds. 
+3474: Tue Nov 07 17:35:12 PST 2006: the airbag slows down at the interval of 4 to 5 hundreths of a second
+3473: Tue Nov 07 17:35:12 PST 2006: the airbag speeds up during the interval 0 to 1.5 hundreths of a second.
+3472: Tue Nov 07 17:35:12 PST 2006: the airbag moves at a constant speed from 1.5 to 4 hundreths of a second&#9;
+3471: Tue Nov 07 17:35:12 PST 2006: a small bump where nobody would usually get hurt, or if the person doesn't have their seat belt on, if the air bag deploys too late and the person hits their face.
+3470: Tue Nov 07 17:35:12 PST 2006: the seat belt holds the passenger in place, prevents thier body from going over the airbag, or in another harmful position.
+3469: Tue Nov 07 17:35:12 PST 2006: their bodies are smaller and more fragile most of the time, the air bag may have a more harsh impact on their body.
+3468: Tue Nov 07 17:35:12 PST 2006: the airbag may deploy unexpectedly, without the driver/ passenger reacting in the usuall manner
+3466: Tue Nov 07 17:35:12 PST 2006: must deploy before the person is affected by the impact, so to slow the person down less violently
+3467: Tue Nov 07 17:35:12 PST 2006: yes, if the airbag is deployed too late, it may smash your face in, instead of cushioning it.
+4466: Tue Nov 07 18:06:32 PST 2006: The person's armlength
+4467: Tue Nov 07 18:06:32 PST 2006: The speed of the car will determine how fast the driver move towards steering wheel. 
+4468: Tue Nov 07 18:06:32 PST 2006: The length of the car determines the time before you feel the impact.
+4469: Tue Nov 07 18:06:32 PST 2006: the driver moces at a constant speed from 2.5 to 4..5 hundreths of a second
+4473: Tue Nov 07 18:06:32 PST 2006: the driver stops abruptly at 4.5 hundreths of a  seconds
+4471: Tue Nov 07 18:06:32 PST 2006: the driver's velocity changes instantaniously at 2.5 hundreths of a seconds
+4481: Tue Nov 07 18:06:33 PST 2006: We would change the charts to be relative to the steering wheel, instead of the driver's starting point.
+4482: Tue Nov 07 18:06:33 PST 2006: the time it and the postion in the grath would be greater or smaller, depending on the change.
+4483: Tue Nov 07 18:06:33 PST 2006: the velocity would be farther from 0
+4484: Tue Nov 07 18:06:33 PST 2006: the time before he starts moving would be greater or smaller

@@ -15,9 +15,13 @@ class Curnit < ActiveRecord::Base
   
   def get_curnit_last_modified
     uri = URI.parse(url)
-    Net::HTTP.start(uri.host, uri.port) do |http|
-      curnit_head = http.head(uri.path, 'User-Agent' => '')
-      Time::httpdate(curnit_head['Last-Modified'])
+    begin
+      Net::HTTP.start(uri.host, uri.port) do |http|
+        curnit_head = http.head(uri.path, 'User-Agent' => '')
+        Time::httpdate(curnit_head['Last-Modified'])
+      end
+    rescue SocketError
+      "network unavailable"
     end
   end
  

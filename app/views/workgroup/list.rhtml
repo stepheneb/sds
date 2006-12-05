@@ -1,23 +1,27 @@
 <%= link_to 'New Workgroup', :action => 'create', :pid => params[:pid] %>
 
 <p />
-<table cellpadding=3 cellspacing=0>
+<table cellpadding=3 cellspacing=1>
   <% odd_or_even = 0 %>
   <tr>
     <td><b>Id</b></td>
     <td><b>Name</b></td>
     <td><b>Version</b></td>
+    <td><b>Members</b></td>
+    <td><b>Sessions</b></td>
   </tr>
-  <% for workgroup in @workgroups %>
+  <% for w in @workgroups %>
     <% odd_or_even = 1 - odd_or_even %>
     <tr  valign="middle" class="ListLine<%= odd_or_even %>">
-      <td><%= workgroup.id.to_s %></td>
-      <td><%= workgroup.name %></td>
-      <td><%= workgroup.version.to_s %></td>
-      <td><%= link_to 'Show', :action => 'show', :id => workgroup %> | 
-          <%= link_to 'Edit', :action => 'edit', :id => workgroup %>
+      <td><%= w.id.to_s %></td>
+      <td><%= w.name %></td>
+      <td><%= w.version.to_s %></td>
+      <td><%= w.member_names %></td>
+      <td><%= w.bundles.length.to_s %>
+      <td><%= link_to 'Show', :action => 'show', :id => w %> | 
+          <%= link_to 'Edit', :action => 'edit', :id => w %> |
+          <%= link_to "Offering:#{w.offering.id.to_s}", :controller => 'offering', :action => 'show', :id => w.offering.id %>
       </td>
-      <td><em>(<%= pluralize(workgroup.users.uniq.length, "member")%>, created: <%= workgroup.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em></td>
     </tr>
   <% end %>
 </table>

@@ -12,16 +12,24 @@ class Jnlp < ActiveRecord::Base
   
   def get_jnlp
     uri = URI.parse(url)
-    Net::HTTP.start(uri.host, uri.port) do |http|
-      jnlp_body = http.get(uri.path, 'User-Agent' => '').body
+    begin
+      Net::HTTP.start(uri.host, uri.port) do |http|
+        jnlp_body = http.get(uri.path, 'User-Agent' => '').body
+      end
+    rescue SocketError
+      nil
     end
   end
 
   def get_jnlp_last_modified
     uri = URI.parse(url)
-    Net::HTTP.start(uri.host, uri.port) do |http|
-      jnlp_head = http.head(uri.path, 'User-Agent' => '')
-      Time::httpdate(jnlp_head['Last-Modified'])
+    begin
+      Net::HTTP.start(uri.host, uri.port) do |http|
+        jnlp_head = http.head(uri.path, 'User-Agent' => '')
+        Time::httpdate(jnlp_head['Last-Modified'])
+      end
+    rescue SocketError
+      "network unavailable"
     end
   end
   

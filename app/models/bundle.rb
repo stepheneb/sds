@@ -32,8 +32,8 @@ class Bundle < ActiveRecord::Base
       rim_name = sp_xml.attributes["rimName"].to_s
       shape = sp_xml.attributes["rimShape"].to_s
       rim_shape = case
-      when shape == "[B" : "bytearray"
-      when shape == "" : "text"
+        when shape == "[B" : "bytearray"
+        when shape == "" : "text"
       end
       unless p = Pod.find_by_uuid_and_rim_name(uuid, rim_name)
         p = Pod.create(:curnit_id => self.workgroup.offering.curnit.id, :uuid => uuid, :rim_name => rim_name, :rim_shape => rim_shape)

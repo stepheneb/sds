@@ -39,5 +39,12 @@ class Workgroup < ActiveRecord::Base
   def bundles
     Bundle.find(:all, :order => "created_at DESC", :conditions => ['workgroup_id = ?', id])
   end
-
+  
+  def members
+    self.users.version(self.version)
+  end
+  
+  def member_names
+    self.members.collect {|m| m.name}.join(', ')
+  end
 end

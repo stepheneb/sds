@@ -5,21 +5,26 @@
   Offering: <%= @offering.name %>, <em>(id: <%= @offering.id %>)</em><br />
   Workgroups: <%= @offering.workgroups.length.to_s %>, <em>(ids: <%=  @offering.workgroups.collect {|w| w.id }.join(', ') %>)</em>. <br />
   Jnlp: <%= @offering.jnlp.name %>, <em>(id: <%= @offering.jnlp.id %>), last updated: <%= @offering.jnlp.get_jnlp_last_modified %></em><br />
-  Curnit: <%= @offering.curnit.name %> <em>(id: <%= @offering.curnit.id %>), last updated: <%= @offering.curnit.get_curnit_last_modified %></em>.
-  Created: <%= @offering.created_at.to_s %>
+  Curnit: <%= @offering.curnit.name %> <em>(id: <%= @offering.curnit.id %>), last updated: <%= @offering.curnit.get_curnit_last_modified %></em>
 </p>
 
 
 <b>Workgroups:</b>
-<table cellpadding="1" cellspacing="1">
+<table cellpadding=3 cellspacing=1>
+  <% odd_or_even = 0 %>
   <tr>
     <td><b>Id</b></td>
     <td><b>Name</b></td>
+    <td><b>Members</b></td>
+    <td><b>Sessions</b></td>
   </tr>
   <% @offering.workgroups.each do |w| %>
-    <tr>
+    <% odd_or_even = 1 - odd_or_even %>
+    <tr  valign="middle" class="ListLine<%= odd_or_even %>">
       <td><%= w.id.to_s %></td>
       <td><%= w.name %></td>
+      <td><%= w.member_names %></td>
+      <td><%= w.bundles.length.to_s %>
       <td>
         <%= link_to 'Show', :controller => 'workgroup', :action => 'show', :id => w.id %> | 
         <%= link_to 'Run', :controller => 'offering', :action => 'jnlp', :id => @offering.id, :wid => w.id, :type => 'workgroup', :savedata => true, :only_path => false %> | 
@@ -29,5 +34,6 @@
     </tr>
   <% end %>
 </table>
+
 
 <%= display_xml(@offering) %>
