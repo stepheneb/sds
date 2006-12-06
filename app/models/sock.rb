@@ -74,8 +74,8 @@ class Sock < ActiveRecord::Base
   
   def save_to_file_system
     begin
-      File.open("raw/sock_#{self.id.to_s}_#{self.pas_type}_#{self.encoding}", "w") { |f| f.write self.value }
-      File.open("decoded/sock_#{self.id.to_s}_#{self.pas_type}.#{self.extension}", "w") { |f| f.write self.text }
+      File.open("public/socks/raw/sock_#{self.id.to_s}_#{self.pas_type}_#{self.encoding}", "w") { |f| f.write self.value }
+      File.open("public/socks/decoded/sock_#{self.id.to_s}_#{self.pas_type}.#{self.extension}", "w") { |f| f.write self.text }
     end
   end
   
