@@ -629,7 +629,6 @@ The url returned in the Location header is a direct link to the actual SAIL user
     <user>
       <first-name>Stephen</first-name>
       <last-name>Smith</last-name>
-      <portal-username>ssmith</portal-username>
     </user>
 
   return headers:
@@ -651,8 +650,7 @@ The url returned in the Location header is a direct link to the actual SAIL user
 Example:
 
 {panel}
-  curl -i -H 'Content-Type: application/xml' -X POST -d '<user><first-name>Stephen</first-name><last-name>Smith</last-name><portal-username>ssmith</portal-username>
-  </user>' http://rails.dev.concord.org/sds/1/user
+  curl -i -H 'Content-Type: application/xml' -X POST -d '<user><first-name>Stephen</first-name><last-name>Smith</last-name></user>' http://rails.dev.concord.org/sds/1/user
   
   HTTP/1.1 201 Created 
   Date: Wed, 16 Aug 2006 01:04:44 GMT

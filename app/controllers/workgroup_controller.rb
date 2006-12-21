@@ -101,7 +101,7 @@ class WorkgroupController < ApplicationController
   def show
     begin
       p = Portal.find(params[:pid])
-      @workgroup = p.find_in_workgroups(params[:id])
+      @workgroup = p.workgroups.find(params[:id])
       @members = @workgroup.users.version(@workgroup.version) # array of User objects
       @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects
       if request.get?

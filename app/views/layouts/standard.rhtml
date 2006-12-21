@@ -1,8 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
         "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
-    <% page_title = "SDS: #{@controller.controller_name.capitalize}"
-      page_title = page_title + 's' unless page_title == 'SDS: Home' %>
+    <% page_title = "SDS: #{@controller.controller_name.capitalize}" %>
     <head>
         <title><%= page_title %></title>
         <%= stylesheet_link_tag "sds" %>
@@ -15,7 +14,7 @@
       </div>
       <div id="titlebar">
         <div id="titlebar_left">
-          <h3><%= page_title %></h3>
+          <h3><%= page_title %><%= yield :tip %></h3>
         </div>
         <div id="titlebar_right">
           <% if p = params[:pid] %>
@@ -27,10 +26,10 @@
         <div id="menubar_left">
           <span class="active">        
             <%= link_to 'Home', :controller => 'home', :action => 'index' %> | 
+            <%= link_to 'Portals', :controller => 'portal', :action => 'list' %> | 
           </span>
           <% if params[:pid] %>
             <span class="active">        
-            <%= link_to 'Portals', :controller => 'portal', :action => 'list' %> | 
             <%= link_to 'Curnits', :controller => 'curnit', :action => 'list' %> | 
             <%= link_to 'Jnlps', :controller => 'jnlp', :action => 'list' %> | 
             <%= link_to 'Users', :controller => 'user', :action => 'list' %> | 
@@ -38,7 +37,7 @@
             <%= link_to 'Workgroups', :controller => 'workgroup', :action => 'list' %>
             </span>
           <% else %>
-            <span class="inactive">Portals | Curnits | Jnlps | Users | Offerings | Workgroups</span>
+            <span class="inactive">Curnits | Jnlps | Users | Offerings | Workgroups</span>
           <% end %>
         </div>
         <div id="menubar_right">

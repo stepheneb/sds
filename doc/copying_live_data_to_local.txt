@@ -1,0 +1,9 @@
+execute this in Ruby while connected to CC network
+
+sdstables = `mysqlshow -u rails --password='****' -h railsdb.concord.org rails 'sds_%'`.scan(/sds_\S*/)[1..-1].join(' ')
+`mysqldump -u rails --password='****' -h railsdb.concord.org rails #{sdstables} | mysql -u root --password='****' -h localhost -C sds_real_data`
+
+do this when remote
+
+ssh -L 8888:railsdb.concord.org:3306 sbannasch@railsdb.concord.org
+mysqlshow -u rails --password='****' -h 127.0.0.1 -P 8888 rails

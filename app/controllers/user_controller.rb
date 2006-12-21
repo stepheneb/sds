@@ -59,7 +59,12 @@ class UserController < ApplicationController
   def show
     begin
       p = Portal.find(params[:pid])
-      @user = p.find_in_users(params[:id])
+      id = params[:id]
+      if id.length == 36
+        @user = p.users.find_by_uuid(id)
+      else
+        @user = p.users.find(id)
+      end
       if request.get?
         respond_to do |wants|
           wants.html

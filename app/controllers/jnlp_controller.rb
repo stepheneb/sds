@@ -60,7 +60,7 @@ class JnlpController < ApplicationController
   def show
     begin
       p = Portal.find(params[:pid])
-      @jnlp = p.find_in_jnlps(params[:id])
+      @jnlp = p.jnlps.find(params[:id])
       if request.get?
         respond_to do |wants|
           wants.html

@@ -1,9 +1,7 @@
 class OfferingController < ApplicationController
 
   before_filter :log_referrer
-
   after_filter :compress, :only => [:bundle]
-
   layout "standard", :except => [ :atom ] 
 
   BUNDLE_SIZE_LIMIT = 131072-1
@@ -67,7 +65,7 @@ class OfferingController < ApplicationController
   def show
     begin
       p = Portal.find(params[:pid])
-      @offering = p.find_in_offerings(params[:id])
+      @offering = p.offerings.find(params[:id])
       if request.get?
         respond_to do |wants|
           wants.html

@@ -27,11 +27,11 @@ class ApplicationController < ActionController::Base
   before_filter :login_from_cookie
   before_filter :check_sds_user
 
-  after_filter :calc_contant_length 
+  after_filter :calc_content_length 
     
 protected
   
-  def calc_contant_length
+  def calc_content_length
     response.headers['Content-Length'] = response.body.length
   end
   

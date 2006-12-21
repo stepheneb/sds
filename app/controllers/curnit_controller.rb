@@ -59,7 +59,7 @@ class CurnitController < ApplicationController
   def show
     begin
       p = Portal.find(params[:pid])
-      @curnit = p.find_in_curnits(params[:id])
+      @curnit = p.curnits.find(params[:id])
       if request.get?
         respond_to do |wants|
           wants.html
