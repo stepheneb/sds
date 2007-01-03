@@ -17,8 +17,12 @@ class Curnit < ActiveRecord::Base
     uri = URI.parse(url)
     begin
       Net::HTTP.start(uri.host, uri.port) do |http|
-        curnit_head = http.head(uri.path, 'User-Agent' => '')
-        Time::httpdate(curnit_head['Last-Modified'])
+        head = Net::HTTP.start(uri.host, uri.port) {|http| http.head(uri.path, 'User-Agent' => '')}
+        if head.class == Net::HTTPOK
+          Time::httpdate(head['Last-Modified'])
+        else
+          'resource not available'
+        end
       end
     rescue SocketError
       "network unavailable"

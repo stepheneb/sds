@@ -25,8 +25,12 @@ class Jnlp < ActiveRecord::Base
     uri = URI.parse(url)
     begin
       Net::HTTP.start(uri.host, uri.port) do |http|
-        jnlp_head = http.head(uri.path, 'User-Agent' => '')
-        Time::httpdate(jnlp_head['Last-Modified'])
+        head = Net::HTTP.start(uri.host, uri.port) {|http| http.head(uri.path, 'User-Agent' => '')}
+        if head.class == Net::HTTPOK
+          Time::httpdate(head['Last-Modified'])
+        else
+          'jnlp not available'
+        end
       end
     rescue SocketError
       "network unavailable"

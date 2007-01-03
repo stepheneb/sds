@@ -79,7 +79,7 @@ When the HTTP operation is a PUT or POST and the HTTP Content-Type header is set
 
 In the case of HTTP GET or POST commands if the appropriate header is not set to 'application/xml' the SDS will assume that an html page is requested and will render the appropriate UI in html. In the examples below I use 'wise' as an example of an SDS portal relationship. 
 
-At this time all of the following resources are also editable through a browser using http/html interactions. This is probably needed only for testing.
+At this time all of the following resources are also editable through a browser using http/html interactions.
 
 ----
 
@@ -141,21 +141,6 @@ When an existing resource update request is made with an HTTP PUT to a url refer
 ** HTTP/1.1 400 Bad Request
 
 *Delete*
-Determined status of request from returned headers
-
-s => 201) # Created
-
-
-
-
- => 400) # Bad Request
-
-
-
-> 204) # No Content
-
-
-404) # Not Found
   
 {anchor:Accessing SDS resources with Atom feeds}
 h3. Accessing SDS resources with Atom feeds
@@ -718,10 +703,14 @@ Example:
 {anchor:Info on one SDS user for a portal}
 h4. Info on one SDS user for a portal.
 
+You can specify a user resource with either the sds_user_id or the sds_user_uuid.
+
 {panel}
   GET 
   Accept: application/xml
   http://rails.dev.concord.org/sds/<sds_portal_id>/user/<sds_user_id>
+OR
+  http://rails.dev.concord.org/sds/<sds_portal_id>/user/<sds_user_uuid>
 
   return headers:
 
@@ -745,20 +734,44 @@ h4. Info on one SDS user for a portal.
 Example:
 
 {panel}
-  curl -i -X GET -H 'Accept: application/xml' http://rails.dev.concord.org/sds/1/user/3
-  
-  HTTP/1.1 200 OK 
-  Date: Wed, 16 Aug 2006 00:58:54 GMT
-  Content-Type: application/xml
-  Content-Length: 225
-  Location: http://rails.dev.concord.org/sds/1/user/3
+  curl -i -X GET -H 'Accept: application/xml' http://rails.dev.concord.org/sds/1/user/122
 
+  HTTP/1.1 200 OK
+  Date: Thu, 21 Dec 2006 16:16:43 GMT
+  Server: lighttpd/1.4.11
+  Content-Type: application/xml
+  Location: http://rails.dev.concord.org/sds/1/user/122
+  Cache-Control: no-cache
+  Content-Length: 213
+  
   <?xml version="1.0" encoding="UTF-8"?>
   <user>
-    <uuid>c096c6c6-2cc1-11db-92b2-0016cb92217d</uuid>
-    <id>3</id>
-    <first-name>Stephen</first-name>
-    <last-name>Bannasch</last-name>
+    <portal-id>1</portal-id>
+    <uuid>2ee80540-8479-11db-b8e9-0014c2c34555</uuid>
+    <id>122</id>
+    <first-name>Trudi</first-name>
+    <last-name>Tester</last-name>
+  </user>
+  
+OR
+  
+  curl -i -X GET -H 'Accept: application/xml' http://rails.dev.concord.org/sds/1/user/2ee80540-8479-11db-b8e9-0014c2c34555 
+
+  HTTP/1.1 200 OK
+  Date: Thu, 21 Dec 2006 16:17:00 GMT
+  Server: lighttpd/1.4.11
+  Content-Type: application/xml
+  Location: http://rails.dev.concord.org/sds/1/user/2ee80540-8479-11db-b8e9-0014c2c34555
+  Cache-Control: no-cache
+  Content-Length: 213
+  
+  <?xml version="1.0" encoding="UTF-8"?>
+  <user>
+    <portal-id>1</portal-id>
+    <uuid>2ee80540-8479-11db-b8e9-0014c2c34555</uuid>
+    <id>122</id>
+    <first-name>Trudi</first-name>
+    <last-name>Tester</last-name>
   </user>
 {panel}
 
