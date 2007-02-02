@@ -1,10 +1,12 @@
 class OfferingController < ApplicationController
 
+  require 'zlib'
+
   before_filter :log_referrer
   after_filter :compress, :only => [:bundle]
   layout "standard", :except => [ :atom ] 
 
-  BUNDLE_SIZE_LIMIT = 131072-1
+  BUNDLE_SIZE_LIMIT = 2**21-1 # 2M
 
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
@@ -129,9 +131,9 @@ class OfferingController < ApplicationController
   end
   
   def atom
-    @offering = Offering.find(params[:id])
-    @workgroups = Workgroup.find_all_in_offering(@offering.id)
-    @headers["Content-Type"] = "application/atom+xml"
+#    @offering = Offering.find(params[:id])
+#    @workgroups = Workgroup.find_all_in_offering(@offering.id)
+#    @headers["Content-Type"] = "application/atom+xml"
   end
   
   def config
@@ -148,18 +150,23 @@ class OfferingController < ApplicationController
   
   def bundle
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
-      begin 
-        raise "bundle too large" if request.raw_post.length > BUNDLE_SIZE_LIMIT
+#      begin 
+#        raise "bundle too large" if request.raw_post.length > BUNDLE_SIZE_LIMIT
+        if request.env['HTTP_CONTENT_ENCODING'] == 'b64gzip'
+          content = Zlib::GzipReader.new(StringIO.new(Base64.decode64(request.raw_post))).read
+        else
+          content = request.raw_post
+        end
         @bundle = Bundle.create!(:offering_id => params[:id], :workgroup_id => params[:wid],
-          :workgroup_version => params[:version], :content => request.raw_post)
+          :workgroup_version => params[:version], :content => content)
         response.headers['Content-md5'] = Base64.b64encode(Digest::MD5.digest(@bundle.content))
         response.headers['Location'] = url_for(:action => :bundle)
 #        response.headers['Cache-Control'] = 'no-cache'
         response.headers['Cache-Control'] = 'public'
         render(:xml => "", :status => 201) # Created
-      rescue
-        render(:text => "", :status => 400) # Bad Request
-      end
+ #     rescue
+ #       render(:text => "", :status => 400) # Bad Request
+ #     end
     else
       begin
         @bundles = Bundle.find_by_offering_and_workgroup(params[:id], params[:wid])

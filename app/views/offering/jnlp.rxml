@@ -42,7 +42,7 @@ xml.jnlp("spec" => jattr['spec'], "codebase" => jattr['codebase']) {
     xml.vendor("Created by the TELS Project and Concord Consortium")
     xml.homepage("href" => homepage_url)
     xml.description("Wise 3.0, based on SAIL")
-    xml.icon("href" => image_url("panda_64.png", :only_path => false), "height" => "64", "width" => "64")
+    xml.icon("href" => image_url("panda_96.png", :only_path => false), "height" => "64", "width" => "64")
 #    xml << nl + "<offline-allowed/>" 
   }
   xml << security.to_s
