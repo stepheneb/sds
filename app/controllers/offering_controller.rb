@@ -150,8 +150,8 @@ class OfferingController < ApplicationController
   
   def bundle
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
-#      begin 
-#        raise "bundle too large" if request.raw_post.length > BUNDLE_SIZE_LIMIT
+      begin 
+        raise "bundle too large" if request.raw_post.length > BUNDLE_SIZE_LIMIT
         if request.env['HTTP_CONTENT_ENCODING'] == 'b64gzip'
           content = Zlib::GzipReader.new(StringIO.new(Base64.decode64(request.raw_post))).read
         else
@@ -164,9 +164,9 @@ class OfferingController < ApplicationController
 #        response.headers['Cache-Control'] = 'no-cache'
         response.headers['Cache-Control'] = 'public'
         render(:xml => "", :status => 201) # Created
- #     rescue
- #       render(:text => "", :status => 400) # Bad Request
- #     end
+      rescue
+        render(:text => "", :status => 400) # Bad Request
+      end
     else
       begin
         @bundles = Bundle.find_by_offering_and_workgroup(params[:id], params[:wid])
