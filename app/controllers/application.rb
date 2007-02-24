@@ -28,6 +28,9 @@ class ApplicationController < ActionController::Base
   before_filter :check_sds_user
 
   after_filter :calc_content_length 
+
+  # Pick a unique cookie name to distinguish our session data from other rails apps
+  session :session_key => '_sds_session_id'
     
 protected
   

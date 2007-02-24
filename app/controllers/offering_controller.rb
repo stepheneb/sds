@@ -160,7 +160,7 @@ class OfferingController < ApplicationController
         @bundle = Bundle.create!(:offering_id => params[:id], :workgroup_id => params[:wid],
           :workgroup_version => params[:version], :content => content)
         response.headers['Content-md5'] = Base64.b64encode(Digest::MD5.digest(@bundle.content))
-        response.headers['Location'] = url_for(:action => :bundle)
+        response.headers['Location'] = "#{url_for(:action => :bundle, :bid => @bundle.id)}"
 #        response.headers['Cache-Control'] = 'no-cache'
         response.headers['Cache-Control'] = 'public'
         render(:xml => "", :status => 201) # Created
