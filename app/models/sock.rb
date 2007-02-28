@@ -2,20 +2,25 @@ class Sock < ActiveRecord::Base
   set_table_name "sds_socks"
   belongs_to :bundle
   belongs_to :pod
-  
+
   def after_create
-    self.update_attributes(self.kind)
+    self.update_attributes(kind)
     self.save_to_file_system
   end
       
+  def sock_path
+    prefix = if Dir.getwd =~ /\/public$/ then "" else "public/" end
+    "#{prefix}socks/"
+  end
+    
   def text
-    value = case self.encoding
+    value = case encoding
     when 'gzip+b64'
       self.unpack_gzip_b64_value
     when 'escaped'
       self.unescape_value
     end
-    case self.mime_type
+    case mime_type
     when /xml/
       hash = XmlSimple.new().xml_in(CGI.unescapeHTML(value), {'keeproot' => true})
       XmlSimple.xml_out(hash, {'keeproot' => true})
@@ -27,11 +32,13 @@ class Sock < ActiveRecord::Base
       "can't determine how to render this sock as text"
     end
   end    
-  
+
   # calculates and returns a hash: {:mime_type, :encoding, :pas_type, :extension]
   def kind
     types = []
     types = case
+    when self.bytearray? && self.pod.rim_name == 'ot.learner.data'
+      ['application/xml+otrunk', 'gzip+b64', 'ot.learner.data', 'otml']
     when self.bytearray? && self.pod.rim_name == 'otrunk_drawing'
       ['application/xml+otrunk', 'gzip+b64', 'otrunk_drawing', 'otml']
     when self.bytearray? && self.pod.rim_name == 'trialData'
@@ -49,42 +56,37 @@ class Sock < ActiveRecord::Base
     end
     {"mime_type" => types[0], "encoding" => types[1], "pas_type" => types[2], "extension" => types[3]}
   end
-    
+  
   def unescape_value
     CGI.unescapeHTML(self.value)
   end
-  
+
   def bytearray?
     self.pod.rim_shape == 'bytearray'
   end
 
   def unpack_gzip_b64_value
-    if self.bytearray?
+    if bytearray?
       Zlib::GzipReader.new(StringIO.new(Base64.decode64(self.value))).read
     else
       ""
     end
   end
-  
-  def unescape
-    if !self.bytearray?
-      CGI.unescapeHTML(s.value)
-    end
-  end
-  
+
+#  def unescape
+#    if !bytearray?
+#      CGI.unescapeHTML(s.value)
+#    end
+#  end
+
   def save_to_file_system
     begin
-      if ActionController::AbstractRequest.relative_url_root.blank?
-        File.open("public/socks/raw/sock_#{self.id.to_s}_#{self.pas_type}_#{self.encoding}", "w") { |f| f.write self.value }
-        File.open("public/socks/decoded/sock_#{self.id.to_s}_#{self.pas_type}.#{self.extension}", "w") { |f| f.write self.text }
-      else
-        File.open("socks/raw/sock_#{self.id.to_s}_#{self.pas_type}_#{self.encoding}", "w") { |f| f.write self.value }
-        File.open("socks/decoded/sock_#{self.id.to_s}_#{self.pas_type}.#{self.extension}", "w") { |f| f.write self.text }
-      end
+      File.open("#{sock_path}raw/sock_#{self.id.to_s}_#{pas_type}_#{encoding}", "w") { |f| f.write value }
+      File.open("#{sock_path}decoded/sock_#{self.id.to_s}_#{pas_type}.#{extension}", "w") { |f| f.write text }
     end
   end
-  
-  def self.export_to_file_system
+
+  def export_to_file_system
     puts "Exporting #{Socks.count.to_s} Socks to file system\nprocessing (x100): "
     process_count = 0
     Sock.find(:all, :order => "created_at ASC").each do |s|
@@ -96,5 +98,4 @@ class Sock < ActiveRecord::Base
       end
     end
   end
-
 end

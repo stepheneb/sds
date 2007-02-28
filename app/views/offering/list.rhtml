@@ -10,8 +10,8 @@
       <td><%= offering.id.to_s %></td>
       <td><%= offering.name %></td>
       <td>
-        <%= link_to 'Show/Run', :action => 'show', :id => offering %> | 
-        <%= link_to 'Edit', :action => 'edit', :id => offering %>  
+        <%= link_to 'Show/Run', {:action => 'show', :id => offering}, {:title => "Show the workgroups for this offering."} %> | 
+        <%= link_to 'Edit', {:action => 'edit', :id => offering}, {:title => "Edit the curnit and jnlp used for this offering."} %>  
         <em>(<%= pluralize(offering.workgroups.uniq.length, "workgroup")%>, created: <%= offering.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em>
       </td>
     </tr>

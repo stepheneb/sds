@@ -1,8 +1,6 @@
 require "rexml/document"
 
-jnlp = @offering.jnlp.get_jnlp
-
-jnlp = REXML::Document.new jnlp
+jnlp = REXML::Document.new @jnlp.body
 jattr = jnlp.root.attributes
 info = jnlp.root.elements["information"]
 security = jnlp.root.elements["security"]
@@ -38,14 +36,12 @@ xml.jnlp("spec" => jattr['spec'], "codebase" => jattr['codebase']) {
 
 #  xml << info.to_s
 
-p = @offering.portal
-
   xml.information {
-    xml.title(p.title)
-    xml.vendor(p.vendor)
-    xml.homepage("href" => p.home_page_url)
-    xml.description(p.description)
-    xml.icon("href" => p.image_url, "height" => "64", "width" => "64")
+    xml.title(@portal.title)
+    xml.vendor(@portal.vendor)
+    xml.homepage("href" => @portal.home_page_url)
+    xml.description(@portal.description)
+    xml.icon("href" => @portal.image_url, "height" => "64", "width" => "64")
 #    xml << nl + "<offline-allowed/>" 
   }
   xml << security.to_s

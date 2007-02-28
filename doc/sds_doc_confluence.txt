@@ -4,6 +4,9 @@ The initial implementation of the SAIL Data Service has been created using the R
 
 REST web service protocols are based on the HTTP verbs POST (create), PUT (update), GET (show), and DELETE (delete) applied to  resources specified with urls. When a REST protocol is used the data exchanged is formatted as XML. The SDS implements REST-based services for communication with external portals to support the delivery of SAIL-based curriculum units. Many of the administrative services are also available as html rendered in a browser.
 
+h3. Child Pages
+{children}
+
 h3. Table of Contents
 # [#Resources managed in the SDS]
 # [#Interpreting Response Headers]
@@ -30,6 +33,7 @@ h3. Table of Contents
 #* [#Info on all SDS workgroups for a portal]
 #* [#Info on one SDS workgroup for a portal]
 # [#Producing a Java Webstart JNLP]
+#* [#Adding additional portal-specific config parameters]
 # [#Producing a config file for the Java client]
 # [#Saving new session bundle files for the Java client]
 # [#Producing a collection of session bundle files for the Java client]
@@ -488,13 +492,13 @@ The url returned in the Location header is a direct link to the actual SAIL jnlp
 Example:
 
 {panel}
-curl -i -H 'Content-Type: application/xml' -X POST -d '<jnlp><name>testing</name><url>http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/basic-emf.jnlp</url></jnlp>' http://rails.dev.concord.org/sds/1/curnit
+curl -i -H 'Content-Type: application/xml' -X POST -d '<jnlp><name>testing</name><url>http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/basic-emf.jnlp</url></jnlp>' http://rails.dev.concord.org/sds/1/jnlp
 
   HTTP/1.1 201 Created 
   Date: Tue, 15 Aug 2006 22:39:36 GMT
   Content-Type: application/xml
   Content-Length: 0
-  Location: http://rails.dev.concord.org/sds/1/curnit/3
+  Location: http://rails.dev.concord.org/sds/1/jnlp/3
 {panel}
 
 {anchor:Info on all SDS jnlps for a portal}
@@ -1038,7 +1042,7 @@ Example:
 {panel}
 
 {anchor:Info on all SDS workgroups for a portal}
-h4. Info on all SDS workgroups for a workgroup.
+h4. Info on all SDS workgroups for a portal.
 
 {panel}
   GET 
@@ -1262,6 +1266,30 @@ Example:
     </information>
   <security>    <all-permissions/>  </security><resources>    <j2se max-heap-size='128m' version='1.4.2+' initial-heap-size='32m'/>    <jar href='concurrent/concurrent.jar' version='1.3.4'/><jar href='com.webrenderer/webrenderer-win.jar' version='3.0'/><jar href='org.telscenter/pas-learner-runtime.jar' version='0.4.3-20060727.051158-20'/><jar href='com.webrenderer/webrenderer.jar' version='3.0'/><jar href='log4j/log4j.jar' version='1.2.8'/><jar href='ekit/ekit.jar' version='1.1'/><jar href='org.eclipse.emf/ecore.jar' version='2.2.0-SNAPSHOT'/><jar href='jgoodies/looks.jar' version='1.3.1'/><jar href='jgroups/jgroups-all.jar' version='2.2.8'/><jar href='org.eclipse.emf/common.jar' version='2.2.0-SNAPSHOT'/><jar href='commons-beanutils/commons-beanutils.jar' version='1.7.0'/><jar href='com.l2fprod.common/l2fprod-common-tasks.jar' version='6.2'/><jar href='com.webrenderer/webrenderer-osx.jar' version='3.0'/><jar href='net.sf.sail/sail-data-emf.jar' version='0.1.0-20060724.065806-5' main='true'/><jar href='jug/jug.jar' version='1.1.2'/><jar href='swing/swing.jar' version='1.7'/><jar href='jsr223/script.jar' version='1.0ea'/><jar href='jdom/jdom.jar' version='1.0'/><jar href='com.lowagie/itext.jar' version='1.3.1'/><jar href='jgoodies/binding.jar' version='1.0'/><jar href='aelfred/aelfred.jar' version='1.1.1'/><jar href='mysql/mysql-connector-java.jar' version='3.1.12'/><jar href='commons-io/commons-io.jar' version='1.1'/><jar href='com.l2fprod.common/l2fprod-common-sheet.jar' version='6.2'/><jar href='javax.activation/activation.jar' version='1.1'/><jar href='org.telscenter/pedraw.jar' version='1.3.0-20060717.010643-2'/><jar href='commons-logging/commons-logging.jar' version='1.0.3'/><jar href='vldocking/vldocking.jar' version='2.0.5'/><jar href='xito/dialog.jar' version='0.9'/><jar href='xstream/xstream.jar' version='1.1.2'/><jar href='tablelayout/TableLayout.jar' version='20020517'/><jar href='com.toedter/jcalendar.jar' version='1.2.2'/><jar href='net.sf.nachocalendar/nachocalendar.jar' version='0.21'/><jar href='commons-lang/commons-lang.jar' version='2.0'/><jar href='org.eclipse.emf/ecore-xmi.jar' version='2.2.0-SNAPSHOT'/><jar href='rhino/js.jar' version='1.6R2'/><jar href='javax.mail/mail.jar' version='1.4'/><jar href='com.l2fprod.common/l2fprod-common-shared.jar' version='6.2'/><jar href='net.sf.sail/sail-core.jar' version='0.4.5-20060723.044604-14'/><jar href='org.telscenter/sensemaker.jar' version='1.3.3'/><jar href='jmdns/jmdns.jar' version='1.0rc2'/><jar href='xpp3/xpp3.jar' version='1.1.3.4-RC8'/>  </resources><application-desc main-class='net.sf.sail.emf.launch.EMFLauncher3'>    <argument>http://rails.dev.concord.org/sds/1/offering/1/config/8/3</argument>  </application-desc></jnlp>
 {panel}
+
+----
+
+{anchor:Adding additional portal-specific config parameters}
+h4. Adding additional portal-specific config parameters
+
+Additional portal-specific data can be added to the sail learner session by appending it to the end of the jnlp url in standard HTTP GET key/value format. For example in this url:
+
+  http://rails.dev.concord.org/sds/1/offering/23/jnlp/17?projectName=My%20Test%20Project&projectID=23
+
+Two additional session parameters will be added when sail starts up:
+
+  projectName: "My Test Project"
+  projectID: 23
+
+These properties are then available to the Bean of a Pod though the SessionService interface.
+
+See: 
+
+  http://www.telscenter.org/confluence/display/SAIL/Session+Launch+Properties
+
+for more info on the Java implementation.
+
+Right now this functionality is being used to pass to sail information used by the PAS-WISE legacy step that supports display of web content and learner interactivity rendered in WISE such as the discussion step.
 
 ----
 

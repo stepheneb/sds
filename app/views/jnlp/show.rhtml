@@ -1,29 +1,13 @@
 <%= link_to 'List', :action => 'list'  %> | 
 <%= link_to 'Edit', :action => 'edit' %>
-
+ 
 <table cellpadding="3" cellspacing="4">
-  <% for column in Jnlp.columns %>
-    <tr>
-      <td><%= h column.human_name %></td>
-      <td><%= h @jnlp.send(column.name) %></td>
-    </tr>
-  <% end %>
+  <tr><td>Id: </td<td><%= @jnlp.id.to_s %></td></tr>
+  <tr><td>Name: </td<td><%= @jnlp.name %></td></tr>
+  <tr><td>Url: </td<td><%= @jnlp.url %></td></tr>
+  <tr><td>Last Modified: </td<td><%= @jnlp.last_modified.to_s %></td></tr>
+  <tr><td>Always Update: </td<td><%= @jnlp.always_update.to_s %></td></tr>
+  <tr><td>Body: </td<td><pre><%= CGI.escapeHTML(XmlSimple.xml_out(XmlSimple.new().xml_in(@jnlp.body, {'keeproot' => true}), {'keeproot' => true})) %></pre></td></tr>
 </table>
 
-<%= display_xml(@jnlp) %>
-
-<table cellpadding="1" cellspacing="1">
-  <tr>
-    <td><b>Offering Id</b></td>
-    <td><b>Offering Name</b></td>
-  </tr>
-  <% @jnlp.offerings.each do |o| %>
-    <tr>
-      <td><%= o.id.to_s %></td>
-      <td><%= o.name %></td>
-      <td><%= link_to 'Show', :controller => 'workgroup', :action => 'show', :id => o.id %> | 
-          <%= link_to 'Edit', :controller => 'workgroup', :action => 'edit', :id => o.id %> 
-      </td>
-    </tr>
-  <% end %>
-</table>
+<%= display_xml(@jnlp, ['body']) %>

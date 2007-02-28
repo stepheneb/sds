@@ -28,14 +28,6 @@ class Workgroup < ActiveRecord::Base
     WorkgroupMembership.delete_all(["workgroup_id = ?", self.id])
   end
   
-  def self.find_all_in_portal(pid)
-    Workgroup.find(:all, :order => "created_at DESC", :conditions => ["portal_id = ?", pid])
-  end
-
-  def self.find_all_in_offering(oid)
-    Workgroup.find(:all, :order => "created_at DESC", :conditions => ["offering_id = ?", oid])
-  end
-  
   def bundles
     Bundle.find(:all, :order => "created_at DESC", :conditions => ['workgroup_id = ?', id])
   end

@@ -259,3 +259,139 @@ Here's a look at the other three pods that had two versions:
 4482: Tue Nov 07 18:06:33 PST 2006: the time it and the postion in the grath would be greater or smaller, depending on the change.
 4483: Tue Nov 07 18:06:33 PST 2006: the velocity would be farther from 0
 4484: Tue Nov 07 18:06:33 PST 2006: the time before he starts moving would be greater or smaller
+
+----
+
+Adding parameters:
+
+http://rails.dev.concord.org/sds/3/offering/81/jnlp/153?wise.projectName=Global%20Warming%20Test%20Curnit&wise.projectID=23879&wise.groupID=177849&wise.wiseServer=wise-dev.berkeley.edu&wise.language=en&wise.groupUsernames=TwelveD&wise.groupRealnames=Twelve%20Drummers&wise.teacher=Starbucks%20frappuccino&wise.period=4&wise.isCurrent=1&wise.hingeSelection=&wise.sessionId=00rntotqv8uo5q924cta4a76d5]
+
+----
+
+offering/80/bundle/146/0
+workgroup/146/0/bundle
+
+----
+
+
+def list_max_bundles(n)
+  puts "The #{n} largest bundles."
+  b = Bundle.find_all.sort {|x,y| y.content.length <=> x.content.length}[0..n-1]
+  b.each {|b| bundle_info(b)}; nil
+end
+
+def bundle_info(b)
+  puts "bundle id: #{b.id}, length: #{b.content.length}, created at: #{b.created_at}, offering: #{b.workgroup.offering.id}, workgroup: #{b.workgroup.id}" 
+end
+
+def sock_info(s)
+  puts "sock id: #{s.id}, length #{s.value.length}, duplicate: #{s.duplicate}, pastype: #{s.pas_type}, mimetype #{s.mime_type}"
+end
+
+  t.column "value", :text
+  t.column "bundle_id", :integer
+  t.column "pod_id", :integer
+  t.column "duplicate", :boolean
+  t.column "mime_type", :string
+  t.column "encoding", :string
+  t.column "pas_type", :string
+  t.column "extension", :string
+end
+
+----
+
+curl        -H 'Content-Type: application/xml' http://63.138.152.144:3000/1/offering/84/bundle/168/0
+curl -X GET -H 'Accept: application/xml' http://63.138.152.144:3000/1/offering/84/bundle/168/0
+
+curl -i -H 'Content-Type: application/xml' -X POST --data-binary @big_bundle.xml http://rails.dev.concord.org/sds/1/offering/95/bundle/283/0
+
+----
+
+sailuserdata:ESessionBundle xmi:version="2.0"
+sessionBundles
+
+----
+require 'zlib'
+require 'base64'
+
+def b64gzip_pack(filename)
+  output = StringIO.new 
+  def output.close # Zlib does a close. Bad Zlib... 
+    rewind 
+  end 
+  gz = Zlib::GzipWriter.new(output) 
+  gz.write(File.read(filename)) 
+  gz.close 
+  b = Base64.encode64(output.string)
+  File.open(filename+'.gz.b64', 'w') {|f| f.write b}
+end
+
+def b64gzip_unpack(filename)
+  b = Base64.decode64(File.read(filename))
+  outfile = filename.chomp('.gz.b64')
+  File.open('outfile', 'w') {|f| f.write  Zlib::GzipReader.new(StringIO.new(b)).read}
+end
+
+----
+
+b = Bundle.find_all; nil
+ (-40..-1).each {|i| puts "id: #{b[i].id}, length: #{b[i].content.length}, #{b[i].workgroup.member_names}" }; nil
+ 
+----
+
+I increased the mysqld max_allowed_packet to 2MB and now we can save Bundles as large as 2MB in the mysql database. This maximum could be much larger but there are a number of other aspects to this problem and just increasing the maximum size for table fields in Mysql is not the whole solution.
+
+The default mysqld maximum packet size is 1MB (the packet size is the maximum size for any table field). I changed this to 2MB on the mysqld running on otto (railsdb.concord.org) by editing the file:
+
+  /etc/my.cnf
+
+and restarting the mysql daemon:
+
+  sudo /etc/init.d/mysqld restart
+  
+Here's an extract from the beginning of my.cnf. he last line increases the maximum field size to 2MB:
+
+  [mysqld]
+  datadir=/var/lib/mysql
+  socket=/var/lib/mysql/mysql.sock
+  max_allowed_packet=2M
+
+Testing the increased bundle posting size was difficult because of a bug in the lighttpd 1.4.x webserver that affects POSTing large bundles with curl. The lighttpd webserver does not handle 'Expect' headers and always responds with 'HTTP/1.1 417 Expectation Failed'.
+
+The lighttpd development team claims this will be fixed in v1.5:
+
+  http://trac.lighttpd.net/trac/ticket/1017
+
+In the meantime there are two ways to get curl to post the data successfully.
+
+1) force curl to use the HTTP 1.0 protocol with the --http1.0 option.
+2) force curl to provide no Expect header by explicitly setting it to nil: -H 'Expect:'.
+
+Only bundles that are well formed xml sessionBundles will be accepted.
+
+In late January a workgroup in California produced a 1.8MB bundle that was saved as saildataemf22465.xml. I gzipped and then base64 encoded this bundle.
+
+  1929002 Jan 30 14:21 saildataemf22465.xml
+   106787 Feb 25 00:42 saildataemf22465.xml.gz.b64
+
+In this test I forced curl to use the http 1.0 protocol.
+
+  curl -i -X POST --http1.0 -H 'Content-Type: application/xml' -H 'Content-Encoding: b64gzip' -d @saildataemf22465.xml.gz.b64 http://rails.dev.concord.org/sds/1/offering/95/bundle/282/0
+  HTTP/1.1 201 Created
+  Date: Sun, 25 Feb 2007 05:51:10 GMT
+  Server: lighttpd/1.4.11
+  Content-Type: application/xml
+  Content-md5: P/5ORr7E5kiXgFyOH+3bFA==
+  Location: http://rails.dev.concord.org/sds/1/offering/95/bundle/282/0?bid=2993
+  Cache-Control: public
+  Content-Length: 0
+  Connection: close
+
+The Location header is invalid because it doesn't return a url where the newly created bundle resource is located. The bundle ID in the Location header is however valid and the size of the bundle content can be checked with the rails script/console:
+
+$ cd ~/rails/sds
+$ script/console
+>> b = Bundle.find(2993); nil
+=> nil
+>> b.content.length
+=> 1929002

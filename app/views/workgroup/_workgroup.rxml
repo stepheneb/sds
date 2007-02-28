@@ -14,7 +14,7 @@ xm.entry 'xml:base' => url_for(:controller => 'offering', :action => 'list', :on
   xm << h(%{<p>Workgroup: "#{workgroup.name}", <em>(id: #{workgroup.id})</em><br />
     Users: #{workgroup.member_names}, <em>(ids: #{workgroup.members.collect {|m| m.id}.join(', ')})</em>. <br />
     Offering: "#{workgroup.offering.name}", <em>(id: #{workgroup.offering.id})</em><br />
-    Curnit: "#{workgroup.offering.curnit.name}" <em>(id: #{workgroup.offering.curnit.id}), last updated: #{workgroup.offering.curnit.get_curnit_last_modified}</em>.})
+    Curnit: "#{workgroup.offering.curnit.name}" <em>(id: #{workgroup.offering.curnit.id}), last updated: #{workgroup.offering.curnit.last_modified}</em>.})
   workgroup.bundles.each do |b| 
     xm << h(%{<hr /><div style="background-color: #BBFFEE; padding: 10px; border: 1px solid gray; margin: 10px; font: 9px sans-serif;">})
     xm << h(%{#{b.created_at.to_s}<br >Bundle: #{b.id}<br />Workgroup membership version: #{b.workgroup_version.to_s}.<br />})

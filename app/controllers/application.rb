@@ -20,10 +20,12 @@ class ApplicationController < ActionController::Base
   require 'convert'
   require 'to_xml'
   require 'net/http'
+  require 'open-uri'
 
   filter_parameter_logging "password"
 
   include AuthenticatedSystem
+  before_filter :find_portal
   before_filter :login_from_cookie
   before_filter :check_sds_user
 
@@ -31,15 +33,81 @@ class ApplicationController < ActionController::Base
 
   # Pick a unique cookie name to distinguish our session data from other rails apps
   session :session_key => '_sds_session_id'
-    
+  
 protected
+  
+  class Time
+    def self.java8601(java_date)
+      Time.xmlschema("#{java_date[0..-3]}:#{java_date[-2..-1]}")
+    end
+
+    def to_java8601
+      ts = self.getlocal.xmlschema(3)
+      ts[0..-4]+ts[-2..-1]
+    end
+  end
   
   def calc_content_length
     response.headers['Content-Length'] = response.body.length
   end
   
+  def to_filename(name)
+    name.strip.downcase.gsub(/\W+/, '_')
+  end
+
+  def find_portal
+    unless @portal = Portal.find_by_id(params[:id])
+      resource_not_found('Portal', params[:id])
+    end
+  end
+  
+  def find_portal_resource(klassname, id)
+    if resource = eval("@portal.#{klassname.downcase.pluralize}.find_by_id(id)")
+      resource
+    else
+      portal_resource_not_found(klassname, id)
+    end
+  end
+  
+  def portal_resource_not_found(resource, id)
+    msg = "#{resource} #{id.to_s} does not exist in Portal: #{@portal.id.to_s}: #{@portal.name}."
+    respond_to do |wants|
+      wants.html { flash[:notice] = msg ; redirect_to :action => 'list' }
+      wants.xml { render(:text => "<error>#{msg}<error/>", :status => 404) } # Not Found
+    end
+    false
+  end
+
+  def external_resource_not_found(resource, id, url)
+    msg = "#{resource} #{id.to_s}: external resource: #{url} not available."
+    respond_to do |wants|
+      wants.html { flash[:notice] = msg ; redirect_to :action => 'list' }
+      wants.xml { render(:text => "<error>#{msg}<error/>", :status => 404) } # Not Found
+    end
+    false
+  end
+    
+  def find_portal
+    unless @portal = Portal.find_by_id(params[:pid])
+      resource_not_found('Portal', params[:id])
+    end
+  end
+  
+  def resource_not_found(resource, id)
+    msg = "#{resource} #{id.to_s} does not exist in Portal: #{@portal.id.to_s}: #{@portal.name}."
+    respond_to do |wants|
+      wants.html { flash[:notice] = msg ; redirect_to :action => 'list' }
+      wants.xml { render(:text => "<error>#{msg}<error/>", :status => 404) } # Not Found
+    end
+    false
+  end
+  
 private
 
+  def process_portal_realm
+    @portal = if params[:pid] then Portal.find(params[:pid]) end
+  end
+ 
   def check_sds_user
     self.current_sds_user = SdsUser.find_by_login('anonymous') unless logged_in?
 #    self.current_sds_user = User.find_by_login('anonymous', :include => :roles) unless logged_in?

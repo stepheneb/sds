@@ -4,7 +4,7 @@ xml.tag!('sailuserdata:EPortfolio', 'xmi:version' => '2.0',  'xmlns:xmi' => 'htt
     xml.sessionBundles
   else
     @bundles.each do |b|
-      xml << b.content
+      xml << b.bundle_content.content
     end
   end
 }

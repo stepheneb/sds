@@ -3,19 +3,30 @@ class UserController < ApplicationController
   layout "standard"
 
   def list
-    if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
+    if request.env['CONTENT_TYPE'] == "application/xml" # should only be a POST or PUT
       begin
         u = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
-        @user = User.new(u)
-        if @user.save!
-          response.headers['Location'] = url_for(:action => :show, :id => @user.id)
-          render(:xml => "", :status => 201) # Created
+        if request.post?
+          @user = User.new(u)
+          if @user.save!
+            response.headers['Location'] = url_for(:action => :show, :id => @user.id)
+            render(:xml => "", :status => 201) # Created
+          end
+        else
+          if request.put?
+            @user = User.find(u['id'])
+            @user.update_attributes(u)
+            response.headers['Location'] = url_for(:action => :show, :id => @user.id)
+            render(:xml => "", :status => 200) # OK
+          else
+            render(:text => "", :status => 400) # Bad Request
+          end
         end
-      rescue
-        render(:text => "", :status => 400) # Bad Request
+      rescue => e
+        render(:text => e, :status => 400) # Bad Request
       end
     else
-      @users = User.find_all_in_portal(params[:pid])
+      @users = @portal.users
       respond_to do |wants|
         wants.html
         wants.xml { render :xml => (@users.empty? ? "<users />" : @users.to_xml(:except => ['created_at', 'updated_at'])) }
@@ -83,14 +94,14 @@ class UserController < ApplicationController
             raise
           end
         rescue
-          render(:text => "", :status => 400) # Bad Request
+          render(:text => '', :status => 400) # Bad Request
         end
       elsif request.delete?
         @user.destroy
-        render(:text => "", :status => 204) # No Content
+        render(:text => '', :status => 204) # No Content
       end
-    rescue
-      render(:text => "", :status => 404) # Not Found
+    rescue => e
+      render(:text => e, :status => 404) # Not Found
     end
   end
   

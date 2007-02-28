@@ -1,6 +1,8 @@
 class HomeController < ApplicationController
     
   layout "standard"
+  
+  skip_before_filter :find_portal
 
   def index
     begin
@@ -9,7 +11,7 @@ class HomeController < ApplicationController
         wants.html
         wants.xml { render(:xml => "<text>Sail Data Service</text>\n", :status => 200) }
       end
-    rescue
+    rescue => e
       render(:xml => "", :status => 400) # Bad Request
     end
   end

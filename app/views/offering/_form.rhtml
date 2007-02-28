@@ -1,10 +1,10 @@
 <%= error_messages_for 'offering' %>
 
 <p><label for="offering_name">Name</label><br/>
-<%= text_field 'offering', 'name', :size => 60  %></p>
+<%= text_field 'offering', 'name', :size => 80  %></p>
 
 <p><label for="offering_curnit">Curnit: </label><br/>
-<%= select 'offering', 'curnit_id',  Curnit.find_all_in_portal(params[:pid]).map { |p| ["#{p.id}: #{p.name}", p.id] }  %></p>
+<%= select 'offering', 'curnit_id', @portal.curnits.find_all.map { |p| ["#{p.id}: #{p.name}", p.id] }  %></p>
 
 <p><label for="offering_jnlp">Jnlp: </label><br/>
-<%= select 'offering', 'jnlp_id',  Jnlp.find_all_in_portal(params[:pid]).map { |p| ["#{p.id}: #{p.name}", p.id] }  %></p>
+<%= select 'offering', 'jnlp_id',  @portal.jnlps.find_all.map { |p| ["#{p.id}: #{p.name}", p.id] }  %></p>

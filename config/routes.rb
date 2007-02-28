@@ -15,7 +15,11 @@ ActionController::Routing::Routes.draw do |map|
 
 # offering: atom feed services
 
-  map.connect ':pid/offering/:id/atom', :controller => 'offering', :action => 'atom', :type => 'offering'
+#  map.connect ':pid/offering/:id/atom', :controller => 'offering', :action => 'atom', :type => 'offering'
+
+# direct bundle manipulation
+
+  map.connect ':pid/bundle/:id', :controller => 'bundle', :action => 'bundle'
 
 # offering: java web start services
 
@@ -28,6 +32,7 @@ ActionController::Routing::Routes.draw do |map|
   map.connect ':pid/offering/:id/config/:wid/:version', :controller => 'offering', :action => 'config', :savedata => true
   map.connect ':pid/offering/:id/config/:wid/:version/view', :controller => 'offering', :action => 'config', :savedata => nil
   map.connect ':pid/offering/:id/bundle/:wid/:version', :controller => 'offering', :action => 'bundle'
+#  map.connect ':pid/offering/:id/pod/:uuid', :controller => 'offering', :action => 'pod'
 
   map.connect ':pid/offering/:id/errorbundle_create', :controller => 'offering', :action => 'errorbundle_create'
   map.connect ':pid/offering/:id/errorbundle/:ebid', :controller => 'offering', :action => 'errorbundle', :ebid => 'ebid'
@@ -51,10 +56,11 @@ ActionController::Routing::Routes.draw do |map|
   map.connect ':pid/workgroup/list', :controller => 'workgroup', :action => 'list'
   map.connect ':pid/workgroup/create', :controller => 'workgroup', :action => 'create'
   map.connect ':pid/workgroup/edit/:id', :controller => 'workgroup', :action => 'edit'
+  map.connect ':pid/workgroup/report/:id', :controller => 'workgroup', :action => 'report'
 #  map.connect ':pid/workgroup/destroy/:id', :controller => 'workgroup', :action => 'destroy'
   map.connect ':pid/workgroup/:id/membership', :controller => 'workgroup', :action => 'membership'
-  map.connect ':pid/workgroup/atom', :controller => 'workgroup', :action => 'atom'
-  map.connect ':pid/workgroup/:id', :controller => 'workgroup', :action => 'show'
+#  map.connect ':pid/workgroup/atom', :controller => 'workgroup', :action => 'atom'
+   map.connect ':pid/workgroup/:id', :controller => 'workgroup', :action => 'show'
 
 # user
 
@@ -91,7 +97,7 @@ ActionController::Routing::Routes.draw do |map|
   map.connect 'portal/create', :controller => 'portal', :action => 'create'
   map.connect 'portal/edit/:id', :controller => 'portal', :action => 'edit'
 #  map.connect 'portal/destroy/:id', :controller => 'portal', :action => 'destroy'
-  map.connect 'portal/:id', :controller => 'portal', :action => 'show'
+   map.connect 'portal/:id', :controller => 'portal', :action => 'show'
 
   # Install the default route as the lowest priority.
 #  map.connect ':controller/:action/:id'

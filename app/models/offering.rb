@@ -9,11 +9,5 @@ class Offering < ActiveRecord::Base
   belongs_to :jnlp
   has_many :workgroups
   has_many :errorbundles
-  
-  has_and_belongs_to_many :users, options = { :join_table => 'sds_offerings_users'}
-
-  def self.find_all_in_portal(pid)
-    Offering.find(:all, :order => "created_at DESC", :conditions => ["portal_id = ?", pid])
-  end
-  
+    
 end

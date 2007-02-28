@@ -1,9 +1,14 @@
 # Methods added to this helper will be available to all templates in the application.
 module ApplicationHelper
   
-  def display_xml(obj)
+  def display_xml(obj, options=nil)
+    except = ['created_at', 'updated_at'] 
+    if (options.is_a? Array) && !options.blank?
+      except << options
+    end
     "<p><b>XML output representation: </b></p>" +
-    "<p><code>#{h(obj.to_xml(:except => ['created_at', 'updated_at']))}</code></p>"
+#    "<p><code>#{h(obj.to_xml(:except => ['created_at', 'updated_at']))}</code></p>"
+    "<p><code>#{h(obj.to_xml(:except => except))}</code></p>"
   end
 
   # This method will work the same as image_path

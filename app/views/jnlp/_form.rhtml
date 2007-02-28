@@ -1,8 +1,13 @@
 <%= error_messages_for 'jnlp' %>
 
 <p><label for="jnlp_name">Name</label><br/>
-<%= text_field 'jnlp', 'name'  %></p>
+<%= text_field 'jnlp', 'name', :size => 80 %></p>
 
 <p><label for="jnlp_url">Url</label><br/>
-<%= text_field 'jnlp', 'url', :size => 60 %></p>
+<%= text_field 'jnlp', 'url', :size => 80 %></p>
+
+<p><label for="jnlp_always_update">Always update from url when generating jnlp?</label><br/>
+<%= check_box 'jnlp', 'always_update'  %></p>
+
+
 

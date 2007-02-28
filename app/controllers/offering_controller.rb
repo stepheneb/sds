@@ -3,10 +3,13 @@ class OfferingController < ApplicationController
   require 'zlib'
 
   before_filter :log_referrer
+  before_filter :find_offering, :except => [ :list ]
+  
   after_filter :compress, :only => [:bundle]
+
   layout "standard", :except => [ :atom ] 
 
-  BUNDLE_SIZE_LIMIT = 2**21-1 # 2M
+  BUNDLE_SIZE_LIMIT = 2**21-1 # 2M  
 
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
@@ -19,11 +22,11 @@ class OfferingController < ApplicationController
           response.headers['Location'] = url_for(:action => :show, :id => @offering.id)
           render(:xml => "", :status => 201) # Created
         end
-#      rescue
-#        render(:text => "", :status => 400) # Bad Request
+#      rescue => e
+#        render(:text => e, :status => 400) # Bad Request
       end
     else
-      @offerings = Offering.find_all_in_portal(params[:pid])
+      @offerings = @portal.offerings
       respond_to do |wants|
         wants.html
         wants.xml { render :xml => (@offerings.empty? ? "<offerings />" : @offerings.to_xml(:except => ['created_at', 'updated_at'])) }
@@ -32,19 +35,13 @@ class OfferingController < ApplicationController
   end
 
   def edit
-    begin
-      if request.post?
-        @offering = Offering.find(params[:id])
-        if @offering.update_attributes(params[:offering])
-          flash[:notice] = "Offering #{@offering.id} was successfully updated."
-          redirect_to :action => 'list'
-        end
-      else
-        @offering = Offering.find(params[:id])
+    if request.post?
+      if @offering.update_attributes(params[:offering])
+        flash[:notice] = "Offering #{@offering.id} was successfully updated."
+        redirect_to :action => 'list'
       end
-    rescue
-      flash[:notice] = "Offering #{@offering.id} does not exist." 
-      redirect_to :action => :list
+    else
+      @offering = Offering.find(params[:id])
     end
   end
 
@@ -55,7 +52,7 @@ class OfferingController < ApplicationController
         @offering = Offering.create!(parms)
         flash[:notice] = "Offering #{@offering.id} was successfully created."
         redirect_to :action => 'list'
-      rescue
+      rescue => e
         flash[:notice] = "Error creating Offering." 
         redirect_to :action => :list
       end
@@ -66,8 +63,7 @@ class OfferingController < ApplicationController
 
   def show
     begin
-      p = Portal.find(params[:pid])
-      @offering = p.offerings.find(params[:id])
+      @offering = @portal.offerings.find(params[:id])
       if request.get?
         respond_to do |wants|
           wants.html
@@ -85,15 +81,15 @@ class OfferingController < ApplicationController
           else
             raise
           end
-#        rescue
-#          render(:text => "", :status => 400) # Bad Request
+#        rescue => e
+#          render(:text => e, :status => 400) # Bad Request
         end
       elsif request.delete?
         @offering.destroy
-        render(:text => "", :status => 204) # No Content
+        render(:text => '', :status => 204) # No Content
       end
-#    rescue
-#      render(:text => "", :status => 404) # Not Found
+#    rescue => e
+#      render(:text => e, :status => 404) # Not Found
     end
   end
 
@@ -102,15 +98,20 @@ class OfferingController < ApplicationController
 #    begin
 #      Offering.find(id).destroy
 #      flash[:notice] = "Offering #{id.to_s} was successfully deleted."
-#    rescue
+#    rescue => e
 #      flash[:notice] = "Error deleting Offering #{id.to_s}." 
 #    end
 #    redirect_to :action => :list
   end
 
   def jnlp
-    begin
-      @offering = Offering.find(params[:id])
+    @jnlp = @offering.jnlp
+    if @jnlp.always_update || @jnlp.body.blank?
+      @jnlp.save!
+    end
+    if @jnlp.body.blank?
+      external_resource_not_found('Jnlp', @jnlp.id, @jnlp.url)
+    else
       case params[:type]
       when 'user'
         @workgroup = User.find(params[:uid]).workgroup
@@ -120,19 +121,16 @@ class OfferingController < ApplicationController
       @savedata = params[:savedata]
       # need last mod?
       @headers["Content-Type"] = "application/x-java-jnlp-file"
-#      @headers["Cache-Control"] = "no-cache"
       @headers["Cache-Control"] = "max-age=1"
-      @headers["Content-Disposition"] = "attachment; filename=testjnlp.jnlp"
+      @headers["Content-Disposition"] = "attachment; filename=#{to_filename(@jnlp.name)}_#{to_filename(@offering.curnit.name)}.jnlp"
       filename = "testjnlp"
       render :action => 'jnlp', :layout => false
-    rescue
-      render(:text => "", :status => 404) # Not Found
     end
   end
   
   def atom
 #    @offering = Offering.find(params[:id])
-#    @workgroups = Workgroup.find_all_in_offering(@offering.id)
+#    @workgroups = @offering.workgroups
 #    @headers["Content-Type"] = "application/atom+xml"
   end
   
@@ -143,8 +141,8 @@ class OfferingController < ApplicationController
       @version = params[:version]
       @savedata = params[:savedata]
       render :action => 'config', :layout => false
-    rescue
-      render(:text => "", :status => 404) # Not Found
+    rescue => e
+      render(:text => e, :status => 404) # Not Found
     end
   end
   
@@ -157,44 +155,22 @@ class OfferingController < ApplicationController
         else
           content = request.raw_post
         end
-        @bundle = Bundle.create!(:offering_id => params[:id], :workgroup_id => params[:wid],
-          :workgroup_version => params[:version], :content => content)
-        response.headers['Content-md5'] = Base64.b64encode(Digest::MD5.digest(@bundle.content))
-        response.headers['Location'] = "#{url_for(:action => :bundle, :bid => @bundle.id)}"
-#        response.headers['Cache-Control'] = 'no-cache'
+        @bundle = Bundle.create!(:workgroup_id => params[:wid],
+          :workgroup_version => params[:version], :content => content, :bc => content)
+        response.headers['Content-md5'] = Base64.b64encode(Digest::MD5.digest(@bundle.bundle_content.content))
+#        response.headers['Location'] = "#{url_for(:controller => 'bundle', :id => @bundle.id)}"
         response.headers['Cache-Control'] = 'public'
-        render(:xml => "", :status => 201) # Created
-      rescue
-        render(:text => "", :status => 400) # Bad Request
+        render(:xml => "", :status => 201, :layout => false) # Created
+      rescue => e
+        render(:text => e, :status => 400) # Bad Request
       end
     else
       begin
-        @bundles = Bundle.find_by_offering_and_workgroup(params[:id], params[:wid])
+        @bundles = @offering.find_in_workgroups(params[:wid]).bundles
         @headers["Content-Type"] = "text/xml"
         render :action => 'bundlelist', :layout => false
-      rescue
-        render(:text => "", :status => 404) # Not Found
-      end
-    end
-  end
-
-
-  def errorbundle
-    if request.post?
-      o = Offering.find(params[:id])
-      @errorbundle = Errorbundle.new(params[:errorbundle].merge({ "ip_address" => request.env['REMOTE_HOST']}))
-      @errorbundle.offering_id = o.id
-      if @errorbundle.create
-        response.headers['Content-md5'] = Base64.b64encode(Digest::MD5.digest(@errorbundle.data))
-        response.headers['Location'] = url_for(:action => :errorbundle, :ebid => @errorbundle.id)
-        render(:xml => "", :status => 201) # Created
-      else
-        render(:text => "", :status => 400) # Bad Request
-      end
-    else
-      if request.get?
-        @errorbundle = Errorbundle.find(params[:ebid])
-        send_data(@errorbundle.data, :filename => @errorbundle.name, :type => @errorbundle.content_type, :disposition => 'inline')
+      rescue => e
+        render(:text => e, :status => 404) # Not Found
       end
     end
   end
@@ -233,5 +209,9 @@ class OfferingController < ApplicationController
       response.headers['Content-Encoding'] = encoding 
     end 
   end 
+  
+  def find_offering
+    @offering = find_portal_resource('Offering', params[:id])
+  end  
 
 end

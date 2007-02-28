@@ -23,9 +23,13 @@
 			<% end %>
       <div style="background-color: #99FFCC; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px font: sans-serif;">
         <% begin
+            value = CGI.unescapeHTML(s.value)
+            # try and convert to xml, will generate an error if not possible
+            hash = XmlSimple.new().xml_in(CGI.unescapeHTML(s.value), {'keeproot' => true})
+            value = XmlSimple.xml_out(hash, {'keeproot' => true})
         rescue
         end %>
-        <pre><%= CGI.escapeHTML(s.text) %></pre>
+        <pre><%= CGI.escapeHTML(value) %></pre>
       </div>
     <% end %>
   </div>

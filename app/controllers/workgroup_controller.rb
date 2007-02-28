@@ -1,6 +1,8 @@
 class WorkgroupController < ApplicationController
 
   layout "standard", :except => [ :atom ] 
+  before_filter :find_workgroup, :except => [ :list ]
+  
   
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
@@ -11,11 +13,11 @@ class WorkgroupController < ApplicationController
         @workgroup.save!
         response.headers['Location'] = url_for(:action => :show, :id => @workgroup.id)
         render(:xml => "", :status => 201) # Created
-      rescue
-        render(:text => "", :status => 400) # Bad Request
+      rescue => e
+        render(:text => e, :status => 400) # Bad Request
       end
     else
-      @workgroups = Workgroup.find_all_in_portal(params[:pid])
+      @workgroups = @portal.workgroups
       respond_to do |wants|
         wants.html
         wants.xml { render :xml => (@workgroups.empty? ? "<workgroups />" :@workgroups.to_xml(:except => ['created_at', 'updated_at'])) }
@@ -24,7 +26,6 @@ class WorkgroupController < ApplicationController
   end
 
   def membership
-    @workgroup = Workgroup.find(params[:id])
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
       begin
         @workgroup.version += 1
@@ -43,8 +44,8 @@ class WorkgroupController < ApplicationController
         @workgroup.save!
         response.headers['Location'] = url_for(:action => :membership, :id => @workgroup.id)
         render(:xml => "", :status => 201) # Created
-      rescue
-        render(:text => "", :status => 400) # Bad Request
+      rescue => e
+        render(:text => e, :status => 400) # Bad Request
       end
     else
       @members = @workgroup.users.version(@workgroup.version) # array of User objects
@@ -59,7 +60,6 @@ class WorkgroupController < ApplicationController
   def edit
     begin
       if request.post?
-        @workgroup = Workgroup.find(params[:id])
         @workgroup.version += 1
         if @workgroup.update_attributes(params[:workgroup])
           users = params[:users]
@@ -100,8 +100,6 @@ class WorkgroupController < ApplicationController
 
   def show
     begin
-      p = Portal.find(params[:pid])
-      @workgroup = p.workgroups.find(params[:id])
       @members = @workgroup.users.version(@workgroup.version) # array of User objects
       @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects
       if request.get?
@@ -121,20 +119,25 @@ class WorkgroupController < ApplicationController
           else
             raise
           end
-        rescue
-          render(:text => "", :status => 400) # Bad Request
+        rescue => e
+          render(:text => e, :status => 400) # Bad Request
         end
       elsif request.delete?
         @workgroup.destroy
-        render(:text => "", :status => 204) # No Content
+        render(:text => '', :status => 204) # No Content
       end
-#    rescue
-#      render(:text => "", :status => 404) # Not Found
+#    rescue => e
+#      render(:text => e, :status => 404) # Not Found
     end
+  end
+  
+  def report
+    @members = @workgroup.users.version(@workgroup.version) # array of User objects
+    @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects
   end
 
   def atom
-    @workgroups = Workgroup.find_all_in_portal(params[:pid])
+    @workgroups = @portal.workgroups
     @headers["Content-Type"] = "application/atom+xml"
   end
 
@@ -148,6 +151,12 @@ class WorkgroupController < ApplicationController
     end
     redirect_to :action => :list
   end
+  
+  protected
+  
+  def find_workgroup
+    @workgroup = find_portal_resource('Workgroup', params[:id])
+  end  
 
 end
 

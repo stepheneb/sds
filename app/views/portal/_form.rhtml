@@ -2,31 +2,31 @@
 
 <!--[form:portal]-->
 <p><label for="portal_name">Name</label><br/>
-<%= text_field 'portal', 'name'  %></p>
+<%= text_field 'portal', 'name', :size => 60 %></p>
 
 <p><label for="portal_use_authentication">Use authentication?</label><br/>
 <%= check_box 'portal', 'use_authentication'  %></p>
 
 <p><label for="portal_auth_username">Authorized username</label><br/>
-<%= text_field 'portal', 'auth_username'  %></p>
+<%= text_field 'portal', 'auth_username' %></p>
 
 <p><label for="portal_auth_password">Authorized password</label><br/>
 <%= text_field 'portal', 'auth_password'  %></p>
 
 <h3>Webstart Parameters</h3>
 <p><label for="portal_title">Title</label><br/>
-<%= text_field 'portal', 'title'  %></p>
+<%= text_field 'portal', 'title', :size => 80   %></p>
 
 <p><label for="portal_vendor">Vendor</label><br/>
-<%= text_field 'portal', 'vendor'  %></p>
+<%= text_field 'portal', 'vendor', :size => 80   %></p>
 
 <p><label for="portal_home_page_url">Homepage Url</label><br/>
-<%= text_field 'portal', 'home_page_url'  %></p>
+<%= text_field 'portal', 'home_page_url', :size => 80   %></p>
 
 <p><label for="portal_description">Description</label><br/>
-<%= text_field 'portal', 'description'  %></p>
+<%= text_area 'portal', 'description', "cols" => 80, :rows => 4 %></p>
 
 <p><label for="portal_image_url">Image Url</label><br/>
-<%= text_field 'portal', 'image_url'  %></p>
+<%= text_field 'portal', 'image_url', :size => 80   %></p>
 
 <!--[eoform:portal]-->

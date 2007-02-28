@@ -1,10 +1,13 @@
 class Bundle < ActiveRecord::Base
   set_table_name "sds_bundles"
   belongs_to :workgroup
+  has_one :bundle_content
   has_many :socks
   
-  def self.find_by_offering_and_workgroup(offering, workgroup)
-    Bundle.find(:all, :conditions => ["offering_id = :offering and workgroup_id = :workgroup", {:offering => offering, :workgroup => workgroup}])
+  attr_accessor :bc
+  
+  def self.find_by_workgroup(workgroup)
+    Bundle.find(:all, :conditions => ["workgroup_id = :workgroup", {:workgroup => workgroup}])
   end
   
   def self.rebuild_pods_and_socks
@@ -12,22 +15,31 @@ class Bundle < ActiveRecord::Base
     Sock.delete_all
     puts "Bundles to process: #{Bundle.count.to_s}\nprocessing: "
     Bundle.find(:all, :order => "created_at ASC").each do |b|
-      b.process_sockParts
+      b.process_content
       print '.'
     end
     Sock.export_to_file_system
     ""
   end
+
+  def before_save
+    self.bundle_content ||= BundleContent.new(:content => self.bc)
+  end
   
   def after_create
-    process_sockParts
+    process_content
     self.process_status = 1
     self.save
   end
   
   # each sockPart references one pod and one associated rim_name
-  def process_sockParts
-    sockParts.each do |sp_xml|
+  def process_content
+    session_bundle = REXML::Document.new(content).elements['sessionBundles']
+    self.sail_curnit_uuid = session_bundle.attributes['curnitUUID']
+    self.sail_session_uuid = session_bundle.attributes['sessionUUID']
+    self.sail_session_start_time = SdsTime.java8601(session_bundle.attributes['start'])
+    self.sail_session_end_time = SdsTime.java8601(session_bundle.attributes['stop'])
+    session_bundle.elements.to_a('//sockParts').each do |sp_xml|
       uuid = sp_xml.attributes["podId"].to_s
       rim_name = sp_xml.attributes["rimName"].to_s
       shape = sp_xml.attributes["rimShape"].to_s
@@ -47,9 +59,5 @@ class Bundle < ActiveRecord::Base
       end      
     end
   end
-  
-  def sockParts
-    REXML::Document.new(content).elements.to_a('//sockParts')
-  end
-  
+    
 end

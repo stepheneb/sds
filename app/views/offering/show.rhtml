@@ -4,10 +4,9 @@
 <p>
   Offering: <%= @offering.name %>, <em>(id: <%= @offering.id %>)</em><br />
   Workgroups: <%= @offering.workgroups.length.to_s %>, <em>(ids: <%=  @offering.workgroups.collect {|w| w.id }.join(', ') %>)</em>. <br />
-  Jnlp: <%= @offering.jnlp.name %>, <em>(id: <%= @offering.jnlp.id %>), last updated: <%= @offering.jnlp.get_jnlp_last_modified %></em><br />
-  Curnit: <%= @offering.curnit.name %> <em>(id: <%= @offering.curnit.id %>), last updated: <%= @offering.curnit.get_curnit_last_modified %></em>
+  Jnlp: <%= link_to @offering.jnlp.name, {:controller => 'jnlp', :action => 'show', :id => @offering.jnlp.id }, {:title => "Show the jnlp for this offering."} %>, <em>(id: <%= @offering.jnlp.id %>), last updated: <%= @offering.jnlp.last_modified %></em><br />
+  Curnit: <%= link_to @offering.curnit.name, {:controller => 'curnit', :action => 'show', :id => @offering.curnit.id }, {:title => "Show the curnit for this offering."}  %> <em>(id: <%= @offering.curnit.id %>), last updated: <%= @offering.curnit.jar_last_modified %></em>
 </p>
-
 
 <b>Workgroups:</b>
 <table cellpadding=3 cellspacing=1>
@@ -26,10 +25,11 @@
       <td><%= w.member_names %></td>
       <td><%= w.bundles.length.to_s %>
       <td>
-        <%= link_to 'Show', :controller => 'workgroup', :action => 'show', :id => w.id %> | 
-        <%= link_to 'Run', :controller => 'offering', :action => 'jnlp', :id => @offering.id, :wid => w.id, :type => 'workgroup', :savedata => true, :only_path => false %> | 
-        <%= link_to 'View', :controller => 'offering', :action => 'jnlp', :id => @offering.id, :wid => w.id, :type => 'workgroup', :savedata => nil, :only_path => false %> | 
-        <%= link_to 'Edit', :controller => 'workgroup', :action => 'edit', :id => w.id %> 
+        <%= link_to 'Report', {:controller => 'workgroup', :action => 'report', :id => w.id}, {:title => "Report on the work done by this workgroup."} %> | 
+        <%= link_to 'Show', {:controller => 'workgroup', :action => 'show', :id => w.id}, {:title => "Show the raw data returned by this workgroup."} %> | 
+        <%= link_to 'Run', {:controller => 'offering', :action => 'jnlp', :id => @offering.id, :wid => w.id, :type => 'workgroup', :savedata => true, :only_path => false}, {:title => "Run the SAIL curnit for this workgroup"} %> | 
+        <%= link_to 'View', {:controller => 'offering', :action => 'jnlp', :id => @offering.id, :wid => w.id, :type => 'workgroup', :savedata => nil, :only_path => false}, {:title => "View the SAIL curnit for this workgroup (saving data is disabled)"} %> | 
+        <%= link_to 'Edit', {:controller => 'workgroup', :action => 'edit', :id => w.id}, {:title => "Edit the membership of this workgroup."} %> 
       </td>
     </tr>
   <% end %>
