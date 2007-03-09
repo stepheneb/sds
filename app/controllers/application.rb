@@ -57,7 +57,7 @@ protected
 
   def find_portal
     unless @portal = Portal.find_by_id(params[:id])
-      resource_not_found('Portal', params[:id])
+      resource_not_found('Portal', params[:id], '')
     end
   end
   
@@ -93,8 +93,13 @@ protected
     end
   end
   
-  def resource_not_found(resource, id)
-    msg = "#{resource} #{id.to_s} does not exist in Portal: #{@portal.id.to_s}: #{@portal.name}."
+  def resource_not_found(resource, id, enclosing_resource=@portal)
+    msg = "#{resource} #{id.to_s} can't be found"
+    if enclosing_resource.blank?
+       msg << '.'
+       else
+         msg << " in #{enclosing_resource.classname}: #{enclosing_resource.id.to_s}: #{enclosing_resource..name}."
+       end
     respond_to do |wants|
       wants.html { flash[:notice] = msg ; redirect_to :action => 'list' }
       wants.xml { render(:text => "<error>#{msg}<error/>", :status => 404) } # Not Found

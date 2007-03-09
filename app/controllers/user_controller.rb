@@ -2,6 +2,16 @@ class UserController < ApplicationController
 
   layout "standard"
 
+  before_filter :find_user, :except => [ :list ]
+  
+  protected
+  
+  def find_user
+    @user = find_portal_resource('User', params[:id])
+  end
+  
+  public  
+  
   def list
     if request.env['CONTENT_TYPE'] == "application/xml" # should only be a POST or PUT
       begin
@@ -37,7 +47,6 @@ class UserController < ApplicationController
   def edit
     begin
       if request.post?
-        @user = User.find(params[:id])
         if @user.update_attributes(params[:user])
           flash[:notice] = "User #{@user.id} was successfully updated."
           redirect_to :action => 'list'
@@ -69,12 +78,11 @@ class UserController < ApplicationController
 
   def show
     begin
-      p = Portal.find(params[:pid])
       id = params[:id]
       if id.length == 36
-        @user = p.users.find_by_uuid(id)
+        @user = @portal.users.find_by_uuid(id)
       else
-        @user = p.users.find(id)
+        @user = @portal.users.find(id)
       end
       if request.get?
         respond_to do |wants|

@@ -3,7 +3,7 @@ class JnlpController < ApplicationController
   layout "standard"
   
   before_filter :find_jnlp, :except => [ :list ]
-  
+
   protected
   
   def find_jnlp
@@ -24,25 +24,25 @@ class JnlpController < ApplicationController
         render(:xml => "", :status => 201) # Created
       end
     when request.get?
-    
-    begin
-      raise unless request.post? || request.get?
-      if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
-        xml_parms = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
-        @jnlp = Jnlp.new(xml_parms)
-        @jnlp.portal = Portal.find(xml_parms['portal_id'])
-        @jnlp.save!
-        response.headers['Location'] = url_for(:action => :show, :id => @jnlp.id)
-        render(:xml => "", :status => 201) # Created
-      else
-        @jnlps = @portal.jnlps
-        respond_to do |wants|
-          wants.html
-          wants.xml { render :xml => (@jnlps.empty? ? "<jnlps />" : @jnlps.to_xml(:except => ['created_at', 'updated_at'])) }
+      begin
+        raise unless request.post? || request.get?
+        if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
+          xml_parms = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
+          @jnlp = Jnlp.new(xml_parms)
+          @jnlp.portal = Portal.find(xml_parms['portal_id'])
+          @jnlp.save!
+          response.headers['Location'] = url_for(:action => :show, :id => @jnlp.id)
+          render(:xml => "", :status => 201) # Created
+        else
+          @jnlps = @portal.jnlps
+          respond_to do |wants|
+            wants.html
+            wants.xml { render :xml => (@jnlps.empty? ? "<jnlps />" : @jnlps.to_xml(:except => ['created_at', 'updated_at'])) }
+          end
         end
+      rescue => e
+        render(:text => e, :status => 400) # Bad Request
       end
-    rescue => e
-      render(:text => e, :status => 400) # Bad Request
     end
   end
 
@@ -111,9 +111,10 @@ class JnlpController < ApplicationController
     if @jnlp = @portal.jnlps.find_by_id(params[:id])
       @jnlp.destroy
       flash[:notice] = "Jnlp #{id.to_s} was successfully deleted."
-    rescue => e
-      flash[:notice] = "nlp #{id.to_s} not found." 
+    else
+      flash[:notice] = "Jnlp #{id.to_s} not found." 
     end
     redirect_to :action => :list
   end
+  
 end

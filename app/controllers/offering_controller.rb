@@ -11,6 +11,14 @@ class OfferingController < ApplicationController
 
   BUNDLE_SIZE_LIMIT = 2**21-1 # 2M  
 
+  protected
+  
+  def find_offering
+    @offering = find_portal_resource('Offering', params[:id])
+  end  
+
+  public
+  
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
       begin
@@ -166,7 +174,7 @@ class OfferingController < ApplicationController
       end
     else
       begin
-        @bundles = @offering.find_in_workgroups(params[:wid]).bundles
+        @bundles = @offering.find_in_workgroups(params[:wid]).bundles('ASC')
         @headers["Content-Type"] = "text/xml"
         render :action => 'bundlelist', :layout => false
       rescue => e
@@ -209,9 +217,5 @@ class OfferingController < ApplicationController
       response.headers['Content-Encoding'] = encoding 
     end 
   end 
-  
-  def find_offering
-    @offering = find_portal_resource('Offering', params[:id])
-  end  
 
 end

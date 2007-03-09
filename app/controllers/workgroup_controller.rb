@@ -2,7 +2,14 @@ class WorkgroupController < ApplicationController
 
   layout "standard", :except => [ :atom ] 
   before_filter :find_workgroup, :except => [ :list ]
+
+  protected
   
+  def find_workgroup
+    @workgroup = find_portal_resource('Workgroup', params[:id])
+  end  
+
+  public
   
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
@@ -152,12 +159,6 @@ class WorkgroupController < ApplicationController
     redirect_to :action => :list
   end
   
-  protected
-  
-  def find_workgroup
-    @workgroup = find_portal_resource('Workgroup', params[:id])
-  end  
-
 end
 
 
