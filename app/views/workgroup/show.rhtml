@@ -18,7 +18,7 @@
     <%= %{#{b.created_at.to_s}<br >Bundle: #{b.id}, size: #{human_size(b.bundle_content.content.length)}<br />Workgroup membership version: #{b.workgroup_version.to_s}.<br />}%>
     <% b.socks.each do |s| %>
       <%= %{<br />Pod: #{s.pod.id}: UUID: #{s.pod.uuid})<br />Rim name: #{s.pod.rim_name}<br />Sock: #{s.id}#{if s.duplicate then " <em>duplicate</em>" end}, ms offset: #{s.ms_offset}.<br />} %>
-			<% if s.pas_type == 'note' %>
+			<% if s.pod.pas_type == 'note' %>
 				
 			<% end %>
       <div style="background-color: #99FFCC; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px font: sans-serif;">
