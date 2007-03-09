@@ -28,8 +28,8 @@ class Workgroup < ActiveRecord::Base
     WorkgroupMembership.delete_all(["workgroup_id = ?", self.id])
   end
   
-  def bundles
-    Bundle.find(:all, :order => "created_at DESC", :conditions => ['workgroup_id = ?', id])
+  def bundles(sort_direction='DESC')
+    Bundle.find(:all, :order => "created_at #{sort_direction}", :conditions => ['workgroup_id = ?', id])
   end
   
   def members

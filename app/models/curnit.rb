@@ -13,20 +13,35 @@ class Curnit < ActiveRecord::Base
   require 'zip/zipfilesystem'
 
   # look for the pod in this curnit
-  # returning a REXML object with the 
+  # returning an REXMLor LIBXML object with the 
   # xmlencoded form of the pod if found
   # and nil if not found
   def find_podxml_in_jar(pod_id)
-    if p = Pod.find(pod_id)
-      Zip::ZipFile.open(self.jar_file_path, Zip::ZipFile::CREATE) do |jar|
-        REXML::Document.new(jar.file.read("POD_#{p.uuid}.xml"))
+    uuid = if pod_id.kind_of?(String) && pod_id.length == 36
+      pod_id
+    else
+      Pod.find(pod_id).uuid
+    end
+    unless uuid.blank?
+      Zip::ZipFile.open(self.jar_path, Zip::ZipFile::CREATE) do |jar|
+        podxml = jar.file.read("POD_#{uuid}.xml")
+        if USE_LIBXML
+          XML::Parser.string(podxml).parse.root
+        else # use REXML
+          REXML::Document.new(podxml)
+        end
       end
     end
   end
 
   def curnit_xml
-    Zip::ZipFile.open(self.jar_file_path, Zip::ZipFile::CREATE) do |jar|
-      curnit_xml = REXML::Document.new(jar.file.read("curnit.xml"))
+    Zip::ZipFile.open(self.jar_path, Zip::ZipFile::CREATE) do |jar|
+      curnitxml = jar.file.read("curnit.xml")
+      if USE_LIBXML
+        curnit_xml = XML::Parser.string(curnitxml).parse.root
+      else # use REXML
+        curnit_xml = REXML::Document.new(curnitxml)
+      end
     end
   end
     
@@ -50,37 +65,43 @@ class Curnit < ActiveRecord::Base
   end
 
   def local_jar_empty?
-    !self.jar_last_modified || !File.exists?(self.jar_file_path)
+    !self.jar_last_modified || !File.exists?(self.jar_path)
   end
   
   # deal with strange issue of chroot at railsapp/ in development
   # mode and railsapp/public/ in production on the server
-  def jar_path
-    prefix = if Dir.getwd =~ /\/public$/ then "" else "public/" end
-    "#{prefix}curnits/#{self.id}/"
+  def path  
+    "#{SdsCache.instance.path}#{self.portal.id}/curnits/#{self.id}/"
   end
-  
+
   # >> c.jar_last_modified.iso8601.gsub(/\W/, '_')
   # => "2007_02_05T16_27_40_05_00"
-  def jar_file_path
-    "#{self.jar_path}#{self.filename}_#{self.jar_last_modified.iso8601.gsub(/\W/, '_')}.jar"
+  def jar_path
+    "#{self.path}#{self.filename}_#{self.jar_last_modified.iso8601.gsub(/\W/, '_')}.jar"
   end
   
   def update_jar
     if self.jar_last_modified.blank? || (self.jar_last_modified < self.get_last_modified)
       open(self.url) do |f|
-        if  !File.exists?(self.jar_path)
-          FileUtils.mkdir_p(self.jar_path)
+        if  !File.exists?(self.path)
+          FileUtils.mkdir_p(self.path)
         end
         self.jar_last_modified = f.last_modified
-        File.open(jar_file_path, 'wb') {|j| j.write(f.read) }
-        # x = system("cd #{jar_path}; jar xf #{jar_file_path}")
+        File.open(jar_path, 'wb') {|j| j.write(f.read) }
+        # x = system("cd #{path}; jar xf #{jar_path}")
         self.jar_digest = Base64.b64encode(Digest::MD5.digest(f.read))
-        Zip::ZipFile.open(self.jar_file_path, Zip::ZipFile::CREATE) do |jar|
-          curnit_xml = REXML::Document.new(jar.file.read("curnit.xml"))
-          self.uuid = REXML::XPath.first(curnit_xml, "//void[@property='curnitId']/object[@class='net.sf.sail.core.uuid.CurnitUuid']/string").text
-          self.root_pod_uuid =  REXML::XPath.first(curnit_xml, "//void[@property='rootPodId']/object[@class='net.sf.sail.core.uuid.PodUuid']/string").text
-          self.title = REXML::XPath.first(curnit_xml, "//void[@property='title']/string").text
+        Zip::ZipFile.open(self.jar_path, Zip::ZipFile::CREATE) do |jar|
+          if USE_LIBXML
+            curnit_xml = XML::Parser.string(jar.file.read("curnit.xml")).parse.root
+            self.uuid = curnit_xml.find("//void[@property='curnitId']/object[@class='net.sf.sail.core.uuid.CurnitUuid']/string").first.content
+            self.root_pod_uuid =  curnit_xml.find("//void[@property='rootPodId']/object[@class='net.sf.sail.core.uuid.PodUuid']/string").first.content
+            self.title = curnit_xml.find("//void[@property='title']/string").first.content
+          else # use REXML
+            curnit_xml = REXML::Document.new(jar.file.read("curnit.xml"))
+            self.uuid = REXML::XPath.first(curnit_xml, "//void[@property='curnitId']/object[@class='net.sf.sail.core.uuid.CurnitUuid']/string").text
+            self.root_pod_uuid =  REXML::XPath.first(curnit_xml, "//void[@property='rootPodId']/object[@class='net.sf.sail.core.uuid.PodUuid']/string").text
+            self.title = REXML::XPath.first(curnit_xml, "//void[@property='title']/string").text
+          end
         end
       end
     end

@@ -1,8 +1,6 @@
 class Jnlp < ActiveRecord::Base  
   set_table_name "sds_jnlps"
-  
-  before_save :check_always_update
-  
+    
   validates_presence_of :name, :url
 
   belongs_to :portal
@@ -11,10 +9,6 @@ class Jnlp < ActiveRecord::Base
   
   before_save :get_body
   before_save :get_last_modified
-
-  def check_always_update # if nil set to true
-    self.always_update ||= true
-  end
   
   def get_body
     if self.always_update || self.body.blank?
@@ -29,18 +23,20 @@ class Jnlp < ActiveRecord::Base
   end
   
   def get_last_modified
-    uri = URI.parse(url)
-    begin
-      Net::HTTP.start(uri.host, uri.port) do |http|
-        head = Net::HTTP.start(uri.host, uri.port) {|http| http.head(uri.path, 'User-Agent' => '')}
-        if head.class == Net::HTTPOK
-          self.last_modified=Time::httpdate(head['Last-Modified'])
-        else
-          'jnlp not available'
+    if self.always_update || self.body.blank?
+      uri = URI.parse(url)
+      begin
+        Net::HTTP.start(uri.host, uri.port) do |http|
+          head = Net::HTTP.start(uri.host, uri.port) {|http| http.head(uri.path, 'User-Agent' => '')}
+          if head.class == Net::HTTPOK
+            self.last_modified=Time::httpdate(head['Last-Modified'])
+          else
+            'jnlp not available'
+          end
         end
+      rescue SocketError
+        "network unavailable"
       end
-    rescue SocketError
-      "network unavailable"
     end
   end
   
