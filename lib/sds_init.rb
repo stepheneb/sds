@@ -85,7 +85,7 @@ end
 class TimeTracker
   def start
     @mark = @start = Time.now
-    puts "Time tracking started: #{@time_start.to_s}"
+    puts "Time tracking started: #{@start.to_s}"
   end
   def mark
     @now = Time.now
@@ -98,7 +98,7 @@ class TimeTracker
     mark
     elapsed = @now - @start
     str = sprintf('%4.1f', elapsed)
-    puts "Time tracking stopped, elapsed time: #{str}s"
+    puts "\nTime tracking stopped, elapsed time: #{str}s"
   end
 end
 

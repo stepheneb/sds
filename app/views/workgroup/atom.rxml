@@ -8,7 +8,7 @@ xml.feed "xml:lang" => "en-US", "xmlns" => 'http://www.w3.org/2005/Atom' do
   xml.updated Time.now.iso8601
   if @workgroups && @workgroups.any?
     @workgroups.each do |workgroup|
-      members = workgroup.users.version(workgroup.version) # array of SailUser objects
+      members = workgroup.sail_users.version(workgroup.version) # array of SailUser objects
       memberships = WorkgroupMembership.find_all_in_workgroup(workgroup.id) # array of WorkgroupMembership objects
       render :partial => 'workgroup', :locals => {:xm => xml, :workgroup => workgroup, :members => members, :memberships => memberships}
     end

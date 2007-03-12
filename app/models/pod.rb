@@ -77,19 +77,21 @@ class Pod < ActiveRecord::Base
 
   def get_html_body
     if self.curnit.local_jar_empty?
-      mil
+      nil
     else
       begin        
         podxml = self.curnit.find_podxml_in_jar(self.uuid)
         if USE_LIBXML # libxml version uses native Gnome xml library
           rim_id =  podxml.find("//void[@property='name'][string='#{self.rim_name}']/../@id").first.value #  example => "Rim0"
           response_id =  podxml.find("//void[@property='rim']/object[@idref='#{rim_id}']/../../void[@property='identifier']/string").first.content # example => "MasterWorkNote(62288):NOTE_RESPONSE_1"
-          self.html_body =  podxml.find("//void[@property='responseIdentifier'][string='#{response_id}']/../void[@property='prompt']/string").first.content
+          html_doc =  podxml.find("//void[@property='responseIdentifier'][string='#{response_id}']/../void[@property='prompt']/string").first.content
         else # use REXML
           rim_id =  REXML::XPath.first(podxml, "//void[@property='name'][string='#{self.rim_name}']/../@id").value #  example => "Rim0"
           response_id =  REXML::XPath.first(podxml, "//void[@property='rim']/object[@idref='#{rim_id}']/../../void[@property='identifier']/string").text # example => "MasterWorkNote(62288):NOTE_RESPONSE_1"
-          self.html_body = REXML::XPath.first(podxml, "//void[@property='responseIdentifier'][string='#{response_id}']/../void[@property='prompt']/string").text
+          html_doc = REXML::XPath.first(podxml, "//void[@property='responseIdentifier'][string='#{response_id}']/../void[@property='prompt']/string").text
         end
+        doc = Hpricot(html_doc)
+        self.html_body = doc.search("body").inner_html
       rescue
         nil
       end

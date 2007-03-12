@@ -10,10 +10,21 @@ namespace :sds do
   task :copy_bundle_content_to_related_model => :environment do
     tracker = TimeTracker.new
     tracker.start
+    puts "Bundles to process: #{Bundle.count.to_s}:"
+    count = 1
+    print "#{sprintf("%5d", count)}: "
     Bundle.find(:all, :select => 'id').each do |b1| 
-      b2 = Bundle.find(b1.id)
-      b2.bundle_content = BundleContent.new
-      b2.bundle_content.content = b2.content; b2.save
+      begin
+        b2 = Bundle.find(b1.id)
+        b2.bundle_content = BundleContent.new unless b2.bundle_content
+        b2.bundle_content.content = b2.content
+        b2.save!
+        print 'p'
+      rescue => e
+        print 'x'
+      end
+      print "\n#{sprintf("%5d", count)}: " unless count.remainder(50) != 0
+      count += 1
     end
     tracker.stop
   end
@@ -34,6 +45,33 @@ namespace :sds do
       end
     end
     tracker.stop
+  end
+  
+  desc "Process Pods to set derived type information.."
+  task :create_pod_derived_types => :environment do
+    tracker = TimeTracker.new
+    tracker.start
+    puts "Pods to process: #{Pod.count.to_s}:"
+    count = 1
+    print "#{sprintf("%5d", count)}: "
+    Pod.find(:all).each do |p|
+      begin
+        p.attributes=(p.kind)
+        flag = 'p'
+        if p.pas_type == 'note'
+          p.html_body = p.get_html_body
+          flag = 'n'
+        end
+        p.save!
+        print flag
+      rescue => e
+        print 'x'
+      end
+      print "\n#{sprintf("%5d", count)}: " unless count.remainder(50) != 0
+      count += 1
+    end
+    tracker.stop
+    puts
   end
  
   desc "Clear sds_cache of Bundles, Pods; and Socks, delete Pods and Socks from db; regenerate db and sds_cache"

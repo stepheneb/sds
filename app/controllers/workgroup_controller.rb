@@ -55,7 +55,7 @@ class WorkgroupController < ApplicationController
         render(:text => e, :status => 400) # Bad Request
       end
     else
-      @members = @workgroup.users.version(@workgroup.version) # array of SailUser objects
+      @members = @workgroup.sail_users.version(@workgroup.version) # array of SailUser objects
       @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects
       respond_to do |wants|
         wants.html
@@ -107,7 +107,7 @@ class WorkgroupController < ApplicationController
 
   def show
     begin
-      @members = @workgroup.users.version(@workgroup.version) # array of SailUser objects
+      @members = @workgroup.sail_users.version(@workgroup.version) # array of SailUser objects
       @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects
       if request.get?
         respond_to do |wants|
@@ -139,7 +139,7 @@ class WorkgroupController < ApplicationController
   end
   
   def report
-    @members = @workgroup.users.version(@workgroup.version) # array of SailUser objects
+    @members = @workgroup.sail_users.version(@workgroup.version) # array of SailUser objects
     @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects
   end
 

@@ -9,7 +9,7 @@ class Workgroup < ActiveRecord::Base
   validates_associated :offering
   
   # this creates the following possible search
-  # members = workgroup.users.version(1)
+  # members = workgroup.sail_users.version(1)
   has_many :sail_users, :through => :workgroup_memberships do
     def version(version)
       find :all, :conditions => ['version = ?', version] 
