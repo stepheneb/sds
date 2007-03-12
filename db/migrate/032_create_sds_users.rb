@@ -1,6 +1,6 @@
-class CreateSdsUsers < ActiveRecord::Migration
+class CreateUsers < ActiveRecord::Migration
   def self.up
-    create_table "sds_sds_users"  do |t|
+    create_table "sds_users"  do |t|
       t.column :login, :string
       t.column :email, :string
       t.column :first_name, :string
@@ -18,7 +18,7 @@ class CreateSdsUsers < ActiveRecord::Migration
       t.column :title, :string
     end
     
-    create_table "sds_roles_sds_users", :id => false, :force => true do |t|
+    create_table "sds_roles_users", :id => false, :force => true do |t|
       t.column :role_id, :integer
       t.column :sds_user_id, :integer
     end
@@ -35,7 +35,7 @@ class CreateSdsUsers < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table "sds_sds_users"
+    drop_table "sds_users"
     drop_table "sds_roles_sds_users"
     drop_table "sds_roles"
   end
