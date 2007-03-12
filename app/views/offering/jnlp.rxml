@@ -5,12 +5,16 @@ else
   jnlp = REXML::Document.new(@jnlp.body).root
 end
 
-href_url =     @controller.url_for(:controller => 'offering', :action => 'jnlp', :id => @offering.id, :wid => @workgroup.id, :version => @version, :only_path => false).to_s
+href_url = @controller.url_for(:controller => 'offering', :action => 'jnlp', :id => @offering.id, :wid => @workgroup.id, :version => @version, :only_path => false).to_s
 homepage_url = @controller.url_for(:controller => 'offering', :action => 'show', :id => @offering.id, :only_path => false).to_s
-config_url =   @controller.url_for(:controller => "offering", 
-  :action => "config", :id => @offering.id, :wid => @workgroup.id, 
-  :version => @workgroup.version, :savedata => @savedata, :only_path => false).to_s + "?"  + hash_to_url_params(request.query_parameters())
-  
+
+extra_properties = hash_to_url_params(request.query_parameters())
+config_url =   @controller.url_for(:controller => "offering", :action => "config", :id => @offering.id, 
+  :wid => @workgroup.id, :version => @workgroup.version, :savedata => @savedata, :only_path => false).to_s
+if extra_properties
+  config_url = config_url + '?' + extra_properties.to_s
+end
+
 sds_launcher = "net.sf.sail.emf.launch.EMFLauncher2"
 
 if USE_LIBXML
@@ -18,27 +22,41 @@ if USE_LIBXML
   res_prop_value = jnlp.find('./resources/property').first['value']
   app_desc_arg = jnlp.find('./application-desc/argument').first
 else
-  app_desc_main_class = jnlp.elements["application-desc"].attributes["main-class"]
-  res_prop_value = jnlp.elements["resources/property"].attributes["value"]
+  app_desc = jnlp.elements["application-desc"]
+  app_desc_main_class = app_desc.attributes["main-class"]
+  res_prop = jnlp.elements["resources/property"]
+  res_prop_value = res_prop.attributes["value"]
   app_desc_arg = jnlp.elements["application-desc/argument"]
 end
 
 # if there is a file-based launcher convert to an sds launcher
 case "net.sf.sail.emf.launch.EMFLauncher3"
 when app_desc_main_class
-  app_desc_main_class = sds_launcher
+  if USE_LIBXML
+  else
+    app_desc.attributes["main-class"] = sds_launcher
+  end
 when res_prop_value
-  res_prop_value = sds_launcher
+  if USE_LIBXML
+  else
+    res_prop.attributes["value"] = sds_launcher
+  end
 end
 
 # if there is an sds_launcher set the application-desc/argument to the config_url
-case sds_launcher
-when app_desc_main_class, res_prop_value
-  if USE_LIBXML
+if USE_LIBXML
+  case sds_launcher
+  when app_desc_main_class, res_prop_value
     app_desc_arg.content = config_url
-  else
-    app_desc_arg.text = config_url
   end
+else
+# I haven't figured out why this code isn't working
+#  breakpoint
+#  case sds_launcher
+#  when app_desc_main_class, res_prop_value
+#    breakpoint
+    app_desc_arg.text = config_url
+#  end
 end
 
 resources = []
