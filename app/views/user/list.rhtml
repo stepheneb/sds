@@ -6,7 +6,7 @@
         odd_or_even = 1 - odd_or_even
     %>
     <tr valign="top" class="ListLine<%= odd_or_even %>">
-        <% if current_sds_user.email == 'stephen@concord.org'%>
+        <% if current_user.email == 'stephen@concord.org'%>
         <td align="Listactions">
             <%= link_to 'Edit', :action => 'edit', :id => user %><br />
             <%= link_to 'Delete', { :action => 'destroy', :id => user }, :confirm => 'Are you sure?', :post => true %>

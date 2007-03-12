@@ -3,7 +3,7 @@ class WorkgroupMembership < ActiveRecord::Base
   set_table_name "sds_workgroup_memberships"
 
   belongs_to :workgroup
-  belongs_to :user
+  belongs_to :sail_user
   
   def self.find_all_in_workgroup(wid)
     version = Workgroup.find(wid).version

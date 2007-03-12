@@ -1,7 +1,7 @@
-class SdsUser < ActiveRecord::Base
-  set_table_name "sds_sds_users"
+class User < ActiveRecord::Base
+  set_table_name "sds_users"
 
-  has_and_belongs_to_many :roles, options = {:join_table => "sds_roles_sds_users"}
+  has_and_belongs_to_many :roles, options = {:join_table => "sds_roles_users"}
 
   require 'digest/sha1'
   require 'digest/md5' 
@@ -23,25 +23,25 @@ class SdsUser < ActiveRecord::Base
     "#{first_name} #{last_name}"
   end
 
-  # Authenticates an sds_user by their login name and unencrypted password.  Returns the sds_user or nil.
+  # Authenticates an user by their login name and unencrypted password.  Returns the user or nil.
   def self.authenticate(identifier, password)
     unless remote_authenticate(identifier, password)
       local_authenticate(identifier, password)
     end
   end
 
-  def self.synch_with_local_sds_user(cc_user, password)
-    sds_user = SdsUser.find_by_email(ccuser.user_email) unless sds_user = SdsUser.find_by_login(ccuser.user_username)
-    if sds_user.blank?
-      sds_user = SdsUser.new
-      sds_user.login = ccuser.user_username
-      sds_user.email = ccuser.user_email
-      sds_user.first_name = ccuser.user_first_name 
-      sds_user.last_name = ccuser.user_last_name
-      sds_user.save
+  def self.synch_with_local_user(cc_user, password)
+    user = User.find_by_email(ccuser.user_email) unless user = User.find_by_login(ccuser.user_username)
+    if user.blank?
+      user = User.new
+      user.login = ccuser.user_username
+      user.email = ccuser.user_email
+      user.first_name = ccuser.user_first_name 
+      user.last_name = ccuser.user_last_name
+      user.save
     else
-      if sds_user.password_hash != ccuser.user_password
-        sds_user.save
+      if user.password_hash != ccuser.user_password
+        user.save
       end
     end
   end
@@ -52,7 +52,7 @@ class SdsUser < ActiveRecord::Base
     begin
       if ccuser = SunflowerMystriUser.find_user(identifier)
         if remote_authenticated?(password, ccuser.user_password)
-          synch_with_local_sds_user(cc_user, password)
+          synch_with_local_user(cc_user, password)
         else
           nil
         end
@@ -69,7 +69,7 @@ class SdsUser < ActiveRecord::Base
   end
 
   def self.local_authenticate(identifier, password)
-    u = SdsUser.find_by_login(identifier) || SdsUser.find_by_email(identifier)
+    u = User.find_by_login(identifier) || User.find_by_email(identifier)
     u && u.local_authenticated?(password) ? u : nil
   end
 
@@ -89,7 +89,7 @@ class SdsUser < ActiveRecord::Base
     Digest::SHA1.hexdigest("--#{salt}--#{password}--")
   end
 
-  # Encrypts the password with the sds_user salt
+  # Encrypts the password with the user salt
   def salted_sha_encrypt(password)
     self.class.local_encrypt(password, salt)
   end
@@ -109,7 +109,7 @@ class SdsUser < ActiveRecord::Base
     remember_token_expires_at && Time.now.utc < remember_token_expires_at 
   end
 
-  # These create and unset the fields required for remembering sds_users between browser closes
+  # These create and unset the fields required for remembering users between browser closes
   def remember_me
     self.remember_token_expires_at = 2.weeks.from_now.utc
     self.remember_token            = salted_sha_encrypt("#{email}--#{remember_token_expires_at}")

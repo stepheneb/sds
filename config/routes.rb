@@ -62,6 +62,15 @@ ActionController::Routing::Routes.draw do |map|
 #  map.connect ':pid/workgroup/atom', :controller => 'workgroup', :action => 'atom'
    map.connect ':pid/workgroup/:id', :controller => 'workgroup', :action => 'show'
 
+# sail_user
+
+  map.connect ':pid/sail_user', :controller => 'sail_user', :action => 'list'
+  map.connect ':pid/sail_user/list', :controller => 'sail_user', :action => 'list'
+  map.connect ':pid/sail_user/create', :controller => 'sail_user', :action => 'create'
+  map.connect ':pid/sail_user/edit/:id', :controller => 'sail_user', :action => 'edit'
+#  map.connect ':pid/sail_user/destroy/:id', :controller => 'sail_user', :action => 'destroy'
+  map.connect ':pid/sail_user/:id', :controller => 'sail_user', :action => 'show'
+
 # user
 
   map.connect ':pid/user', :controller => 'user', :action => 'list'
@@ -102,7 +111,7 @@ ActionController::Routing::Routes.draw do |map|
   # Install the default route as the lowest priority.
 #  map.connect ':controller/:action/:id'
 
-  map.connect 'sds_user/:action', :controller => 'sds_user'
+  map.connect 'user/:action', :controller => 'user'
   
   map.connect ':pid', :controller => 'home', :action => 'index'
   

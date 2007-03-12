@@ -32,19 +32,19 @@
             <span class="active">        
             <%= link_to 'Curnits', :controller => 'curnit', :action => 'list' %> | 
             <%= link_to 'Jnlps', :controller => 'jnlp', :action => 'list' %> | 
-            <%= link_to 'Users', :controller => 'user', :action => 'list' %> | 
+            <%= link_to 'SailUsers', :controller => 'sail_user', :action => 'list' %> | 
             <%= link_to 'Offerings', :controller => 'offering', :action => 'list' %> | 
             <%= link_to 'Workgroups', :controller => 'workgroup', :action => 'list' %>
             </span>
           <% else %>
-            <span class="inactive">Curnits | Jnlps | Users | Offerings | Workgroups</span>
+            <span class="inactive">Curnits | Jnlps | SailUsers | Offerings | Workgroups</span>
           <% end %>
         </div>
         <div id="menubar_right">
           <% if logged_in? %>
-            <span class="salutation">Welcome <%= current_sds_user.name %>,</span> <%= link_to 'Logout', :controller => 'sds_user', :action => 'logout' %>
+            <span class="salutation">Welcome <%= current_user.name %>,</span> <%= link_to 'Logout', :controller => 'user', :action => 'logout' %>
           <% else %>
-            <%= link_to 'Login', :controller => 'sds_user', :action => 'login' %>
+            <%= link_to 'Login', :controller => 'user', :action => 'login' %>
           <% end %>
         </div>
       </div>

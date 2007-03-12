@@ -1,6 +1,6 @@
-class User < ActiveRecord::Base
+class SailUser < ActiveRecord::Base
   
-  set_table_name "sds_users"
+  set_table_name "sds_sail_users"
 
   validates_presence_of :first_name, :last_name
 

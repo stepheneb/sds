@@ -5,7 +5,7 @@ class Bundle < ActiveRecord::Base
   has_many :socks
 
 #  cattr_accessor :console_log
-  cattr_reader :process_errors
+  cattr_reader :process_errors, :session_bundle
 
   if USE_LIBXML 
     @@xml_parser = XML::Parser.new
@@ -102,23 +102,23 @@ class Bundle < ActiveRecord::Base
   def parse_content_xml
     if USE_LIBXML
       @@xml_parser.string = self.bundle_content.content
-      nil unless @session_bundle = @@xml_parser.parse.root
+      nil || @@session_bundles = @@xml_parser.parse.root
     else
-      nil unless @session_bundle = REXML::Document.new(self.content).root
+      nil || @@session_bundles = REXML::Document.new(self.content).root
     end
   end
   
   def process_sail_session_attributes
     if USE_LIBXML
-      self.sail_curnit_uuid = @session_bundle.sds_get_attribute_with_default('curnitUUID', curnit.uuid)
-      self.sail_session_uuid = @session_bundle.sds_get_attribute_with_default('sessionUUID', 0)
-      self.sail_session_start_time = @session_bundle.sds_get_attribute_with_default('start', self.created_at) { |t| SdsTime.java8601(t) }
-      self.sail_session_end_time = @session_bundle.sds_get_attribute_with_default('stop', self.created_at) { |t| SdsTime.java8601(t) }
+      self.sail_curnit_uuid = @@session_bundles.sds_get_attribute_with_default('curnitUUID', curnit.uuid)
+      self.sail_session_uuid = @@session_bundles.sds_get_attribute_with_default('sessionUUID', 0)
+      self.sail_session_start_time = @@session_bundles.sds_get_attribute_with_default('start', self.created_at) { |t| SdsTime.java8601(t) }
+      self.sail_session_end_time = @@session_bundles.sds_get_attribute_with_default('stop', self.created_at) { |t| SdsTime.java8601(t) }
     else
-      self.sail_curnit_uuid = @session_bundle.attributes['curnitUUID'] || 'x' * 36
-      self.sail_session_uuid = @session_bundle.attributes['sessionUUID'] || 0
-      self.sail_session_start_time = SdsTime.fix_java8601(@session_bundle.attributes['start']) || self.created_at
-      self.sail_session_end_time = SdsTime.fix_java8601(@session_bundle.attributes['stop']) || self.created_at
+      self.sail_curnit_uuid = @@session_bundles.attributes['curnitUUID'] || 'x' * 36
+      self.sail_session_uuid = @@session_bundles.attributes['sessionUUID'] || 0
+      self.sail_session_start_time = SdsTime.fix_java8601(@@session_bundles.attributes['start']) || self.created_at
+      self.sail_session_end_time = SdsTime.fix_java8601(@@session_bundles.attributes['stop']) || self.created_at
     end
   end
   
@@ -126,7 +126,7 @@ class Bundle < ActiveRecord::Base
   def process_sock_parts(console_log=nil)
     curnit = self.workgroup.offering.curnit
     if USE_LIBXML
-      @session_bundle.find('//sockParts').each do |sockPart|
+      @@session_bundles.find('//sockParts').each do |sockPart|
         uuid = sockPart.find('@podId').first.value
         rim_name = sockPart.find('@rimName').first.value
         shape = sockPart.find('@rimShape').first
@@ -147,7 +147,7 @@ class Bundle < ActiveRecord::Base
         end
       end
     else # use REXML
-      @session_bundle.elements.to_a('//sockParts').each do |sockPart|
+      @@session_bundles.elements.to_a('//sockParts').each do |sockPart|
         uuid = sockPart.attributes["podId"].to_s
         rim_name = sockPart.attributes["rimName"].to_s
         shape = sockPart.attributes["rimShape"].to_s

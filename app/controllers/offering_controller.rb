@@ -122,7 +122,7 @@ class OfferingController < ApplicationController
     else
       case params[:type]
       when 'user'
-        @workgroup = User.find(params[:uid]).workgroup
+        @workgroup = SailUser.find(params[:uid]).workgroup
       when 'workgroup'
         @workgroup = Workgroup.find(params[:wid])
       end

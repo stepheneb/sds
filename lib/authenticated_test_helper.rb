@@ -1,7 +1,7 @@
 module AuthenticatedTestHelper
-  # Sets the current sds_user in the session from the sds_user fixtures.
-  def login_as(sds_user)
-    @request.session[:sds_user] = sds_user ? sds_users(sds_user).id : nil
+  # Sets the current user in the session from the user fixtures.
+  def login_as(user)
+    @request.session[:user] = user ? users(user).id : nil
   end
 
   def content_type(type)
@@ -12,9 +12,9 @@ module AuthenticatedTestHelper
     @request.env["HTTP_ACCEPT"] = accept
   end
 
-  def authorize_as(sds_user)
-    if sds_user
-      @request.env["HTTP_AUTHORIZATION"] = "Basic #{Base64.encode64("#{sds_users(sds_user).login}:test")}"
+  def authorize_as(user)
+    if user
+      @request.env["HTTP_AUTHORIZATION"] = "Basic #{Base64.encode64("#{users(user).login}:test")}"
       accept       'application/xml'
       content_type 'application/xml'
     else

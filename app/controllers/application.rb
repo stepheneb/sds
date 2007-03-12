@@ -8,11 +8,11 @@ class ApplicationController < ActionController::Base
   model :curnit
   model :jnlp
   model :offering
-  model :user
+  model :sail_user
   model :workgroup
   model :bundle
   
-  model :sds_user
+  model :user
   model :sunflower_model
   model :sunflower_mystri_user
   
@@ -27,7 +27,7 @@ class ApplicationController < ActionController::Base
   include AuthenticatedSystem
   before_filter :find_portal
   before_filter :login_from_cookie
-  before_filter :check_sds_user
+  before_filter :check_user
 
   after_filter :calc_content_length 
 
@@ -113,13 +113,13 @@ private
     @portal = if params[:pid] then Portal.find(params[:pid]) end
   end
  
-  def check_sds_user
-    self.current_sds_user = SdsUser.find_by_login('anonymous') unless logged_in?
-#    self.current_sds_user = User.find_by_login('anonymous', :include => :roles) unless logged_in?
+  def check_user
+    self.current_user = User.find_by_login('anonymous') unless logged_in?
+#    self.current_user = User.find_by_login('anonymous', :include => :roles) unless logged_in?
   end
 
   def check_authentication
-    if current_sds_user.email == "anonymous"
+    if current_user.email == "anonymous"
       session[:intended_action] = [controller_name, action_name] 
       flash[:warning]  = "You need to be logged in first."
       redirect_to :controller => 'user', :action => 'login' 

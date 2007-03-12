@@ -395,3 +395,94 @@ $ script/console
 => nil
 >> b.content.length
 => 1929002
+
+----
+
+Bundle content conversion:
+
+t1 = Time.now; Bundle.find(:all, :select => 'id').each {|b1| b2 = Bundle.find(b1.id); b2.bundle_content = BundleContent.new; b2.bundle_content.content = b2.content; b2.save}; puts Time.now - t1
+64.975221
+
+
+
+b = Bundle.find(2855); nil
+w = b.workgroup; nil
+o = w.offering; nil
+c = o.curnit; nil
+
+---
+
+
+rim_shape,        (rim_name[/(undefined).*/, 1] || p.rim_name)             => 
+
+def pod_kind(shape, name)
+    name = name[/(undefined).*/, 1] || name
+    Hash[*[POD_TYPE_KEYS, POD_TYPES[[shape, name]]].transpose.flatten]
+end
+
+POD_TYPE_KEYS = ['mime_type', 'encoding', 'pas_type', 'extension']
+POD_TYPES = {
+  ['bytearray',        'ot.learner.data'    ] => ['application/xml+otrunk',               'gzip+b64',   'ot.learner.data',       'otml'],
+  ['bytearray',        'otrunk_drawing'     ] => ['application/xml+otrunk-drawing'        'gzip+b64',   'otrunk_drawing',        'otml'],
+  ['bytearray',        'trialData'          ] => ['java_object/gzip+b64',                 'gzip+b64',   'trial_data',            'pojo'],
+  ['bytearray',        'findingsData'       ] => ['java_object/gzip+b64',                 'gzip+b64',   'findings_data',         'pojo'],
+  ['bytearray',        ''                   ] => ['java_object/gzip+b64',                 'gzip+b64',   'generic_pas_object',    'pojo'],
+  ['text',             'model.activity.data'] => ['application/xml+pas-modelreport',      'escaped',    'model.activity.data',   'xml' ],
+  ['text',             'modelActivityData'  ] => ['application/xml+pas-modelreport',      'escaped',    'ModelActivityData',     'xml' ],
+  ['text',             'navigation_log'     ] => ['application/xml+pas-navigation-log',   'escaped',    'navigation_log',        'xml' ],
+  ['text',             'curnit_map'         ] => ['application/xml+pas-curnit-map',       'escaped',    'curnit_map',            'xml' ],
+  ['text',             'session_state'      ] => ['application/xml+pas-session-state',    'escaped',    'session_state',         'xml' ],
+  ['text',             'airbag99'           ] => ['application/xml+svg',                  'escaped',    'pedraw',                'svg' ],
+  ['text',             'airbag999'          ] => ['application/xml+svg',                  'escaped',    'pedraw',                'svg' ],
+  ['text',             'undefined'          ] => ['text/plain',                           'escaped',    'note',                  'txt' ]
+}
+Hash[*[pod_type_keys, pt].transpose.flatten]
+
+pod_types = {
+  ['bytearray',        'ot.learner.data'    ] => ['application/xml+otrunk',               'gzip+b64',   'ot.learner.data',       'otml']
+}
+----
+
+
+>> Pod.find(:all).collect {|p| p.rim_name}.uniq
+=> ["modelActivityData", "undefined1", "undefined2", "model.activity.data", "undefined33", "undefined3", "undefined4", "undefined5", "undefined6", "undefined7", "undefined8", "undefined9", "airbag99", "undefined11", "undefined12", "undefined13", "undefined14", "undefined15", "undefined16", "undefined17", "undefined18", "undefined19", "airbag999", "undefined25", "undefined26", "undefined27", "undefined28", "undefined29", "undefined30", "undefined31", "undefined32", "undefined34", "undefined35", "undefined36", "undefined37", "undefined38", "undefined39", "undefined41", "undefined42", "undefined43", "undefined44", "undefined45", "undefined46", "undefined47", "undefined48", "undefined49", "undefined50", "undefined20", "undefined21", "undefined22", "undefined23", "undefined24", "otrunk_drawing", "findingsData", "trialData", "undefined40", "undefined51", "undefined52", "undefined53", "navigation_log", "session_state", "undefined10", "undefined54", "undefined55", "curnit_map", "undefined56", "ot.learner.data", "undefined58", "undefined59", "undefined60", "undefined61", "undefined62"]
+
+Ok those undefined rim_names are cluttering up this pseudo namespace. Here's the list with all of them collapsed into one 'undefined' string:
+
+>> Pod.find(:all).collect {|p| p.rim_name[/(undefined).*/, 1] || p.rim_name }.uniq
+=> ["modelActivityData", "undefined", "model.activity.data", "airbag99", "airbag999", "otrunk_drawing", "findingsData", "trialData", "navigation_log", "session_state", "curnit_map", "ot.learner.data"]
+
+There are only two shapes we are using:
+
+>> Pod.find(:all).collect {|p| p.rim_shape}.uniq
+=> ["text", "bytearray"]
+
+----
+
+Change database table names
+
+from            =>  to
+---------------------------------------
+sds_users           =>  sds_sail_users
+sds_sds_users       =>  sds_users
+sds_roles_sds_users =>  sds_roles_users
+sds_offerings_users =>  sds_offerings_sail_users
+  user_id           =>  sail_user_id  
+sds_workgroup_memberships
+  user_id           =>  sail_user_id
+  (the name of the column the index refers to appears to have been automatically updated)
+  
+sds_roles_sds_users
+  sds_user_id       =>  user_id
+  
+*Problem* changing field name in sds_offerings_sail_users
+--------------------------------------------------------
+  Couldn't change field sail_user_id.
+  MySQL said: Invalid default value for 'sail_user_id'
+  
+At least using CocoaMySQL-SBG I had to enter a default value of 0 in order to change the field name. The Null attribute for the filed was set to NO.
+
+In table sds_roles_sds_users the Null attribute values for both fields were set to YES and the valuefor the Default attribute was set to NULL.
+
+In the table sds_workgroup_memberships the Default attribute for the field user_id was already set to 0.
+

@@ -10,7 +10,7 @@ class Workgroup < ActiveRecord::Base
   
   # this creates the following possible search
   # members = workgroup.users.version(1)
-  has_many :users, :through => :workgroup_memberships do
+  has_many :sail_users, :through => :workgroup_memberships do
     def version(version)
       find :all, :conditions => ['version = ?', version] 
     end
@@ -33,7 +33,7 @@ class Workgroup < ActiveRecord::Base
   end
   
   def members
-    self.users.version(self.version)
+    self.sail_users.version(self.version)
   end
   
   def member_names
