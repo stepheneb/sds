@@ -34,12 +34,12 @@ case "net.sf.sail.emf.launch.EMFLauncher3"
 when app_desc_main_class
   if USE_LIBXML
   else
-    app_desc.attributes["main-class"] = sds_launcher
+    app_desc.attributes["main-class"] = app_desc_main_class = sds_launcher
   end
 when res_prop_value
   if USE_LIBXML
   else
-    res_prop.attributes["value"] = sds_launcher
+    res_prop.attributes["value"] = res_prop_value = sds_launcher
   end
 end
 
@@ -51,12 +51,10 @@ if USE_LIBXML
   end
 else
 # I haven't figured out why this code isn't working
-#  breakpoint
-#  case sds_launcher
-#  when app_desc_main_class, res_prop_value
-#    breakpoint
+  case sds_launcher
+  when app_desc_main_class, res_prop_value
     app_desc_arg.text = config_url
-#  end
+  end
 end
 
 resources = []
