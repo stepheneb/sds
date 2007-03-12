@@ -9,6 +9,33 @@ module OfferingHelper
       }
     }
   end
+  
+  def render_jnlp_body(xml, jnlp, resources)
+    #  xml << info.to_s
+    xml.information {
+      xml.title(@portal.title)
+      xml.vendor(@portal.vendor)
+      xml.homepage("href" => @portal.home_page_url)
+      xml.description(@portal.description)
+      xml.icon("href" => @portal.image_url, "height" => "64", "width" => "64")
+  #    xml << nl + "<offline-allowed/>" 
+    }
+    if USE_LIBXML
+      xml << jnlp.find('./security').to_s
+    else
+      xml << jnlp.elements["security"].to_s
+    end
+
+    resources.each do |r| 
+      xml << "\n" + r.to_s
+    end
+
+    if USE_LIBXML
+      xml << "\n#{jnlp.find('./application-desc')}"
+    else
+      xml << "\n#{jnlp.elements["application-desc"]}"
+    end
+  end
 
   def hash_to_url_params(hash)
     url_params = Array.new    

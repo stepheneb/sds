@@ -1,6 +1,10 @@
-jnlp = XML::Parser.string(@jnlp.body).parse.root
+if USE_LIBXML
+  jnlp = XML::Parser.string(@jnlp.body).parse.root
+else
+  require "rexml/document"
+  jnlp = REXML::Document.new(@jnlp.body).root
+end
 
-nl = "\n"
 href_url =     @controller.url_for(:controller => 'offering', :action => 'jnlp', :id => @offering.id, :wid => @workgroup.id, :version => @version, :only_path => false).to_s
 homepage_url = @controller.url_for(:controller => 'offering', :action => 'show', :id => @offering.id, :only_path => false).to_s
 config_url =   @controller.url_for(:controller => "offering", 
@@ -9,9 +13,15 @@ config_url =   @controller.url_for(:controller => "offering",
   
 sds_launcher = "net.sf.sail.emf.launch.EMFLauncher2"
 
-app_desc_main_class = jnlp.find('./application-desc').first['main-class']
-res_prop_value = jnlp.find('./resources/property').first['value']
-app_desc_arg = jnlp.find('./application-desc/argument').first
+if USE_LIBXML
+  app_desc_main_class = jnlp.find('./application-desc').first['main-class']
+  res_prop_value = jnlp.find('./resources/property').first['value']
+  app_desc_arg = jnlp.find('./application-desc/argument').first
+else
+  app_desc_main_class = jnlp.elements["application-desc"].attributes["main-class"]
+  res_prop_value = jnlp.elements["resources/property"].attributes["value"]
+  app_desc_arg = jnlp.elements["application-desc/argument"]
+end
 
 # if there is a file-based launcher convert to an sds launcher
 case "net.sf.sail.emf.launch.EMFLauncher3"
@@ -24,31 +34,25 @@ end
 # if there is an sds_launcher set the application-desc/argument to the config_url
 case sds_launcher
 when app_desc_main_class, res_prop_value
-  app_desc_arg.content = config_url
+  if USE_LIBXML
+    app_desc_arg.content = config_url
+  else
+    app_desc_arg.text = config_url
+  end
 end
 
 resources = []
-jnlp.find('//resources').each { |e| resources << e.to_s } 
+if USE_LIBXML
+  jnlp.find('//resources').each { |e| resources << e.to_s } 
+else
+  jnlp.elements.each("//resources") { |e| resources << e } 
+end
 
 xml.instruct! :xml, :version=>"1.0", :encoding=>"UTF-8"
-xml.jnlp("spec" => jnlp['spec'], "codebase" => jnlp['codebase']) {
+if USE_LIBXML
+  xml.jnlp("spec" => jnlp['spec'], "codebase" => jnlp['codebase']) { render_jnlp_body(xml, jnlp, resources) }
+else
+  xml.jnlp("spec" => jnlp.attributes['spec'], "codebase" => jnlp.attributes['codebase']) { render_jnlp_body(xml, jnlp, resources) }
+end
 
-#  xml << info.to_s
-
-  xml.information {
-    xml.title(@portal.title)
-    xml.vendor(@portal.vendor)
-    xml.homepage("href" => @portal.home_page_url)
-    xml.description(@portal.description)
-    xml.icon("href" => @portal.image_url, "height" => "64", "width" => "64")
-#    xml << nl + "<offline-allowed/>" 
-  }
-  xml << jnlp.find('./security').to_s
-  
-  resources.each do |r| 
-    xml << nl + r.to_s
-  end
-
-  xml << nl + jnlp.find('./application-desc').to_s
-}
 
