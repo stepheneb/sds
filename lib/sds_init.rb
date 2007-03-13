@@ -67,6 +67,7 @@ class SdsTime < Time
   end
 end
 
+if USE_LIBXML
 # This was used with LIBXML to scan for an attribute and return a default 
 # value if the xml attribute wasn't there.
 # If a block is passed and the attribute is not found in the dom
@@ -80,6 +81,7 @@ class XML::Node
       alternate_value
     end
   end
+end
 end
 
 class TimeTracker

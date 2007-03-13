@@ -1,5 +1,6 @@
 
 namespace :sds do
+  require 'lib/sds_init.rb'
 
   desc "display the cache path"
   task :path => :environment do
