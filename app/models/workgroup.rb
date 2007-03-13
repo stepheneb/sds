@@ -3,7 +3,27 @@ class Workgroup < ActiveRecord::Base
   belongs_to :portal
   belongs_to :offering
   has_many :workgroup_memberships
-  has_many :bundles
+  
+  # see: http://weblog.jamisbuck.org/2007/1/18/activerecord-association-scoping-pitfalls
+  # and http://weblog.jamisbuck.org/2006/10/18/skinny-controller-fat-model
+  
+  has_many :bundles do
+    def asc # this is the default behavior
+      @asc ||= find(:all, :order => "created_at ASC")
+    end
+    def desc
+      @desc ||= find(:all, :order => "created_at DESC")
+    end
+  end
+
+  has_many :valid_bundles, :class_name => "Bundle", :conditions => 'process_status = 1' do
+    def asc # this is the default behavior
+      @asc ||= find(:all, :order => "created_at ASC")
+    end
+    def desc
+      @desc ||= find(:all, :order => "created_at DESC")
+    end
+  end 
 
   validates_presence_of :offering, :name
   validates_associated :offering
@@ -26,10 +46,6 @@ class Workgroup < ActiveRecord::Base
   
   def delete_workgroup_memberships
     WorkgroupMembership.delete_all(["workgroup_id = ?", self.id])
-  end
-  
-  def bundles(sort_direction='DESC')
-    Bundle.find(:all, :order => "created_at #{sort_direction}", :conditions => ['workgroup_id = ?', id])
   end
   
   def members

@@ -174,7 +174,8 @@ class OfferingController < ApplicationController
       end
     else
       begin
-        @bundles = @offering.find_in_workgroups(params[:wid]).bundles('ASC')
+        @workgroup = @offering.find_in_workgroups(params[:wid])
+        @bundles = @workgroup.valid_bundles.asc
         @headers["Content-Type"] = "text/xml"
         render :action => 'bundlelist', :layout => false
       rescue => e

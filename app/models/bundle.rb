@@ -2,7 +2,13 @@ class Bundle < ActiveRecord::Base
   set_table_name "sds_bundles"
   belongs_to :workgroup
   belongs_to :bundle_content
-  has_many :socks
+
+  has_many :socks do
+    def find_notes
+      note = 'note'
+      @find_notes ||= find(:all).select {|s| s.pod.pas_type == note}
+    end
+  end
 
 #  cattr_accessor :console_log
   cattr_reader :process_errors, :session_bundle
@@ -12,6 +18,9 @@ class Bundle < ActiveRecord::Base
   end
   
   attr_accessor :bc
+  
+  def valid
+  end
   
   def before_save
     self.bundle_content ||= BundleContent.new(:content => self.bc)

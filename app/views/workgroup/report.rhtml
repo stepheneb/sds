@@ -5,30 +5,28 @@
   <%= %{
     Workgroup: "#{@workgroup.name}", <em>(id: #{@workgroup.id})</em><br />
     Members: #{@workgroup.member_names}, <em>(ids: #{@members.collect {|m| m.id}.join(', ')})</em>. <br />
-    Sessions: #{@workgroup.bundles.length.to_s} <br />
+    Valid Sessions: #{@workgroup.valid_bundles.length.to_s} <br />
     Offering: "#{@workgroup.offering.name}", <em>(id: #{@workgroup.offering.id})</em><br />
     Curnit: "#{@workgroup.offering.curnit.name}" <em>(id: #{@workgroup.offering.curnit.id}), last updated: #{@workgroup.offering.curnit.jar_last_modified}</em>
     } %>
 </p>
 
 
-<% @workgroup.bundles.each do |b| %>
+<% @workgroup.valid_bundles.desc.each do |b| %>
   <hr />
   <div style="background-color: #BBFFEE; padding: 10px; border: 1px solid gray; margin: 10px; font: 9px sans-serif;">
     <%= %{#{b.created_at.to_s}<br >Bundle: #{b.id}, size: #{human_size(b.bundle_content.content.length)}<br />Workgroup membership version: #{b.workgroup_version.to_s}.<br />}%>
-    <% b.socks.each do |s| %>
-      <% 
-        pod = s.pod
-        kinds = pod.kind.collect {|k, v| "#{k}: #{v}; " }.join 
-      %>
-      <% if pod.pas_type == 'note' %>
-        <%= %{<br />Pod: #{pod.id}: UUID: #{pod.uuid})<br />Rim name: #{pod.rim_name}, <br />#{kinds}<br />
-        Sock: #{s.id}#{if s.duplicate then " <em>duplicate</em>" end}, ms offset: #{s.ms_offset}.<br />} %>
-        <%= pod.html_body %>
-        <div style="background-color: #99FFCC; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px font: sans-serif;">
+    <% b.socks.find_notes.each do |s| %>
+      <div style="background-color: #99FFCC; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px font: sans-serif;">
+        <% pod = s.pod %>
+        <%= "Pod: id: #{pod.id}, uuid: #{pod.uuid}, rim name: #{pod.rim_name}"%>
+        <div style="background-color: #DDFFEE; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px font: sans-serif;">
+          <%= s.pod.html_body %>
+        </div>
+        <div style="background-color: white; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px font: sans-serif;">
           <%= s.value %>
         </div>
-      <% end %>
+      </div>
     <% end %>
   </div>
 <% end %>

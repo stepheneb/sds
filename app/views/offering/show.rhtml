@@ -15,7 +15,7 @@
     <td><b>Id</b></td>
     <td><b>Name</b></td>
     <td><b>Members</b></td>
-    <td><b>Sessions</b></td>
+    <td><b>Valid Sessions</b></td>
   </tr>
   <% @offering.workgroups.each do |w| %>
     <% odd_or_even = 1 - odd_or_even %>
@@ -23,7 +23,7 @@
       <td><%= w.id.to_s %></td>
       <td><%= w.name %></td>
       <td><%= w.member_names %></td>
-      <td><%= w.bundles.length.to_s %>
+      <td><%= w.valid_bundles.length.to_s %>
       <td>
         <%= link_to 'Report', {:controller => 'workgroup', :action => 'report', :id => w.id}, {:title => "Report on the work done by this workgroup."} %> | 
         <%= link_to 'Show', {:controller => 'workgroup', :action => 'show', :id => w.id}, {:title => "Show the raw data returned by this workgroup."} %> | 
