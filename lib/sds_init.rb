@@ -83,22 +83,51 @@ class XML::Node
 end
 
 class TimeTracker
+  # another way:
+  # Time.at(7683).gmtime.strftime('%R:%S')
+  # => "02:08:03"
+  attr_reader :start_time, :now, :marker, :interval, :elapsed, :stop
+  def seconds_to_s(s)
+    str = ''
+    units = ' '
+    return 'x' if s < 0
+    return '60 hours plus' if s >= 216000    
+    hh = (s / 3600).to_i
+    if hh != 0 then str = hh.to_s.rjust(2,' ') + ':' ; units << 'hh:mm:ss' end
+    mm = (s / 60 % 60).to_i
+    if hh != 0 || mm != 0
+      if hh == 0 
+        units << 'mm:ss' 
+        str << '   ' + mm.to_s.rjust(2,' ')
+      else
+        str << mm.to_s.rjust(2,'0') 
+      end
+    end
+    ss = (s % 60).to_i
+    if (hh + mm) == 0
+      units = ' s'
+      str = '      ' + ss.to_s.rjust(2,' ')
+      str << '.' +  ((s - s.to_i) * 10).to_i.to_s
+    else
+      str << ':' + ss.to_s.rjust(2,'0') + '  ' 
+    end
+    str + units
+  end
   def start
-    @mark = @start = Time.now
-    puts "Time tracking started: #{@start.to_s}"
+    @marker = @start_time = Time.now
+    puts "Time tracking started: #{@start_time.to_s}"
   end
   def mark
     @now = Time.now
-    interval = @now - @mark
-    str = sprintf('%4.1f', interval)
-    puts "time: #{str}s"
-    @mark = @now
+    @interval = @now - @marker
+    @elapsed = @now - @start_time
+    print "time: #{seconds_to_s(@interval)}"
+    @marker = @now
   end
   def stop
-    mark
-    elapsed = @now - @start
-    str = sprintf('%4.1f', elapsed)
-    puts "\nTime tracking stopped, elapsed time: #{str}s"
+    self.mark
+    @elapsed = @now - @start_time
+    puts "\nTime tracking stopped, elapsed time: #{seconds_to_s(@elapsed)}"
   end
 end
 

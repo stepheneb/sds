@@ -74,13 +74,12 @@ class Pod < ActiveRecord::Base
     end
   end
   
-
   def get_html_body
     if self.curnit.local_jar_empty?
       nil
     else
       begin        
-        podxml = self.curnit.find_podxml_in_jar(self.uuid)
+        podxml = self.curnit.find_podxml(self.uuid)
         if USE_LIBXML # libxml version uses native Gnome xml library
           rim_id =  podxml.find("//void[@property='name'][string='#{self.rim_name}']/../@id").first.value #  example => "Rim0"
           response_id =  podxml.find("//void[@property='rim']/object[@idref='#{rim_id}']/../../void[@property='identifier']/string").first.content # example => "MasterWorkNote(62288):NOTE_RESPONSE_1"
@@ -96,12 +95,11 @@ class Pod < ActiveRecord::Base
         nil
       end
     end
-  end
-  
+  end  
 end
 
 #  def note_question
-#    @curnit.find_podxml_in_jar(self.uuid)   
+#    @curnit.find_podxml(self.uuid)   
 #
 #  def note_question
 #    podxml = REXML::Document.new(File.new("/Users/stephen/dev/rails/sds/public/curnits/POD_#{self.uuid}.xml"))

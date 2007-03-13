@@ -35,14 +35,14 @@ namespace :sds do
     tracker.start
     Curnit.find_all.each do |c| 
       c.jar_last_modified = nil
-      print "#{c.id}: #{c.name}"
+      print "#{c.id}: #{c.name}: "
       begin 
         c.save!
+        print ' ok: '
       rescue
-        print " error " 
-      ensure 
-        puts 
+        print " error: " 
       end
+      tracker.mark
     end
     tracker.stop
   end
@@ -76,7 +76,7 @@ namespace :sds do
  
   desc "Clear sds_cache of Bundles, Pods; and Socks, delete Pods and Socks from db; regenerate db and sds_cache"
   task :rebuild_pods_and_socks => :environment do
-    Bundle.rebuild_pods_and_socks
+    Bundle.rebuild_pods_and_socks(true)
   end
   
   desc "Process the Bundle content to update the sail_session attributes added in migration 42."

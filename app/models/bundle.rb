@@ -32,40 +32,45 @@ class Bundle < ActiveRecord::Base
     Bundle.find(:all)[nth-1]
   end
 
-  def self.rebuild_pods_and_socks
+  def self.rebuild_pods_and_socks(start_over=true)
     tracker = TimeTracker.new
     tracker.start
-    print "Setting Bundle process status to 0 for all #{Bundle.count.to_s} Bundles ... "
-    result = Bundle.update_all("process_status = 0")
-    tracker.mark
-    print "Erasing resources cached in filesystem generated from processing Bundles (includes Workgroups, Socks) ... "
-    Portal.find(:all).each do |p|
-      path = "#{SdsCache.instance.path}#{p.id}/offerings"
-      if File.exists?(path)
-        FileUtils.rmtree("#{SdsCache.instance.path}#{p.id}/offerings")
+    if start_over
+      print "Setting Bundle process status to 0 for all #{Bundle.count.to_s} Bundles ... "
+      result = Bundle.update_all("process_status = 0")
+      tracker.mark
+      print "Erasing resources cached in filesystem generated from processing Bundles (includes Workgroups, Socks) ... "
+      Portal.find(:all).each do |p|
+        path = "#{SdsCache.instance.path}#{p.id}/offerings"
+        if File.exists?(path)
+          FileUtils.rmtree(Dir.glob("#{path}*"))
+        end
       end
-    end
-    tracker.mark
-    print "Erasing Pods from sds_cache ... "
-    Pod.find(:all).each do |p| 
-      path = p.path
-      if File.exists?(path)
-        FileUtils.rm Dir.glob("#{path}*")
+      tracker.mark
+      print "Erasing Pods from sds_cache ... "
+      Pod.find(:all).each do |p| 
+        path = p.path
+        if File.exists?(path)
+          FileUtils.rm Dir.glob("#{path}*")
+        end
       end
+      tracker.mark
+      print "Deleting: #{Pod.count.to_s} Pods from the database ... "
+      Pod.delete_all
+      tracker.mark
+      Sock.delete_all
+      tracker.mark
     end
-    tracker.mark
-    print "Deleting: #{Pod.count.to_s} Pods from the database ... "
-    Pod.delete_all
-    tracker.mark
-    Sock.delete_all
-    tracker.mark
     Bundle.process_bundles
     tracker.stop
   end
     
   def self.process_bundles
+    bundle_count = Bundle.count
     puts "Processing Bundles in database, recreating Pods and Socks in database and sds_cache ..."
-    puts "Bundles to process: #{Bundle.count.to_s}:"
+    puts "Bundles to process: #{bundle_count}:"
+    tracker = TimeTracker.new
+    tracker.start
     @@process_errors = []
     count = 1
     print "#{sprintf("%5d", count)}: "
@@ -83,10 +88,17 @@ class Bundle < ActiveRecord::Base
       else
         print '.'
       end
-      print "\n#{sprintf("%5d", count)}: " unless count.remainder(50) != 0
+      if count.remainder(50) == 0
+        print '  '
+        tracker.mark
+        ave = tracker.elapsed / count
+        projected = (bundle_count - count) * ave
+        print " :: ave: #{tracker.seconds_to_s(ave)}, projected: #{tracker.seconds_to_s(projected)}"
+        print "\n#{sprintf("%5d", count)}: "
+      end
       count += 1
     end
-    nil
+    tracker.stop
   end
   
   def process_content(console_log=nil)
@@ -102,23 +114,23 @@ class Bundle < ActiveRecord::Base
   def parse_content_xml
     if USE_LIBXML
       @@xml_parser.string = self.bundle_content.content
-      nil || @@session_bundles = @@xml_parser.parse.root
+      nil || @@session_bundle = @@xml_parser.parse.root
     else
-      nil || @@session_bundles = REXML::Document.new(self.content).root
+      nil || @@session_bundle = REXML::Document.new(self.content).root
     end
   end
   
   def process_sail_session_attributes
     if USE_LIBXML
-      self.sail_curnit_uuid = @@session_bundles.sds_get_attribute_with_default('curnitUUID', curnit.uuid)
-      self.sail_session_uuid = @@session_bundles.sds_get_attribute_with_default('sessionUUID', 0)
-      self.sail_session_start_time = @@session_bundles.sds_get_attribute_with_default('start', self.created_at) { |t| SdsTime.java8601(t) }
-      self.sail_session_end_time = @@session_bundles.sds_get_attribute_with_default('stop', self.created_at) { |t| SdsTime.java8601(t) }
+      self.sail_curnit_uuid = @@session_bundle.sds_get_attribute_with_default('curnitUUID', curnit.uuid)
+      self.sail_session_uuid = @@session_bundle.sds_get_attribute_with_default('sessionUUID', 0)
+      self.sail_session_start_time = @@session_bundle.sds_get_attribute_with_default('start', self.created_at) { |t| SdsTime.java8601(t) }
+      self.sail_session_end_time = @@session_bundle.sds_get_attribute_with_default('stop', self.created_at) { |t| SdsTime.java8601(t) }
     else
-      self.sail_curnit_uuid = @@session_bundles.attributes['curnitUUID'] || 'x' * 36
-      self.sail_session_uuid = @@session_bundles.attributes['sessionUUID'] || 0
-      self.sail_session_start_time = SdsTime.fix_java8601(@@session_bundles.attributes['start']) || self.created_at
-      self.sail_session_end_time = SdsTime.fix_java8601(@@session_bundles.attributes['stop']) || self.created_at
+      self.sail_curnit_uuid = @@session_bundle.attributes['curnitUUID'] || 'x' * 36
+      self.sail_session_uuid = @@session_bundle.attributes['sessionUUID'] || 0
+      self.sail_session_start_time = SdsTime.fix_java8601(@@session_bundle.attributes['start']) || self.created_at
+      self.sail_session_end_time = SdsTime.fix_java8601(@@session_bundle.attributes['stop']) || self.created_at
     end
   end
   
@@ -126,7 +138,7 @@ class Bundle < ActiveRecord::Base
   def process_sock_parts(console_log=nil)
     curnit = self.workgroup.offering.curnit
     if USE_LIBXML
-      @@session_bundles.find('//sockParts').each do |sockPart|
+      @@session_bundle.find('//sockParts').each do |sockPart|
         uuid = sockPart.find('@podId').first.value
         rim_name = sockPart.find('@rimName').first.value
         shape = sockPart.find('@rimShape').first
@@ -135,7 +147,8 @@ class Bundle < ActiveRecord::Base
           if console_log
             puts ":curnit_id => #{self.workgroup.offering.curnit.id}, :uuid => #{uuid}, :rim_name => #{rim_name}, :rim_shape => #{rim_shape}"
           end
-          p = Pod.create!(:curnit_id => self.workgroup.offering.curnit.id, :uuid => uuid, :rim_name => rim_name, :rim_shape => rim_shape)
+          # p = Pod.create!(:curnit_id => self.workgroup.offering.curnit.id, :uuid => uuid, :rim_name => rim_name, :rim_shape => rim_shape)
+          p = Pod.new(:curnit_id => self.workgroup.offering.curnit.id, :uuid => uuid, :rim_name => rim_name, :rim_shape => rim_shape)
         end
         sockPart.find('sockEntries').each do |sockEntry|
           value = sockEntry.find('@value').first.value
@@ -143,11 +156,12 @@ class Bundle < ActiveRecord::Base
           if console_log
             puts ":bundle_id => #{self.id}, :value => #{value}, :ms_offset => #{ms_offset}, :pod_id => #{p.id}, :duplicate => #{(if p.socks.empty? then false else p.socks.last.value == value end)}"
           end
-          Sock.create!(:bundle_id => self.id, :value => value, :ms_offset => ms_offset, :pod_id => p.id, :duplicate => (if p.socks.empty? then false else p.socks.last.value == value end))
+          # Sock.create!(:bundle_id => self.id, :value => value, :ms_offset => ms_offset, :pod_id => p.id, :duplicate => (if p.socks.empty? then false else p.socks.last.value == value end))
+          Sock.new(:bundle_id => self.id, :value => value, :ms_offset => ms_offset, :pod_id => 3, :duplicate => (if p.socks.empty? then false else p.socks.last.value == value end))
         end
       end
     else # use REXML
-      @@session_bundles.elements.to_a('//sockParts').each do |sockPart|
+      @@session_bundle.elements.to_a('//sockParts').each do |sockPart|
         uuid = sockPart.attributes["podId"].to_s
         rim_name = sockPart.attributes["rimName"].to_s
         shape = sockPart.attributes["rimShape"].to_s
@@ -161,18 +175,17 @@ class Bundle < ActiveRecord::Base
             puts
           end
           p = Pod.create!(:curnit_id => self.workgroup.offering.curnit.id, :uuid => uuid, :rim_name => rim_name, :rim_shape => rim_shape)
+          # p = Pod.new(:curnit_id => self.workgroup.offering.curnit.id, :uuid => uuid, :rim_name => rim_name, :rim_shape => rim_shape)
         end
-        sockPart.elements.to_a('//sockEntries').each do |sockEntry|
+        sockPart.elements.to_a('./sockEntries').each do |sockEntry|
           value = sockEntry.attributes["value"].to_s
           ms_offset = sockEntry.attributes["millisecondsOffset"].to_i
-          s = Sock.create(:bundle_id => self.id, :pod_id => p.id, :value => value, :ms_offset => ms_offset, 
-          :duplicate => (if p.socks.empty? then false else p.socks.last.value == value end))
           if console_log
             puts
             puts "Sock.create!(:bundle_id => #{self.id}, \n:value => #{value.length},\n:ms_offset => #{ms_offset}, :pod_id => #{p.id}, :duplicate => #{(if p.socks.empty? then false else p.socks.last.value == value end)})"
           end
-          Sock.create!(:bundle_id => self.id, :value => value, :ms_offset => ms_offset, :pod_id => p.id, 
-          :duplicate => (if p.socks.empty? then false else p.socks.last.value == value end))
+          Sock.create!(:bundle_id => self.id, :value => value, :ms_offset => ms_offset, :pod_id => p.id, :duplicate => (if p.socks.empty? then false else p.socks.last.value == value end))
+          # Sock.new(:bundle_id => self.id, :value => value, :ms_offset => ms_offset, :pod_id => 3, :duplicate => (if p.socks.empty? then false else p.socks.last.value == value end))
         end
       end
     end
