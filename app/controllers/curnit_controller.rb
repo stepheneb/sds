@@ -2,7 +2,7 @@ class CurnitController < ApplicationController
 
   layout "standard"
   
-  before_filter :find_curnit, :except => [ :list ]
+  before_filter :find_curnit, :except => [ :list, :create ]
   
   protected
   

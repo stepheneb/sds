@@ -21,8 +21,8 @@ config.action_view.debug_rjs                         = true
 config.action_mailer.raise_delivery_errors = false
 
 # See: http://www.datanoise.com/ruby-debug/
-# require 'ruby-debug'
+require 'ruby-debug'
 # Debugger.wait_connection = true
 # Debugger.stop_on_connect = true
 # Debugger.start_remote
-# Debugger.start
+Debugger.start

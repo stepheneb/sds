@@ -2,7 +2,7 @@ class SailUserController < ApplicationController
 
   layout "standard"
 
-  before_filter :find_sail_user, :except => [ :list ]
+  before_filter :find_sail_user, :except => [ :list, :create ]
   
   protected
   

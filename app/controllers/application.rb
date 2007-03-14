@@ -62,6 +62,7 @@ protected
   end
   
   def find_portal_resource(klassname, id)
+    debugger
     if resource = eval("@portal.#{klassname.downcase.pluralize}.find_by_id(id)")
       resource
     else

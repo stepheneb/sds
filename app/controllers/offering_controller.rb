@@ -3,7 +3,7 @@ class OfferingController < ApplicationController
   require 'zlib'
 
   before_filter :log_referrer
-  before_filter :find_offering, :except => [ :list ]
+  before_filter :find_offering, :except => [ :list, :create ]
   
   after_filter :compress, :only => [:bundle]
 

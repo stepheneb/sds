@@ -2,7 +2,7 @@ class JnlpController < ApplicationController
 
   layout "standard"
   
-  before_filter :find_jnlp, :except => [ :list ]
+  before_filter :find_jnlp, :except => [ :list, :create ]
 
   protected
   

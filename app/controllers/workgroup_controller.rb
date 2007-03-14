@@ -1,7 +1,7 @@
 class WorkgroupController < ApplicationController
 
   layout "standard", :except => [ :atom ] 
-  before_filter :find_workgroup, :except => [ :list ]
+  before_filter :find_workgroup, :except => [ :list, :create ]
 
   protected
   
