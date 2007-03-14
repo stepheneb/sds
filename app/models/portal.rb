@@ -2,7 +2,7 @@
 
 class Portal < ActiveRecord::Base
   set_table_name "sds_portals"
-  validates_presence_of :name, :title, :vendor, :homepage_url, :image_url
+  validates_presence_of :name, :title, :vendor, :home_page_url, :image_url
 
   has_many :curnits, :order => "created_at DESC"
   has_many :jnlps, :order => "created_at DESC"
