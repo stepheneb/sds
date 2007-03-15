@@ -62,8 +62,7 @@ protected
   end
   
   def find_portal_resource(klassname, id)
-    debugger
-    if resource = eval("@portal.#{klassname.downcase.pluralize}.find_by_id(id)")
+    if resource = eval("@portal.#{klassname.underscore.pluralize}.find_by_id(id)")
       resource
     else
       portal_resource_not_found(klassname, id)

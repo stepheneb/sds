@@ -74,6 +74,37 @@ namespace :sds do
     tracker.stop
     puts
   end
+  
+  desc 'Resave all the jnlp resources -- this will cause html_bodies and other web resource attributes to be set'
+  task :rebuild_jnlps => :environment do
+    jnlps = Jnlp.find(:all)
+    puts "\nProcessing #{jnlps.length} Jnlps in database, collecting web resources ..."
+    count = 1
+    print "#{sprintf("%5d", count)}: "
+    Jnlp.find(:all).each do |j| 
+      begin
+        if j.save
+          print 'p'
+          count += 1
+        else
+          print 'e'
+          print "\n#{sprintf("%5d", count)}: " unless count.remainder(10) != 0
+          count += 1
+        end
+      rescue => e
+        print 'x'
+        print "\n#{sprintf("%5d", count)}: " unless count.remainder(10) != 0
+        count += 1
+      end
+    end
+    valid_jnlps = Jnlp.find(:all).select {|j| j.body }
+    invalid_jnlps = Jnlp.find(:all).select {|j| !j.body }
+    puts "\nThere are #{valid_jnlps.length} valid jnlps (the web resource can be loaded) out of a total of #{jnlps.length} jnlps."
+    puts "Valid jnlps: "
+    valid_jnlps.each {|j| puts "id: #{j.id}, name: #{j.name}\n             url: #{j.url}"}
+    puts "\nInvalid jnlps (not working): "
+    invalid_jnlps.each {|j| puts "id: #{j.id}, name: #{j.name}\n             url: #{j.url}"}
+  end
  
   desc "Clear sds_cache of Bundles, Pods; and Socks, delete Pods and Socks from db; regenerate db and sds_cache"
   task :rebuild_pods_and_socks => :environment do

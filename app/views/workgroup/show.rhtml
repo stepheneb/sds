@@ -12,7 +12,7 @@
 </p>
 
 
-<% @workgroup.valid_bundles.each do |b| %>
+<% @workgroup.valid_bundles.desc.each do |b| %>
   <hr />
   <div style="background-color: #BBFFEE; padding: 10px; border: 1px solid gray; margin: 10px; font: 9px sans-serif;">
     <%= %{#{b.created_at.to_s}<br >Bundle: #{b.id}, size: #{human_size(b.bundle_content.content.length)}<br />Workgroup membership version: #{b.workgroup_version.to_s}.<br />}%>

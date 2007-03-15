@@ -12,20 +12,16 @@
 </p>
 
 
-<% @workgroup.valid_bundles.desc.each do |b| %>
-  <hr />
-  <div style="background-color: #BBFFEE; padding: 10px; border: 1px solid gray; margin: 10px; font: 9px sans-serif;">
-    <%= %{#{b.created_at.to_s}<br >Bundle: #{b.id}, size: #{human_size(b.bundle_content.content.length)}<br />Workgroup membership version: #{b.workgroup_version.to_s}.<br />}%>
-    <% b.socks.find_notes.each do |s| %>
-      <div style="background-color: #99FFCC; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px font: sans-serif;">
-        <% pod = s.pod %>
-        <%= "Pod: id: #{pod.id}, uuid: #{pod.uuid}, rim name: #{pod.rim_name}"%>
-        <div style="background-color: #DDFFEE; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px font: sans-serif;">
-          <%= s.pod.html_body %>
-        </div>
-        <div style="background-color: white; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px font: sans-serif;">
-          <%= s.value %>
-        </div>
+<% podnotes = @workgroup.valid_bundles.collect {|b| b.socks.find_notes}.flatten.group_by {|s| s.pod} %>
+<% podnotes.each do |pod, socks| %>
+  <div style="background-color: #99FFCC; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px; font: 10px sans-serif;">
+    <%= "Pod: id: #{pod.id}, uuid: #{pod.uuid}, rim name: #{pod.rim_name}"%>
+    <div style="background-color: #DDFFEE; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px; font: 12px sans-serif;">
+      <%= pod.html_body %>
+    </div>
+    <% socks.each do |s| %>
+      <div style="background-color: white; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px; font: 11px sans-serif;">
+        <%= s.value %>
       </div>
     <% end %>
   </div>

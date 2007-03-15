@@ -69,4 +69,5 @@ end
 
 ActionController::Base.param_parsers[Mime::XML] = nil
 
+require 'sds_init'
 require 'uuidtools'
