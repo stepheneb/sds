@@ -75,7 +75,7 @@ protected
       wants.html { flash[:notice] = msg ; redirect_to :action => 'list' }
       wants.xml { render(:text => "<error>#{msg}<error/>", :status => 404) } # Not Found
     end
-    false
+    false # returing false in a controller filter stops the chain of proccessing
   end
 
   def external_resource_not_found(resource, id, url)

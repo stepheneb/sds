@@ -11,10 +11,12 @@ class Jnlp < ActiveRecord::Base
   before_save :get_last_modified
   
   def get_body
-    if self.always_update || self.body.blank?
+    if self.always_update || self.body.blank?      
       begin
-        open(url) do |f| 
+        open(url) do |f|
           self.body = f.read
+          self.last_modified = f.last_modified
+          self.filename = File.basename(self.url)
         end
       rescue SocketError # getaddrinfo?
       end

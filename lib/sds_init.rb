@@ -1,5 +1,3 @@
-USE_LIBXML = false
-
 if USE_LIBXML
   require 'xml/libxml'
 else

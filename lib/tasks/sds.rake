@@ -1,6 +1,5 @@
-
 namespace :sds do
-  require 'lib/sds_init.rb'
+#  require 'lib/sds_init.rb'
 
   desc "display the cache path"
   task :path => :environment do
@@ -82,8 +81,8 @@ namespace :sds do
     count = 1
     print "#{sprintf("%5d", count)}: "
     Jnlp.find(:all).each do |j| 
-      begin
-        if j.save
+        if j.get_body 
+          j.save
           print 'p'
           count += 1
         else
@@ -91,11 +90,6 @@ namespace :sds do
           print "\n#{sprintf("%5d", count)}: " unless count.remainder(10) != 0
           count += 1
         end
-      rescue => e
-        print 'x'
-        print "\n#{sprintf("%5d", count)}: " unless count.remainder(10) != 0
-        count += 1
-      end
     end
     valid_jnlps = Jnlp.find(:all).select {|j| j.body }
     invalid_jnlps = Jnlp.find(:all).select {|j| !j.body }
@@ -131,6 +125,5 @@ namespace :sds do
       count += 1
     end
     tracker.stop
-  end
-    
+  end  
 end
