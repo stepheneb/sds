@@ -76,14 +76,14 @@ namespace :sds do
   
   desc 'Resave all the jnlp resources -- this will cause html_bodies and other web resource attributes to be set'
   task :rebuild_jnlps => :environment do
+    require 'open-uri'
     jnlps = Jnlp.find(:all)
     puts "\nProcessing #{jnlps.length} Jnlps in database, collecting web resources ..."
     count = 1
     print "#{sprintf("%5d", count)}: "
-    Jnlp.find(:all).each do |j| 
+    jnlps.each do |j| 
       begin
-        if j.get_body 
-          j.save
+        if j.save
           print 'p'
           count += 1
         else
@@ -131,5 +131,77 @@ namespace :sds do
       count += 1
     end
     tracker.stop
-  end  
+  end
+  
+  desc "Delete current database and start from current stable instance"
+  task :rebuild_db => :environment do
+    # pull in config
+    # stable db: name, host, user, pass
+    # current db: is already known, but we still need it all defined)
+    require 'config/db_transfer_config.rb'
+    
+    # get a connection to the current db
+    con = User.connection
+   
+    # get the stable db
+    print "Getting the stable database..."
+    tables = `mysqlshow -u #{STABLE_DB_USER} --password=#{STABLE_DB_PASSWORD} -h #{STABLE_DB_HOST} #{STABLE_DB_NAME} 'sds_%'`.scan(/sds_\S+/)[1..-1].join(' ')
+    `mysqldump -u #{STABLE_DB_USER} --password=#{STABLE_DB_PASSWORD} -h #{STABLE_DB_HOST} #{STABLE_DB_NAME} #{tables} > #{TEMP_FILE}`
+    print " done.\n"
+    
+    # clear out the current db
+    print "Deleting tables in the current database..."
+    con.tables.each do |t|
+      if t.match "^sds_"
+        con.drop_table(t)
+        print "."
+      end
+    end
+    print " done.\n"
+    
+    # import the stable db
+    print "Importing the stable database..."
+    `mysql -u #{CURRENT_DB_USER} --password=#{CURRENT_DB_PASSWORD} -h #{CURRENT_DB_HOST} #{CURRENT_DB_NAME} < #{TEMP_FILE}`
+    print " done.\n"
+    
+    # do the db transformations
+    print "Renaming tables and columns..."
+    con.rename_table :sds_users, :sds_sail_users
+    print "."
+    con.rename_table :sds_sds_users, :sds_users
+    print "."
+    con.rename_table :sds_roles_sds_users, :sds_roles_users
+    print "."
+    con.rename_table :sds_offerings_users, :sds_offerings_sail_users
+    print "."
+    con.rename_column :sds_offerings_sail_users, :user_id, :sail_user_id
+    print "."
+    con.rename_column :sds_workgroup_memberships, :user_id, :sail_user_id
+    print "."
+    con.rename_column :sds_roles_users, :sds_user_id, :user_id
+    print "."
+    # have to set the db version to 42, since 43 in stable and 43 in trunk are not the same...
+    con.execute("update sds_schema_info set version='42'")
+    print ". done.\n"
+    
+    # run the rake tasks
+    puts "\nRunning other rake tasks..."
+    puts "\nRunning db:migrate..."
+    # We can't call db:migrate using Rake::Task[].invoke due to environment corruption issues
+    # We have to use a system call to invoke it
+    system('rake db:migrate')
+    puts "\nRunning sds:create_sail_session_attributes..."
+    Rake::Task["sds:create_sail_session_attributes"].invoke
+    puts "\nRunning sds:rebuild_jnlps"
+    Rake::Task["sds:rebuild_jnlps"].invoke
+    puts "\nRunning sds:copy_bundle_content_to_related_model"
+    Rake::Task["sds:copy_bundle_content_to_related_model"].invoke
+    puts "\nRunning sds:copy_curnit_jars_to_sds_cache"
+    Rake::Task["sds:copy_curnit_jars_to_sds_cache"].invoke
+    puts "\nRunning sds:rebuild_pods_and_socks"
+    Rake::Task["sds:rebuild_pods_and_socks"].invoke
+    
+    puts "\nThe migration completed!"
+  end
+  
 end
