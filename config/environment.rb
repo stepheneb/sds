@@ -8,6 +8,9 @@
 RAILS_GEM_VERSION = '1.1.6'
 USE_LIBXML = false
 
+# Set the java binaries to be in the path, if necessary
+# ENV['PATH'] += ":/usr/java/jdk1.5.0_06/bin"
+
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
 

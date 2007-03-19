@@ -145,8 +145,8 @@ namespace :sds do
    
     # get the stable db
     print "Getting the stable database..."
-    tables = `mysqlshow -u #{STABLE_DB_USER} --password=#{STABLE_DB_PASSWORD} -h #{STABLE_DB_HOST} #{STABLE_DB_NAME} 'sds_%'`.scan(/sds_\S+/)[1..-1].join(' ')
-    `mysqldump -u #{STABLE_DB_USER} --password=#{STABLE_DB_PASSWORD} -h #{STABLE_DB_HOST} #{STABLE_DB_NAME} #{tables} > #{TEMP_FILE}`
+    tables = `mysqlshow -u #{STABLE_DB_USER} --password='#{STABLE_DB_PASSWORD}' -h #{STABLE_DB_HOST} #{STABLE_DB_NAME} 'sds_%'`.scan(/sds_\S+/)[1..-1].join(' ')
+    `mysqldump -u #{STABLE_DB_USER} --password='#{STABLE_DB_PASSWORD}' -h #{STABLE_DB_HOST} #{STABLE_DB_NAME} #{tables} > #{TEMP_FILE}`
     print " done.\n"
     
     # clear out the current db
@@ -161,7 +161,7 @@ namespace :sds do
     
     # import the stable db
     print "Importing the stable database..."
-    `mysql -u #{CURRENT_DB_USER} --password=#{CURRENT_DB_PASSWORD} -h #{CURRENT_DB_HOST} #{CURRENT_DB_NAME} < #{TEMP_FILE}`
+    `mysql -u #{CURRENT_DB_USER} --password='#{CURRENT_DB_PASSWORD}' -h #{CURRENT_DB_HOST} #{CURRENT_DB_NAME} < #{TEMP_FILE}`
     print " done.\n"
     
     # do the db transformations
