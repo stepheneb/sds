@@ -21,18 +21,17 @@ class OfferingController < ApplicationController
   
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
-      begin
         xml_parms = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
         @offering = Offering.new(xml_parms)
         @offering.curnit = Curnit.find(xml_parms['curnit_id'])
         @offering.jnlp = Jnlp.find(xml_parms['jnlp_id'])
-        if @offering.save!
+        if @offering.save
           response.headers['Location'] = url_for(:action => :show, :id => @offering.id)
           render(:xml => "", :status => 201) # Created
+        else
+          errors =  @offering.errors.full_messages.collect {|e| "  <error>#{e}</error>\n"}.join
+          render(:text => "<validation-errors>\n#{errors}</validation-errors>\n", :status => 400) # Bad Request
         end
-#      rescue => e
-#        render(:text => e, :status => 400) # Bad Request
-      end
     else
       @offerings = @portal.offerings
       respond_to do |wants|
@@ -55,14 +54,13 @@ class OfferingController < ApplicationController
 
   def create
     if request.post?
-      begin
-        parms = params[:offering].merge({ "portal_id" => params[:pid]})
-        @offering = Offering.create!(parms)
+      parms = params[:offering].merge({ "portal_id" => params[:pid]})
+      @offering = Offering.new(parms)
+      if @offering.save
         flash[:notice] = "Offering #{@offering.id} was successfully created."
         redirect_to :action => 'list'
-      rescue => e
+      else
         flash[:notice] = "Error creating Offering." 
-        redirect_to :action => :list
       end
     else
       @offering = Offering.new
@@ -82,15 +80,15 @@ class OfferingController < ApplicationController
         end
       elsif request.put?
         begin
-          @offering.update_attributes(ConvertXml.xml_to_hash(request.raw_post))
-          if @offering.save
+          if @offering.update_attributes(ConvertXml.xml_to_hash(request.raw_post))
             response.headers['Location'] = url_for(:action => :show, :id => @offering.id)
             render(:xml => "", :status => 201) # Created
           else
-            raise
+            errors =  @offering.errors.full_messages.collect {|e| "  <error>#{e}</error>\n"}.join
+            render(:text => "<validation-errors>\n#{errors}</validation-errors>\n", :status => 400) # Bad Request
           end
-#        rescue => e
-#          render(:text => e, :status => 400) # Bad Request
+        rescue => e
+          render(:text => e, :status => 400) # Bad Request
         end
       elsif request.delete?
         @offering.destroy

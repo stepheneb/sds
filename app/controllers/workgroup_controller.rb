@@ -13,15 +13,15 @@ class WorkgroupController < ApplicationController
   
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
-      begin
-        xml_parms = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]}).merge({ "version" => "0"})
-        @workgroup = Workgroup.new(xml_parms)
-        @workgroup.offering = Offering.find(xml_parms['offering_id'])
-        @workgroup.save!
+      xml_parms = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]}).merge({ "version" => "0"})
+      @workgroup = Workgroup.new(xml_parms)
+      @workgroup.offering = Offering.find(xml_parms['offering_id'])
+      if @workgroup.save
         response.headers['Location'] = url_for(:action => :show, :id => @workgroup.id)
         render(:xml => "", :status => 201) # Created
-      rescue => e
-        render(:text => e, :status => 400) # Bad Request
+      else
+        errors =  @workgroup.errors.full_messages.collect {|e| "  <error>#{e}</error>\n"}.join
+        render(:text => "<validation-errors>\n#{errors}</validation-errors>\n", :status => 400) # Bad Request
       end
     else
       @workgroups = @portal.workgroups
@@ -89,16 +89,19 @@ class WorkgroupController < ApplicationController
     if request.post?
       begin
         parms = params[:workgroup].merge({ "portal_id" => params[:pid]}).merge({ "version" => "0"})
-        @workgroup = Workgroup.create!(parms)
-        users = params[:users]
-        users.each do |u|
-          @workgroup.workgroup_memberships.create!(:user_id => u, :version => @workgroup.version)
+        @workgroup = Workgroup.new(parms)
+        if @workgroup.save
+          users = params[:users]
+          users.each do |u|
+            @workgroup.workgroup_memberships.create!(:user_id => u, :version => @workgroup.version)
+          end
+          flash[:notice] = "Workgroup #{@workgroup.id} was successfully created."
+          redirect_to :action => 'list'
+        else
+          flash[:notice] = "Error creating Workgroup."
         end
-        flash[:notice] = "Workgroup #{@workgroup.id} was successfully created."
-        redirect_to :action => 'list'
       rescue
-        flash[:notice] = "Error creating Workgroup." 
-        redirect_to :action => :list
+        flash[:notice] = "Error creating Workgroup memberships."
       end
     else
       @workgroup = Workgroup.new
@@ -119,12 +122,12 @@ class WorkgroupController < ApplicationController
         end
       elsif request.put?
         begin
-          @workgroup.update_attributes(ConvertXml.xml_to_hash(request.raw_post))
-          if @workgroup.save
+          if @workgroup.update_attributes(ConvertXml.xml_to_hash(request.raw_post))
             response.headers['Location'] = url_for(:action => :show, :id => @workgroup.id)
             render(:xml => "", :status => 201) # Created
           else
-            raise
+            errors =  @workgroup.errors.full_messages.collect {|e| "  <error>#{e}</error>\n"}.join
+            render(:text => "<validation-errors>\n#{errors}</validation-errors>\n", :status => 400) # Bad Request
           end
         rescue => e
           render(:text => e, :status => 400) # Bad Request

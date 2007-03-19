@@ -18,22 +18,30 @@ class SailUserController < ApplicationController
         u = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
         if request.post?
           @sail_user = SailUser.new(u)
-          if @sail_user.save!
+          if @sail_user.save
             response.headers['Location'] = url_for(:action => :show, :id => @sail_user.id)
             render(:xml => "", :status => 201) # Created
+          else
+            errors =  @sail_user.errors.full_messages.collect {|e| "  <error>#{e}</error>\n"}.join
+            render(:text => "<validation-errors>\n#{errors}</validation-errors>\n", :status => 400) # Bad Request
           end
         else
           if request.put?
             @sail_user = SailUser.find(u['id'])
-            @sail_user.update_attributes(u)
-            response.headers['Location'] = url_for(:action => :show, :id => @sail_user.id)
-            render(:xml => "", :status => 200) # OK
+            if @sail_user.update_attributes(u)
+              response.headers['Location'] = url_for(:action => :show, :id => @sail_user.id)
+              render(:xml => "", :status => 200) # OK
+            else
+              errors =  @sail_user.errors.full_messages.collect {|e| "  <error>#{e}</error>\n"}.join
+              render(:text => "<validation-errors>\n#{errors}</validation-errors>\n", :status => 400) # Bad Request
+            end
           else
             render(:text => "", :status => 400) # Bad Request
           end
         end
       rescue => e
-        render(:text => e, :status => 400) # Bad Request
+        errors =  @sail_user.errors.full_messages.collect {|e| "  <error>#{e}</error>\n"}.join
+        render(:text => "<validation-errors>\n#{errors}</validation-errors>\n", :status => 400) # Bad Request
       end
     else
       @sail_users = @portal.sail_users
@@ -62,14 +70,13 @@ class SailUserController < ApplicationController
 
   def create
     if request.post?
-      begin
-        parms = params[:sail_user].merge({ "portal_id" => params[:pid]})
-        @sail_user = SailUser.create!(parms)
+      parms = params[:sail_user].merge({ "portal_id" => params[:pid]})
+      @sail_user = SailUser.new(parms)
+      if @sail_user.save
         flash[:notice] = "SailUser #{@sail_user.id} was successfully created."
         redirect_to :action => 'list'
-      rescue
+      else
         flash[:notice] = "Error creating SailUser." 
-        redirect_to :action => :list
       end
     else
       @sail_user = SailUser.new
@@ -94,12 +101,12 @@ class SailUserController < ApplicationController
         end
       elsif request.put?
         begin
-          @sail_user.update_attributes(ConvertXml.xml_to_hash(request.raw_post))
-          if @sail_user.save
+          if @sail_user.update_attributes(ConvertXml.xml_to_hash(request.raw_post))
             response.headers['Location'] = url_for(:action => :show, :id => @sail_user.id)
             render(:xml => "", :status => 201) # Created
           else
-            raise
+            errors =  @sail_user.errors.full_messages.collect {|e| "  <error>#{e}</error>\n"}.join
+            render(:text => "<validation-errors>\n#{errors}</validation-errors>\n", :status => 400) # Bad Request
           end
         rescue
           render(:text => '', :status => 400) # Bad Request

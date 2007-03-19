@@ -14,15 +14,15 @@ class CurnitController < ApplicationController
 
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
-      begin
-        xml_parms = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
-        @curnit = Curnit.new(xml_parms)
-        @curnit.portal = Portal.find(xml_parms['portal_id'])
-        @curnit.save!
+      xml_parms = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
+      @curnit = Curnit.new(xml_parms)
+      @curnit.portal = Portal.find(xml_parms['portal_id'])
+      if @curnit.save
         response.headers['Location'] = url_for(:action => :show, :id => @curnit.id)
         render(:xml => "", :status => 201) # Created
-      rescue => e
-        render(:text => e, :status => 400) # Bad Request
+      else
+         errors =  @curnit.errors.full_messages.collect {|e| "  <error>#{e}</error>\n"}.join
+         render(:text => "<validation-errors>\n#{errors}</validation-errors>\n", :status => 400) # Bad Request
       end
     else
       @curnits = @portal.curnits
@@ -48,14 +48,13 @@ class CurnitController < ApplicationController
 
   def create
     if request.post?
-      begin
-        c = params[:curnit].merge({ "portal_id" => params[:pid]})
-        @curnit = Curnit.create!(c)
+      c = params[:curnit].merge({ "portal_id" => params[:pid]})
+      @curnit = Curnit.new(c)
+      if @curnit.save
         flash[:notice] = "Curnit #{@curnit.id} was successfully created."
         redirect_to :action => 'list'
-      rescue => e
+      else
         flash[:notice] = "Error creating Curnit." 
-        redirect_to :action => :list
       end
     else
       @curnit = Curnit.new
@@ -75,12 +74,12 @@ class CurnitController < ApplicationController
           end
         elsif request.put?
           begin
-            @curnit.update_attributes(ConvertXml.xml_to_hash(request.raw_post))
-            if @curnit.save
+            if @curnit.update_attributes(ConvertXml.xml_to_hash(request.raw_post))
               response.headers['Location'] = url_for(:action => :show, :id => @curnit.id)
               render(:xml => "", :status => 201) # Created
             else
-              raise
+              errors =  @curnit.errors.full_messages.collect {|e| "  <error>#{e}</error>\n"}.join
+              render(:text => "<validation-errors>\n#{errors}</validation-errors>\n", :status => 400) # Bad Request
             end
           rescue => e
             render(:text => e, :status => 400) # Bad Request

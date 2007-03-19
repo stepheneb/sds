@@ -19,9 +19,13 @@ class JnlpController < ApplicationController
         xml_parms = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
         @jnlp = Jnlp.new(xml_parms)
         @jnlp.portal = Portal.find(xml_parms['portal_id'])
-        @jnlp.save!
-        response.headers['Location'] = url_for(:action => :show, :id => @jnlp.id)
-        render(:xml => "", :status => 201) # Created
+        if @jnlp.save
+          response.headers['Location'] = url_for(:action => :show, :id => @jnlp.id)
+          render(:xml => "", :status => 201) # Created
+        else
+          errors =  @jnlp.errors.full_messages.collect {|e| "  <error>#{e}</error>\n"}.join
+          render(:text => "<validation-errors>\n#{errors}</validation-errors>\n", :status => 400) # Bad Request
+        end
       end
     when request.get?
       begin
@@ -30,9 +34,13 @@ class JnlpController < ApplicationController
           xml_parms = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
           @jnlp = Jnlp.new(xml_parms)
           @jnlp.portal = Portal.find(xml_parms['portal_id'])
-          @jnlp.save!
-          response.headers['Location'] = url_for(:action => :show, :id => @jnlp.id)
-          render(:xml => "", :status => 201) # Created
+          if @jnlp.save
+            response.headers['Location'] = url_for(:action => :show, :id => @jnlp.id)
+            render(:xml => "", :status => 201) # Created
+          else
+            errors =  @jnlp.errors.full_messages.collect {|e| "  <error>#{e}</error>\n"}.join
+            render(:text => "<validation-errors>\n#{errors}</validation-errors>\n", :status => 400) # Bad Request
+          end
         else
           @jnlps = @portal.jnlps
           respond_to do |wants|
@@ -62,14 +70,13 @@ class JnlpController < ApplicationController
 
   def create
     if request.post?
-      begin
-        parms = params[:jnlp].merge({ "portal_id" => params[:pid]})
-        @jnlp = Jnlp.create!(parms)
+      parms = params[:jnlp].merge({ "portal_id" => params[:pid]})
+      @jnlp = Jnlp.new(parms)
+      if @jnlp.save
         flash[:notice] = "Jnlp #{@jnlp.id} was successfully created."
         redirect_to :action => 'list'
-      rescue => e
-        flash[:notice] = "Error creating Jnlp}." 
-        redirect_to :action => :list
+      else
+        flash[:notice] = "Error creating Jnlp." 
       end
     else
       @jnlp = Jnlp.new
@@ -88,12 +95,12 @@ class JnlpController < ApplicationController
         end
       elsif request.put?
         begin
-          @jnlp.update_attributes(ConvertXml.xml_to_hash(request.raw_post))
-          if @jnlp.save
+          if @jnlp.update_attributes(ConvertXml.xml_to_hash(request.raw_post))
             response.headers['Location'] = url_for(:action => :show, :id => @jnlp.id)
             render(:xml => "", :status => 201) # Created
           else
-            raise
+            errors =  @jnlp.errors.full_messages.collect {|e| "  <error>#{e}</error>\n"}.join
+            render(:text => "<validation-errors>\n#{errors}</validation-errors>\n", :status => 400) # Bad Request
           end
         rescue => e
           render(:text => e, :status => 400) # Bad Request
