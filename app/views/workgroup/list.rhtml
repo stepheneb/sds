@@ -20,7 +20,11 @@
       <td><%= w.valid_bundles.length.to_s %>
       <td><%= link_to 'Show', :action => 'show', :id => w %> | 
           <%= link_to 'Edit', :action => 'edit', :id => w %> |
-          <%= link_to "Offering:#{w.offering.id.to_s}", :controller => 'offering', :action => 'show', :id => w.offering.id %>
+          <% if w.offering %>
+            <%= link_to "Offering:#{w.offering.id.to_s}", :controller => 'offering', :action => 'show', :id => w.offering.id %>
+          <% else %>
+            <span style="color: red;">Offering: <%= w.offering_id %></span>
+          <% end %>
       </td>
     </tr>
   <% end %>

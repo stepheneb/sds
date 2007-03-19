@@ -9,7 +9,7 @@
 <p>Membership (version: <%= @workgroup.version %>):</p>
 <%=
   collection_multiple_select(
-    'users', @portal.users, :id, :identifier, :selected_items => @workgroup.sail_users.version(@workgroup.version).collect { |item| item.id.to_i }
+    'users', @portal.sail_users, :id, :identifier, :selected_items => @workgroup.sail_users.version(@workgroup.version).collect { |item| item.id.to_i }
   )
 %>
 <p/>
