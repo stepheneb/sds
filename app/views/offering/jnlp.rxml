@@ -25,7 +25,9 @@ else
   app_desc = jnlp.elements["application-desc"]
   app_desc_main_class = app_desc.attributes["main-class"]
   res_prop = jnlp.elements["resources/property"]
-  res_prop_value = res_prop.attributes["value"]
+  if res_prop  # some jnlps don't have properties defined
+    res_prop_value = res_prop.attributes["value"]
+  end
   app_desc_arg = jnlp.elements["application-desc/argument"]
 end
 
