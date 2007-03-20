@@ -89,12 +89,13 @@ protected
     
   def find_portal
     unless @portal = Portal.find_by_id(params[:pid])
-      resource_not_found('Portal', params[:id])
+      # when it's a login, they don't have a portal and that's ok
+      resource_not_found('Portal', params[:id]) unless params['action'] == 'login'
     end
   end
   
   def resource_not_found(resource, id, enclosing_resource=@portal)
-    msg = "#{resource} #{id.to_s} can't be found"
+    msg = "#{resource} #{id.to_s} can't be found."
     if enclosing_resource.blank?
        msg << '.'
        else
@@ -119,6 +120,7 @@ private
   end
 
   def check_authentication
+  debugger
     if current_user.email == "anonymous"
       session[:intended_action] = [controller_name, action_name] 
       flash[:warning]  = "You need to be logged in first."
