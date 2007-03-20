@@ -9,11 +9,15 @@
   <tr><td>Always Update: </td<td><%= @jnlp.always_update.to_s %></td></tr>
   <tr><td>Body: </td<td><pre>
     <%= 
+    begin
       if @jnlp.body
         CGI.escapeHTML(XmlSimple.xml_out(XmlSimple.new().xml_in(@jnlp.body, {'keeproot' => true}), {'keeproot' => true}))
       else
         "No jnlp resource available at #{@jnlp.url}."
-      end 
+      end
+    rescue
+      "This content is not a valid JNLP."
+    end 
     %>
   </pre></td></tr>
 </table>
