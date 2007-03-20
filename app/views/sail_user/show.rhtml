@@ -1,5 +1,5 @@
 
-<% content_for(:tip) do ": #{@user.name}" end %>
+<% content_for(:tip) do ": #{@sail_user.name}" end %>
 
 <%= link_to 'List', :action => 'list'  %> | 
 <%= link_to 'Edit', :action => 'edit' %>
@@ -11,11 +11,11 @@
     <td><b>Name</b></td>
   </tr>
   <tr>
-    <td><%= @user.id.to_s %></td>
-    <td><%= @user.portal.id.to_s %></td>
-    <td><%= @user.name %></td>
+    <td><%= @sail_user.id.to_s %></td>
+    <td><%= @sail_user.portal.id.to_s %></td>
+    <td><%= @sail_user.name %></td>
     <td>
-      <em>(<%= pluralize(@user.workgroups.uniq.length, "workgroup")%>, created: <%= @user.created_at.strftime("%a %b %d %H:%M %Z %Y") %>, UUID: <%= @user.uuid %>)</em>
+      <em>(<%= pluralize(@sail_user.workgroups.uniq.length, "workgroup")%>, created: <%= @sail_user.created_at.strftime("%a %b %d %H:%M %Z %Y") %>, UUID: <%= @sail_user.uuid %>)</em>
     </td>
   </tr>
 </table>
@@ -28,7 +28,7 @@ Workgroups
     <td><b>Offering Id</b></td>
     <td><b>Offering Name</b></td>
   </tr>
-  <% @user.workgroups.uniq.each do |w| %>
+  <% @sail_user.workgroups.uniq.each do |w| %>
     <tr>
       <td><%= w.id.to_s %></td>
       <td><%= w.name %></td>
@@ -44,4 +44,4 @@ Workgroups
 
 <hr />
 
-<%= display_xml(@user) %>
+<%= display_xml(@sail_user) %>

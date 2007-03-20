@@ -42,10 +42,10 @@ class WorkgroupController < ApplicationController
         when 0 
           raise
         when 1
-          @workgroup.workgroup_memberships.create!(:user_id => members['user_id'], :version => @workgroup.version)
+          @workgroup.workgroup_memberships.create!(:sail_user_id => members['sail_user_id'], :version => @workgroup.version)
         else
           members.each do |m|
-            @workgroup.workgroup_memberships.create!(:user_id => m['user_id'], :version => @workgroup.version)
+            @workgroup.workgroup_memberships.create!(:sail_user_id => m['sail_user_id'], :version => @workgroup.version)
           end
         end
         @workgroup.save!
@@ -71,7 +71,7 @@ class WorkgroupController < ApplicationController
         if @workgroup.update_attributes(params[:workgroup])
           users = params[:users]
           users.each do |u|
-            @workgroup.workgroup_memberships.create!(:user_id => u, :version => @workgroup.version)
+            @workgroup.workgroup_memberships.create!(:sail_user_id => u, :version => @workgroup.version)
           end
           flash[:notice] = "Workgroup #{@workgroup.id} was successfully updated."
           redirect_to :action => 'list'
@@ -93,7 +93,7 @@ class WorkgroupController < ApplicationController
         if @workgroup.save
           users = params[:users]
           users.each do |u|
-            @workgroup.workgroup_memberships.create!(:sail_user_id => u, :version => @workgroup.version)
+            @workgroup.workgroup_memberships.create!(:sail_sail_user_id => u, :version => @workgroup.version)
           end
           flash[:notice] = "Workgroup #{@workgroup.id} was successfully created."
           redirect_to :action => 'list'
