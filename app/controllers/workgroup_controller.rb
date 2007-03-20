@@ -93,7 +93,7 @@ class WorkgroupController < ApplicationController
         if @workgroup.save
           users = params[:users]
           users.each do |u|
-            @workgroup.workgroup_memberships.create!(:sail_sail_user_id => u, :version => @workgroup.version)
+            @workgroup.workgroup_memberships.create!(:sail_user_id => u, :version => @workgroup.version)
           end
           flash[:notice] = "Workgroup #{@workgroup.id} was successfully created."
           redirect_to :action => 'list'
