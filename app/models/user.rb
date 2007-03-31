@@ -1,10 +1,11 @@
+require 'digest/sha1'
+require 'digest/md5' 
+
 class User < ActiveRecord::Base
   set_table_name "sds_users"
+#  acts_as_authorized_user
 
   has_and_belongs_to_many :roles, options = {:join_table => "sds_roles_users"}
-
-  require 'digest/sha1'
-  require 'digest/md5' 
 
   # Virtual attribute for the unencrypted password
   attr_accessor :password

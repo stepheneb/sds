@@ -15,5 +15,4 @@ class HomeController < ApplicationController
       render(:xml => "", :status => 400) # Bad Request
     end
   end
-
 end

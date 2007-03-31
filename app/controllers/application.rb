@@ -2,6 +2,10 @@
 # Likewise, all the methods added will be available for all controllers.
 class ApplicationController < ActionController::Base
 
+include AuthenticatedSystem
+# before_filter :login_from_cookie
+# before_filter :check_user
+
   session :off, :if => proc { |request| (request.env['CONTENT_TYPE'] == "application/xml") || (request.env['HTTP_ACCEPT'] == "application/xml")}
 
   model :portal
@@ -24,10 +28,7 @@ class ApplicationController < ActionController::Base
 
   filter_parameter_logging "password"
 
-  include AuthenticatedSystem
   before_filter :find_portal
-  before_filter :login_from_cookie
-  before_filter :check_user
 
   after_filter :calc_content_length 
 
