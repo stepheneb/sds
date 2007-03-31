@@ -8,7 +8,7 @@
   <tr><td>Last Modified: </td<td><%= @jnlp.last_modified.to_s %></td></tr>
   <tr><td>Always Update: </td<td><%= @jnlp.always_update.to_s %></td></tr>
   <tr><td>Body: </td<td><pre>
-    <%= 
+    <%=
     begin
       if @jnlp.body
         CGI.escapeHTML(XmlSimple.xml_out(XmlSimple.new().xml_in(@jnlp.body, {'keeproot' => true}), {'keeproot' => true}))
