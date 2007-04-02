@@ -1,25 +1,22 @@
 <%= link_to 'List', :action => 'list'  %> | 
 <%= link_to 'Edit', :action => 'edit' %>
  
-<table cellpadding="3" cellspacing="4">
-  <tr><td>Id: </td<td><%= @jnlp.id.to_s %></td></tr>
-  <tr><td>Name: </td<td><%= @jnlp.name %></td></tr>
-  <tr><td>Url: </td<td><%= @jnlp.url %></td></tr>
-  <tr><td>Last Modified: </td<td><%= @jnlp.last_modified.to_s %></td></tr>
-  <tr><td>Always Update: </td<td><%= @jnlp.always_update.to_s %></td></tr>
-  <tr><td>Body: </td<td><pre>
-    <%=
-    begin
-      if @jnlp.body
-        CGI.escapeHTML(XmlSimple.xml_out(XmlSimple.new().xml_in(@jnlp.body, {'keeproot' => true}), {'keeproot' => true}))
-      else
-        "No jnlp resource available at #{@jnlp.url}."
-      end
-    rescue
-      "This content is not a valid JNLP."
-    end 
-    %>
-  </pre></td></tr>
+<table cellpadding="1" cellspacing="1">
+  <tr><td>Id: </td><td><%= @jnlp.id.to_s %></td></tr>
+  <tr><td>Name: </td><td><%= @jnlp.name %></td></tr>
+  <tr><td>Url: </td><td><%= @jnlp.url %></td></tr>
+  <tr><td>Last Modified: </td><td><%= @jnlp.last_modified.to_s %></td></tr>
+  <tr><td>Always Update: </td><td><b><%= @jnlp.always_update ? "true" : "false" %></b></td></tr>
 </table>
+<div style="background-color: #BBFFEE; padding: 10px; border: 1px solid gray; margin: 10px; font: 11px sans-serif;">
+  Original Jnlp Body:
+  <div style="background-color: #99FFCC; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px font: sans-serif;">
+    <%= if @jnlp.body
+          display_xml2(@jnlp.body)
+        else
+          "No jnlp resource available at #{@jnlp.url}."
+    end %>
+  </div>
+</div>
 
 <%= display_xml(@jnlp, ['body']) %>

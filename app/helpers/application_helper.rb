@@ -8,7 +8,18 @@ module ApplicationHelper
     end
     "<p><b>XML output representation: </b></p>" +
 #    "<p><code>#{h(obj.to_xml(:except => ['created_at', 'updated_at']))}</code></p>"
-    "<p><code>#{h(obj.to_xml(:except => except))}</code></p>"
+#    "<p><code>#{h(obj.to_xml(:except => except))}</code></p>"
+    display_xml2(obj.to_xml(:except => except))
+  end
+  
+  def display_xml2(content)
+    begin
+      body = XmlSimple.new().xml_in(content, {'keeproot' => true})
+      "<pre>#{CGI.escapeHTML(XmlSimple.xml_out(body, {'keeproot' => true}))}</pre>"
+    rescue
+      msg = "<p>This content is not well formed XML.</p>"
+      msg << "<pre>#{CGI.escapeHTML(body)}</pre>"
+    end
   end
 
   # This method will work the same as image_path

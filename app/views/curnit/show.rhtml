@@ -2,12 +2,15 @@
 <%= link_to 'Edit', :action => 'edit' %>
 
 <table cellpadding="3" cellspacing="4">
-  <% for column in Curnit.columns %>
-    <tr>
-      <td><%= h column.human_name %></td>
-      <td><%= h @curnit.send(column.name) %></td>
-    </tr>
-  <% end %>
+  <tr><td>Id: </td><td><%= @curnit.id.to_s %></td></tr>
+  <tr><td>Name: </td><td><%= @curnit.name %></td></tr>
+  <tr><td>Url: </td><td><%= @curnit.url %></td></tr>
+  <tr><td>Always Update: </td><td><b><%= @curnit.always_update ? "true" : "false" %></b></td></tr>
+  <tr><td>Jar last modified: </td><td><%= @curnit.jar_last_modified %></td></tr>
+  <tr><td>Jar digest: </td><td><%= @curnit.jar_digest %></td></tr>
+  <tr><td>uuid: </td><td><%= @curnit.uuid %></td></tr>
+  <tr><td>root pod uuid: </td><td><%= @curnit.root_pod_uuid %></td></tr>
+  <tr><td>Title: </td><td><%= @curnit.title %></td></tr>
 </table>
 
 <%= display_xml(@curnit) %>

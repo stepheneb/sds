@@ -116,7 +116,7 @@ class Curnit < ActiveRecord::Base
         File.open(self.jar_path, 'wb') {|jar| jar.write(urlfile.read) }
         sys = system("cd #{self.path};jar xf #{self.filename}")
         self.jar_last_modified = urlfile.last_modified
-        self.jar_digest = Base64.b64encode(Digest::MD5.digest(urlfile.read))
+        self.jar_digest = Base64.b64encode(Digest::MD5.digest(urlfile.read)).strip
       end
       return
       curnit_xml_file = File.read("#{self.path}curnit.xml")
