@@ -38,8 +38,9 @@ xml.java("version" => "1.4.0", "class" => "java.beans.XMLDecoder") {
   xml.object("class" => "net.sf.sail.core.service.impl.LauncherServiceImpl") {
     xml.void("property" => "properties") {
       xml.object("class" => "java.util.Properties") {
-        @url_params=request.query_parameters()
-        @url_params.each do |k,v| 
+        url_params=request.query_parameters   # this is a hack because I can't delete hash values from the
+        url_params.delete('jnlp_filename')    # request.query_parameters hash (should be done in offering_controller)
+        url_params.each do |k,v| 
           xml.void("method" => "setProperty") {
             xml.string(k)
             xml.string(v)

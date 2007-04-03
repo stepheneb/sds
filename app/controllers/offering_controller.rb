@@ -128,8 +128,11 @@ class OfferingController < ApplicationController
       # need last mod?
       @headers["Content-Type"] = "application/x-java-jnlp-file"
       @headers["Cache-Control"] = "max-age=1"
-      @headers["Content-Disposition"] = "attachment; filename=#{to_filename(@jnlp.name)}_#{to_filename(@offering.curnit.name)}.jnlp"
-      filename = "testjnlp"
+      jnlp_filename = request.query_parameters['jnlp_filename'] || "#{to_filename(@jnlp.name)}_#{to_filename(@offering.curnit.name)}.jnlp"
+      # this is a hack because I can't delete hash values from the
+      # request.query_parameters hash -- instead I copy the hash in
+      # config.rxml and delete this key from the copy
+      @headers["Content-Disposition"] = "attachment; filename=#{jnlp_filename}"
       render :action => 'jnlp', :layout => false
     end
   end
