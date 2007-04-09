@@ -9,6 +9,7 @@ class Curnit < ActiveRecord::Base
   has_many :offerings, :order => "created_at DESC"
   has_many :pods
   
+  before_save { |c| c.url.strip! }
   before_save :check_for_jar
   
   require 'fileutils'
@@ -118,7 +119,6 @@ class Curnit < ActiveRecord::Base
         self.jar_last_modified = urlfile.last_modified
         self.jar_digest = Base64.b64encode(Digest::MD5.digest(urlfile.read)).strip
       end
-      return
       curnit_xml_file = File.read("#{self.path}curnit.xml")
       if USE_LIBXML
         curnit_xml = XML::Parser.string(curnit_xml_file).parse.root

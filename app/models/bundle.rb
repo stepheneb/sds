@@ -56,11 +56,13 @@ class Bundle < ActiveRecord::Base
         end
       end
       tracker.mark
-      print "Erasing Pods from sds_cache ... "
-      Pod.find(:all).each do |p| 
-        path = p.path
-        if File.exists?(path)
-          FileUtils.rm Dir.glob("#{path}*")
+      puts "Erasing Pods from sds_cache ... "
+      Pod.find(:all).each do |p|
+        if p.curnit
+          path = p.path
+          if File.exists?(path)
+            FileUtils.rmtree(Dir.glob("#{path}*"))
+          end
         end
       end
       tracker.mark

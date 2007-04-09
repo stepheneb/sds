@@ -7,6 +7,7 @@ class Jnlp < ActiveRecord::Base
   has_many :offerings
   has_many :offerings, :order => "created_at DESC"
   
+  before_save { |j| j.url.strip! }
   before_save :get_body
   before_save :get_last_modified
   
