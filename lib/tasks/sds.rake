@@ -8,6 +8,7 @@ namespace :sds do
 
   desc "Copy bundle.content to new model BundleContent.content (added in migration 45)."
   task :copy_bundle_content_to_related_model => :environment do
+    puts "\nCopying bundle.content to related model ..."
     tracker = TimeTracker.new
     tracker.start
     puts "Bundles to process: #{Bundle.count.to_s}:"
@@ -31,18 +32,20 @@ namespace :sds do
   
   desc "Download copies of curnit jars to local sds cache."
   task :copy_curnit_jars_to_sds_cache => :environment do
+    puts "\nCopying curnit jars to sds_cache ..."
     tracker = TimeTracker.new
     tracker.start
     Curnit.find_all.each do |c| 
+      cmdstring = "#{c.id}: #{c.name}: "
       c.jar_last_modified = nil
-      print "#{c.id}: #{c.name}: "
       begin 
         c.save!
-        print ' ok: '
+        print "ok   :#{cmdstring}: "
       rescue
-        print " error: " 
+        print "error:#{cmdstring}: "
       end
       tracker.mark
+      puts
     end
     tracker.stop
   end
@@ -108,11 +111,13 @@ namespace :sds do
  
   desc "Clear sds_cache of Bundles, Pods; and Socks, delete Pods and Socks from db; regenerate db and sds_cache"
   task :rebuild_pods_and_socks => :environment do
+    puts "\nRebuilding Pods and Socks ..."
     Bundle.rebuild_pods_and_socks(true)
   end
   
   desc "Process the Bundle content to update the sail_session attributes added in migration 42."
   task :create_sail_session_attributes => :environment do
+    puts "\nCreating sail_session attributes ..."
     puts "Processing Bundles in database, recreating sail_session attributes ..."
     puts "Bundles to process: #{Bundle.count.to_s}:"
     count = 1
@@ -133,8 +138,8 @@ namespace :sds do
     tracker.stop
   end
   
-  desc "Delete current database and start from current stable instance"
-  task :rebuild_db => :environment do
+  desc "Delete current database, copy from stable, convert tables ..."
+  task :delete_copy_and_convert_db => :environment do
     # pull in config
     # stable db: name, host, user, pass
     # current db: is already known, but we still need it all defined)
@@ -183,25 +188,10 @@ namespace :sds do
     # have to set the db version to 42, since 43 in stable and 43 in trunk are not the same...
     con.execute("update sds_schema_info set version='42'")
     print ". done.\n"
-    
-    # run the rake tasks
-    puts "\nRunning other rake tasks..."
-    puts "\nRunning db:migrate..."
-    # We can't call db:migrate using Rake::Task[].invoke due to environment corruption issues
-    # We have to use a system call to invoke it
-    system('rake db:migrate')
-    puts "\nRunning sds:create_sail_session_attributes..."
-    Rake::Task["sds:create_sail_session_attributes"].invoke
-    puts "\nRunning sds:rebuild_jnlps"
-    Rake::Task["sds:rebuild_jnlps"].invoke
-    puts "\nRunning sds:copy_bundle_content_to_related_model"
-    Rake::Task["sds:copy_bundle_content_to_related_model"].invoke
-    puts "\nRunning sds:copy_curnit_jars_to_sds_cache"
-    Rake::Task["sds:copy_curnit_jars_to_sds_cache"].invoke
-    puts "\nRunning sds:rebuild_pods_and_socks"
-    Rake::Task["sds:rebuild_pods_and_socks"].invoke
-    
-    puts "\nThe migration completed!"
+    puts "Now apply migrations: 'rake db:migrate'/n"
   end
-  
+
+  desc "Rebuild database newly converted from stable. First apply migrations!"
+  task :rebuild_db => [:environment, :create_sail_session_attributes, :copy_bundle_content_to_related_model, :copy_curnit_jars_to_sds_cache, :rebuild_pods_and_socks] do
+  end
 end

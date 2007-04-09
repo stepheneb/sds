@@ -27,11 +27,10 @@ class CreateUsers < ActiveRecord::Migration
     Role.create(:title => 'portal_admin')
     Role.create(:title => 'portal_user')
 
-#    This doesn't work now that SdsUser was renamed
-#    u = SdsUser.new(:login => "stephen", :email => "stephen@concord.org", :password_hash => "fd035914661eb4f8b00a57be66a2be2b", :first_name => "Stephen", :last_name => "Bannasch")
-#    u.save(false)
-#    u.roles << Role.find_by_title('sds_admin')
-#    u.save(false)
+    u = User.new(:login => "stephen", :email => "stephen@concord.org", :password_hash => "fd035914661eb4f8b00a57be66a2be2b", :first_name => "Stephen", :last_name => "Bannasch")
+    u.save(false)
+    u.roles << Role.find_by_title('sds_admin')
+    u.save(false)
        
   end
 

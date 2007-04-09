@@ -6,7 +6,7 @@
 
 # Specifies gem version of Rails to use when vendor/rails is not present
 RAILS_GEM_VERSION = '1.1.6'
-USE_LIBXML = false
+USE_LIBXML = true
 
 # Set the java binaries to be in the path, if necessary
 # ENV['PATH'] += ":/usr/java/jdk1.5.0_06/bin"
