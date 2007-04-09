@@ -62,7 +62,7 @@ class Sock < ActiveRecord::Base
   end
 
   def filename_decoded
-    "decoded/sock_#{self.id.to_s}_#{self.pod.pas_type}_#{self.pod.encoding}"
+    "decoded/sock_#{self.id.to_s}_#{self.pod.pas_type}.#{self.pod.extension}"
   end
 
   def save_to_file_system

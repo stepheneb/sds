@@ -47,6 +47,7 @@ class Bundle < ActiveRecord::Base
     if start_over
       print "Setting Bundle process status to 0 for all #{Bundle.count.to_s} Bundles ... "
       result = Bundle.update_all("process_status = 0")
+      result = Bundle.update_all("processing_error = ''")
       tracker.mark
       print "Erasing resources cached in filesystem generated from processing Bundles (includes Workgroups, Socks) ... "
       Portal.find(:all).each do |p|
@@ -156,19 +157,24 @@ class Bundle < ActiveRecord::Base
         rim_shape = Pod.pod_shape_map[shape ? shape.value : '']
         unless p = Pod.find_by_uuid_and_rim_name_and_curnit_id(uuid, rim_name, curnit.id)
           if console_log
-            puts ":curnit_id => #{self.workgroup.offering.curnit.id}, :uuid => #{uuid}, :rim_name => #{rim_name}, :rim_shape => #{rim_shape}"
+            puts
+            puts '------' * 12
+            puts "Pod.create!(:curnit_id => #{self.workgroup.offering.curnit.id}, :uuid => #{uuid}, :rim_name => #{rim_name}, :rim_shape => #{rim_shape})"
+            puts '------' * 12
+            puts
           end
-          # p = Pod.create!(:curnit_id => self.workgroup.offering.curnit.id, :uuid => uuid, :rim_name => rim_name, :rim_shape => rim_shape)
-          p = Pod.new(:curnit_id => self.workgroup.offering.curnit.id, :uuid => uuid, :rim_name => rim_name, :rim_shape => rim_shape)
+          p = Pod.create!(:curnit_id => self.workgroup.offering.curnit.id, :uuid => uuid, :rim_name => rim_name, :rim_shape => rim_shape)
+          # p = Pod.new(:curnit_id => self.workgroup.offering.curnit.id, :uuid => uuid, :rim_name => rim_name, :rim_shape => rim_shape)
         end
         sockPart.find('sockEntries').each do |sockEntry|
           value = sockEntry.find('@value').first.value
           ms_offset = sockEntry.find('@millisecondsOffset').first.value
           if console_log
-            puts ":bundle_id => #{self.id}, :value => #{value}, :ms_offset => #{ms_offset}, :pod_id => #{p.id}, :duplicate => #{(if p.socks.empty? then false else p.socks.last.value == value end)}"
+            puts
+            puts "Sock.create!(:bundle_id => #{self.id}, \n:value => #{value.length},\n:ms_offset => #{ms_offset}, :pod_id => #{p.id}, :duplicate => #{(if p.socks.empty? then false else p.socks.last.value == value end)})"
           end
-          # Sock.create!(:bundle_id => self.id, :value => value, :ms_offset => ms_offset, :pod_id => p.id, :duplicate => (if p.socks.empty? then false else p.socks.last.value == value end))
-          Sock.new(:bundle_id => self.id, :value => value, :ms_offset => ms_offset, :pod_id => 3, :duplicate => (if p.socks.empty? then false else p.socks.last.value == value end))
+          Sock.create!(:bundle_id => self.id, :value => value, :ms_offset => ms_offset, :pod_id => p.id, :duplicate => (if p.socks.empty? then false else p.socks.last.value == value end))
+          # Sock.new(:bundle_id => self.id, :value => value, :ms_offset => ms_offset, :pod_id => p.id, :duplicate => (if p.socks.empty? then false else p.socks.last.value == value end))
         end
       end
     else # use REXML

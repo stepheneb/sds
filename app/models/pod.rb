@@ -24,13 +24,13 @@ class Pod < ActiveRecord::Base
   @@pod_shape_map = {'[B' => 'bytearray', '' => 'text'}
   @@pod_type_keys = ['mime_type', 'encoding', 'pas_type', 'extension']
   @@pod_type_map = {
-    ['bytearray',        'ot.learner.data'    ] => ['application/xml+otrunk',               'gzip+b64',   'ot.learner.data',       'otml'],
+    ['bytearray',        'ot.learner.data'    ] => ['application/xml+otrunk',               'gzip+b64',   'ot_learner_data',       'otml'],
     ['bytearray',        'otrunk_drawing'     ] => ['application/xml+otrunk-drawing',       'gzip+b64',   'otrunk_drawing',        'otml'],
     ['bytearray',        'trialData'          ] => ['java_object/gzip+b64',                 'gzip+b64',   'trial_data',            'pojo'],
     ['bytearray',        'findingsData'       ] => ['java_object/gzip+b64',                 'gzip+b64',   'findings_data',         'pojo'],
     ['bytearray',        ''                   ] => ['java_object/gzip+b64',                 'gzip+b64',   'generic_pas_object',    'pojo'],
-    ['text',             'model.activity.data'] => ['application/xml+pas-modelreport',      'escaped',    'model.activity.data',   'xml' ],
-    ['text',             'modelActivityData'  ] => ['application/xml+pas-modelreport',      'escaped',    'ModelActivityData',     'xml' ],
+    ['text',             'model.activity.data'] => ['application/xml+pas-modelreport',      'escaped',    'model_activity_data',   'xml' ],
+    ['text',             'modelActivityData'  ] => ['application/xml+pas-modelreport',      'escaped',    'model_activity_data',   'xml' ],
     ['text',             'navigation_log'     ] => ['application/xml+pas-navigation-log',   'escaped',    'navigation_log',        'xml' ],
     ['text',             'curnit_map'         ] => ['application/xml+pas-curnit-map',       'escaped',    'curnit_map',            'xml' ],
     ['text',             'session_state'      ] => ['application/xml+pas-session-state',    'escaped',    'session_state',         'xml' ],
