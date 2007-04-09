@@ -131,10 +131,10 @@ class Bundle < ActiveRecord::Base
   
   def process_sail_session_attributes
     if USE_LIBXML
-      self.sail_curnit_uuid = @@session_bundle.sds_get_attribute_with_default('curnitUUID', curnit.uuid)
+      self.sail_curnit_uuid = @@session_bundle.sds_get_attribute_with_default('curnitUUID', 'x' * 36)
       self.sail_session_uuid = @@session_bundle.sds_get_attribute_with_default('sessionUUID', 0)
-      self.sail_session_start_time = @@session_bundle.sds_get_attribute_with_default('start', self.created_at) { |t| SdsTime.java8601(t) }
-      self.sail_session_end_time = @@session_bundle.sds_get_attribute_with_default('stop', self.created_at) { |t| SdsTime.java8601(t) }
+      self.sail_session_start_time = @@session_bundle.sds_get_attribute_with_default('start', self.created_at) { |t| SdsTime.fix_java8601(t) }
+      self.sail_session_end_time = @@session_bundle.sds_get_attribute_with_default('stop', self.created_at) { |t| SdsTime.fix_java8601(t) }
     else
       self.sail_curnit_uuid = @@session_bundle.attributes['curnitUUID'] || 'x' * 36
       self.sail_session_uuid = @@session_bundle.attributes['sessionUUID'] || 0
