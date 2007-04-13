@@ -192,6 +192,6 @@ namespace :sds do
   end
 
   desc "Rebuild database newly converted from stable. First apply migrations!"
-  task :rebuild_db => [:environment, :create_sail_session_attributes, :copy_bundle_content_to_related_model, :copy_curnit_jars_to_sds_cache, :rebuild_pods_and_socks] do
+  task :rebuild_db => [:environment, :copy_bundle_content_to_related_model, :create_sail_session_attributes, :copy_curnit_jars_to_sds_cache, :rebuild_pods_and_socks] do
   end
 end
