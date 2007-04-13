@@ -1,7 +1,7 @@
 class WorkgroupController < ApplicationController
 
   layout "standard", :except => [ :atom ] 
-  before_filter :find_workgroup, :except => [ :list, :create ]
+  before_filter :find_workgroup, :except => [ :list, :create, :list_by_offering ]
 
   protected
   
@@ -30,6 +30,14 @@ class WorkgroupController < ApplicationController
         wants.xml { render :xml => (@workgroups.empty? ? "<workgroups />" :@workgroups.to_xml(:except => ['created_at', 'updated_at'])) }
       end
     end
+  end
+  
+  def list_by_offering
+      @workgroups = Offering.find(params[:oid]).workgroups
+      respond_to do |wants|
+        wants.html { render :action => 'list' }
+        wants.xml { render :xml => (@workgroups.empty? ? "<workgroups />" :@workgroups.to_xml(:except => ['created_at', 'updated_at', 'offering-id'])) }
+      end
   end
 
   def membership
