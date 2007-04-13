@@ -49,6 +49,7 @@ ActionController::Routing::Routes.draw do |map|
   map.connect ':pid/offering/edit/:id', :controller => 'offering', :action => 'edit'
 #  map.connect ':pid/offering/destroy/:id', :controller => 'offering', :action => 'destroy'
   map.connect ':pid/offering/:id', :controller => 'offering', :action => 'show'
+  map.connect ':pid/offering/:oid/workgroups', :controller => 'workgroup', :action => 'list_by_offering'
 
 # workgroup
 
