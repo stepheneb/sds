@@ -121,13 +121,13 @@ class TimeTracker
     @now = Time.now
     @interval = @now - @marker
     @elapsed = @now - @start_time
-    print "time: #{seconds_to_s(@interval)}"
+    print "time: #{TimeTracker.seconds_to_s(@interval)}"
     @marker = @now
   end
   def stop
     self.mark
     @elapsed = @now - @start_time
-    puts "\nTime tracking stopped, elapsed time: #{seconds_to_s(@elapsed)}"
+    puts "\nTime tracking stopped, elapsed time: #{TimeTracker.seconds_to_s(@elapsed)}"
   end
 end
 
