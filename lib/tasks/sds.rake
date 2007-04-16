@@ -188,7 +188,7 @@ namespace :sds do
     # have to set the db version to 42, since 43 in stable and 43 in trunk are not the same...
     con.execute("update sds_schema_info set version='42'")
     print ". done.\n"
-    puts "Now apply migrations: 'rake db:migrate'/n"
+    puts "\n*** Now apply the new database migrations with this command:\n\n  rake db:migrate\n\nWhen the migrations complete successfully  run the second part of the conversion with this command:\n\n  rake sds:rebuild_db\n\n"
   end
 
   desc "Rebuild database newly converted from stable. First apply migrations!"

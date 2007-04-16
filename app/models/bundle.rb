@@ -110,7 +110,7 @@ class Bundle < ActiveRecord::Base
         tracker.mark
         ave = tracker.elapsed / count
         projected = (bundle_count - count) * ave
-        print " :: ave: #{tracker.seconds_to_s(ave)}, projected: #{tracker.seconds_to_s(projected)}"
+        print " :: ave: #{Tracker.seconds_to_s(ave)}, projected: #{Tracker.seconds_to_s(projected)}"
         print "\n#{sprintf("%5d", count)}: "
       end
       count += 1
