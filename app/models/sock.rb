@@ -1,7 +1,9 @@
 class Sock < ActiveRecord::Base
   set_table_name "sds_socks"
+#  acts_as_reportable
   belongs_to :bundle
   belongs_to :pod
+  
 
   def after_save
     self.save_to_file_system

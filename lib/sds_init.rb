@@ -87,7 +87,7 @@ class TimeTracker
   # Time.at(7683).gmtime.strftime('%R:%S')
   # => "02:08:03"
   attr_reader :start_time, :now, :marker, :interval, :elapsed, :stop
-  def seconds_to_s(s)
+  def TimeTracker.seconds_to_s(s)
     str = ''
     units = ' '
     return 'x' if s < 0

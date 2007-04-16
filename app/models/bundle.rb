@@ -1,5 +1,6 @@
 class Bundle < ActiveRecord::Base
   set_table_name "sds_bundles"
+#  acts_as_reportable
   belongs_to :workgroup
   belongs_to :bundle_content
 
@@ -7,6 +8,10 @@ class Bundle < ActiveRecord::Base
     def find_notes
       note = 'note'
       @find_notes ||= find(:all).select {|s| s.pod.pas_type == note}
+    end
+    def find_model_activity_datasets
+      mad = 'model_activity_data'
+      @find_mads ||= find(:all).select {|s| s.pod.pas_type == mad}
     end
   end
 
@@ -48,7 +53,7 @@ class Bundle < ActiveRecord::Base
       print "Setting Bundle process status to 0 for all #{Bundle.count.to_s} Bundles ... "
       result = Bundle.update_all("process_status = 0")
       result = Bundle.update_all("processing_error = ''")
-      tracker.mark
+      tracker.mark; puts
       print "Erasing resources cached in filesystem generated from processing Bundles (includes Workgroups, Socks) ... "
       Portal.find(:all).each do |p|
         path = "#{SdsCache.instance.path}#{p.id}/offerings"
@@ -56,7 +61,7 @@ class Bundle < ActiveRecord::Base
           FileUtils.rmtree(Dir.glob("#{path}*"))
         end
       end
-      tracker.mark
+      tracker.mark; puts
       puts "Erasing Pods from sds_cache ... "
       Pod.find(:all).each do |p|
         if p.curnit
@@ -66,12 +71,12 @@ class Bundle < ActiveRecord::Base
           end
         end
       end
-      tracker.mark
+      tracker.mark; puts
       print "Deleting: #{Pod.count.to_s} Pods from the database ... "
       Pod.delete_all
-      tracker.mark
+      tracker.mark; puts
       Sock.delete_all
-      tracker.mark
+      tracker.mark; puts
     end
     Bundle.process_bundles
     tracker.stop

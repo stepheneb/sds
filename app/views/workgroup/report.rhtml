@@ -11,26 +11,33 @@
     } %>
 </p>
 
-
+<hr />
+<h2>Notes</h2>
 <% podnotes = @workgroup.valid_bundles.collect {|b| b.socks.find_notes}.flatten.group_by {|s| s.pod} %>
 <% podnotes.each do |pod, socks| %>
-  <div style="background-color: #99FFCC; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px; font: 10px sans-serif;">
+  <%= render(:partial => 'pod', :locals => {:pod => pod, :socks => socks}) %>
+<% end%>
+
+<hr />
+<h2>Model Activity Reports</h2>
+
+<% podmads = @workgroup.valid_bundles.collect {|b| b.socks.find_model_activity_datasets}.flatten.group_by {|s| s.pod} %>
+<% podmads.each do |pod, socks| %>
+  <div style="background-color: #FF99CC; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px; font: 10px sans-serif;">
     <%= "Pod: id: #{pod.id}, uuid: #{pod.uuid}, rim name: #{pod.rim_name}"%>
-    <div style="background-color: #DDFFEE; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px; font: 12px sans-serif;">
+    <div style="background-color: #FFDDEE; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px; font: 12px sans-serif;">
       <%= pod.html_body %>
     </div>
     <% socks.each do |s| %>
       <div style="background-color: white; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px; font: 11px sans-serif;">
-        <%= s.value %>
+        <pre><%= CGI.escapeHTML(s.text) %></pre>
       </div>
     <% end %>
   </div>
 <% end %>
 
 <hr />
-
 <%= display_xml(@workgroup) %>
 
 XML output representation:
 <p><code><%= h(WorkgroupMembership.wg_array_to_xml(@membership_array)) %></code></p>
-

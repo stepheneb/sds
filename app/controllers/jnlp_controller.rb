@@ -86,6 +86,7 @@ class JnlpController < ApplicationController
   def show
     if @jnlp = @portal.jnlps.find_by_id(params[:id])
       if request.get?
+        @jnlp.get_body
         respond_to do |wants|
           wants.html
           wants.xml  do

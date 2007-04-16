@@ -193,5 +193,6 @@ namespace :sds do
 
   desc "Rebuild database newly converted from stable. First apply migrations!"
   task :rebuild_db => [:environment, :copy_bundle_content_to_related_model, :create_sail_session_attributes, :copy_curnit_jars_to_sds_cache, :rebuild_pods_and_socks] do
+    puts "Don't forget to update any portals that are directly using the development SDS if the resources they refer to may have been deleted or had their primary keys changed.\nFor example the development TEEMSS2 DIY will need the following operations performed:\n  1. rake diy:delete_local_sds_attributes\n  2. manually update config/sds.yml to refer to the correct jnlp and curnit resources\n"
   end
 end

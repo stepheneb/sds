@@ -1,0 +1,7 @@
+<div style="background-color: #99FFCC; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px; font: 10px sans-serif;">
+  <%= "Pod: id: #{pod.id}, uuid: #{pod.uuid}, rim name: #{pod.rim_name}"%>
+  <div style="background-color: #DDFFEE; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px; font: 12px sans-serif;">
+    <%= pod.html_body %>
+  </div>
+  <%= render(:partial => 'sock', :collection => socks) %>
+</div>

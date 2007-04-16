@@ -1,5 +1,6 @@
 class Workgroup < ActiveRecord::Base  
   set_table_name "sds_workgroups"
+#  acts_as_reportable
   belongs_to :portal
   belongs_to :offering
   has_many :workgroup_memberships
