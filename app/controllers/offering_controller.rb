@@ -133,13 +133,13 @@ class OfferingController < ApplicationController
       jnlp_filename = request.query_parameters['jnlp_filename'] || "#{to_filename(@jnlp.name)}_#{to_filename(@offering.curnit.name)}.jnlp"
       # this is a bit of a hack because the real query_parameters are not a hash
       # so I delete the jnlp_filename parameter if it exists in request.query_string
-      request.query_string.gsub!(/&*jnlp_filename=[^&]*/, '')
+      request.query_string.gsub!(/[?&]jnlp_filename=[^&]*/, '')
       @headers["Content-Disposition"] = "attachment; filename=#{jnlp_filename}"
       # jnlp_properties value is a string of key-value pairs in a url query-string format
       # in which the reserved characters 
       if request.query_parameters['jnlp_properties']
         @jnlp_properties = CGIMethods.parse_query_parameters(URI.unescape(request.query_parameters['jnlp_properties']))
-        request.query_string.gsub!(/[?&][^&]*jnlp_properties=[^&]*/, '')
+        request.query_string.gsub!(/[?&]jnlp_properties=[^&]*/, '')
       end
       render :action => 'jnlp', :layout => false
     end
