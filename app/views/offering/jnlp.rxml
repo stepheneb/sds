@@ -23,7 +23,7 @@ if USE_LIBXML
   app_desc = jnlp.find('./application-desc')
   app_desc_main_class = app_desc.first['main-class']
   app_desc_arg = app_desc.first.find('argument').first
-  res_prop_value = jnlp.find('./resources/property/@value').first.value
+#  res_prop_value = jnlp.find('./resources/property/@value').first.value
 else
   app_desc = jnlp.elements["application-desc"]
   app_desc_main_class = app_desc.attributes["main-class"]
