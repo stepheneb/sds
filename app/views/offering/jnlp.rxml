@@ -53,7 +53,7 @@ end
 if USE_LIBXML
   case sds_launcher
   when app_desc.first['main-class']
-    app_desc_arg.content = config_url
+    app_desc_arg.content = config_url.gsub(/&/, '&amp;')
   end
 else
 # I haven't figured out why this code isn't working
@@ -75,7 +75,8 @@ if USE_LIBXML
   end
   resources = jnlp.find('//resources') 
 else
-  jnlp.elements.each("//resources") { |e| resources << e } 
+  resources = []
+  jnlp.elements.each("//resources") { |e| resources.unshift(e) } 
 end
 
 xml.instruct! :xml, :version=>"1.0", :encoding=>"UTF-8"

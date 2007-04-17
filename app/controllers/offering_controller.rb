@@ -139,7 +139,7 @@ class OfferingController < ApplicationController
       # in which the reserved characters 
       if request.query_parameters['jnlp_properties']
         @jnlp_properties = CGIMethods.parse_query_parameters(URI.unescape(request.query_parameters['jnlp_properties']))
-        request.query_string.gsub!(/&*jnlp_properties=[^&]*/, '')
+        request.query_string.gsub!(/[?&][^&]*jnlp_properties=[^&]*/, '')
       end
       render :action => 'jnlp', :layout => false
     end
