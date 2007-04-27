@@ -83,7 +83,11 @@ class Pod < ActiveRecord::Base
         podxml = self.curnit.find_podxml(self.uuid)
         if USE_LIBXML # libxml version uses native Gnome xml library
           rim_id =  podxml.find("//void[@property='name'][string='#{self.rim_name}']/../@id").first.value #  example => "Rim0"
-          response_id =  podxml.find("//void[@property='rim']/object[@idref='#{rim_id}']/../../void[@property='identifier']/string").first.content # example => "MasterWorkNote(62288):NOTE_RESPONSE_1"
+          begin
+            response_id =  podxml.find("//void[@property='rim']/object[@idref='#{rim_id}']/../../void[@property='identifier']/string").first.content # example => "MasterWorkNote(62288):NOTE_RESPONSE_1"
+          rescue
+            response_id =  podxml.find("//void[@property='rim']/object[@id='#{rim_id}']/../../void[@property='identifier']/string").first.content # example => "MasterWorkNote(62288):NOTE_RESPONSE_1"
+          end
           html_doc =  podxml.find("//void[@property='responseIdentifier'][string='#{response_id}']/../void[@property='prompt']/string").first.content
         else # use REXML
           rim_id =  REXML::XPath.first(podxml, "//void[@property='name'][string='#{self.rim_name}']/../@id").value #  example => "Rim0"
