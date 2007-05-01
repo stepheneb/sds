@@ -1,3 +1,20 @@
+# == Schema Information
+# Schema version: 50
+#
+# Table name: sds_pods
+#
+#  id        :integer(11)   not null, primary key
+#  curnit_id :integer(11)   
+#  uuid      :string(36)    
+#  rim_name  :string(255)   
+#  rim_shape :string(255)   
+#  html_body :text          
+#  mime_type :string(255)   
+#  encoding  :string(255)   
+#  pas_type  :string(255)   
+#  extension :string(255)   
+#
+
 class Pod < ActiveRecord::Base
   set_table_name "sds_pods"
 #  acts_as_reportable

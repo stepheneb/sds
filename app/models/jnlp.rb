@@ -1,3 +1,20 @@
+# == Schema Information
+# Schema version: 50
+#
+# Table name: sds_jnlps
+#
+#  id            :integer(11)   not null, primary key
+#  portal_id     :integer(11)   
+#  name          :string(60)    default(""), not null
+#  url           :string(256)   
+#  created_at    :datetime      
+#  updated_at    :datetime      
+#  body          :text          
+#  always_update :boolean(1)    
+#  last_modified :datetime      
+#  filename      :string(255)   
+#
+
 class Jnlp < ActiveRecord::Base  
   set_table_name "sds_jnlps"
     

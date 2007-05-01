@@ -1,3 +1,23 @@
+# == Schema Information
+# Schema version: 50
+#
+# Table name: sds_curnits
+#
+#  id                :integer(11)   not null, primary key
+#  portal_id         :integer(11)   
+#  name              :string(60)    default(""), not null
+#  url               :string(256)   
+#  created_at        :datetime      
+#  updated_at        :datetime      
+#  pas_map           :text          
+#  always_update     :boolean(1)    
+#  jar_digest        :string(255)   
+#  jar_last_modified :datetime      
+#  uuid              :string(36)    
+#  root_pod_uuid     :string(36)    
+#  title             :string(255)   
+#
+
 class Curnit < ActiveRecord::Base
   require 'net/http'
   set_table_name "sds_curnits"

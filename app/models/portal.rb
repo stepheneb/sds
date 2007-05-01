@@ -1,3 +1,22 @@
+# == Schema Information
+# Schema version: 50
+#
+# Table name: sds_portals
+#
+#  id                 :integer(11)   not null, primary key
+#  name               :string(255)   default(""), not null
+#  use_authentication :boolean(1)    
+#  auth_username      :string(255)   
+#  auth_password      :string(255)   
+#  created_at         :datetime      
+#  updated_at         :datetime      
+#  title              :string(255)   
+#  vendor             :string(255)   
+#  home_page_url      :string(255)   
+#  description        :string(255)   
+#  image_url          :string(255)   
+#
+
 # require 'conversions.rb'
 
 class Portal < ActiveRecord::Base

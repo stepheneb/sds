@@ -1,3 +1,23 @@
+# == Schema Information
+# Schema version: 50
+#
+# Table name: sds_bundles
+#
+#  id                      :integer(11)   not null, primary key
+#  workgroup_id            :integer(11)   
+#  workgroup_version       :integer(11)   
+#  content                 :text          
+#  created_at              :datetime      
+#  process_status          :integer(11)   
+#  sail_session_start_time :datetime      
+#  sail_session_end_time   :datetime      
+#  sail_curnit_uuid        :string(255)   
+#  sail_session_uuid       :string(255)   
+#  content_well_formed_xml :boolean(1)    
+#  bundle_content_id       :integer(11)   
+#  processing_error        :text          
+#
+
 class Bundle < ActiveRecord::Base
   set_table_name "sds_bundles"
 #  acts_as_reportable

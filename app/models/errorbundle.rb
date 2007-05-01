@@ -1,3 +1,18 @@
+# == Schema Information
+# Schema version: 50
+#
+# Table name: sds_errorbundles
+#
+#  id           :integer(11)   not null, primary key
+#  offering_id  :integer(11)   
+#  comment      :string(255)   
+#  name         :string(255)   
+#  content_type :string(255)   
+#  data         :binary        
+#  created_at   :datetime      
+#  ip_address   :string(255)   
+#
+
 class Errorbundle < ActiveRecord::Base
 
   set_table_name "sds_errorbundles"

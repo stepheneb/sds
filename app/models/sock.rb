@@ -1,3 +1,17 @@
+# == Schema Information
+# Schema version: 50
+#
+# Table name: sds_socks
+#
+#  id         :integer(11)   not null, primary key
+#  created_at :datetime      
+#  ms_offset  :integer(11)   
+#  value      :text          
+#  bundle_id  :integer(11)   
+#  pod_id     :integer(11)   
+#  duplicate  :boolean(1)    
+#
+
 class Sock < ActiveRecord::Base
   set_table_name "sds_socks"
 #  acts_as_reportable

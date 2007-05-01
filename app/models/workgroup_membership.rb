@@ -1,3 +1,14 @@
+# == Schema Information
+# Schema version: 50
+#
+# Table name: sds_workgroup_memberships
+#
+#  id           :integer(11)   not null, primary key
+#  sail_user_id :integer(11)   
+#  workgroup_id :integer(11)   default(0), not null
+#  version      :integer(11)   default(0), not null
+#
+
 class WorkgroupMembership < ActiveRecord::Base
 
   set_table_name "sds_workgroup_memberships"

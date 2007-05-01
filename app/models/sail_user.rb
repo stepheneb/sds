@@ -1,3 +1,17 @@
+# == Schema Information
+# Schema version: 50
+#
+# Table name: sds_sail_users
+#
+#  id         :integer(11)   not null, primary key
+#  portal_id  :integer(11)   
+#  first_name :string(60)    default(""), not null
+#  last_name  :string(60)    default(""), not null
+#  uuid       :string(36)    default(""), not null
+#  created_at :datetime      
+#  updated_at :datetime      
+#
+
 class SailUser < ActiveRecord::Base
   
   set_table_name "sds_sail_users"

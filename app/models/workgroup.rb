@@ -1,3 +1,18 @@
+# == Schema Information
+# Schema version: 50
+#
+# Table name: sds_workgroups
+#
+#  id          :integer(11)   not null, primary key
+#  portal_id   :integer(11)   
+#  offering_id :integer(11)   
+#  name        :string(60)    default(""), not null
+#  uuid        :string(36)    default(""), not null
+#  version     :integer(11)   default(0), not null
+#  created_at  :datetime      
+#  updated_at  :datetime      
+#
+
 class Workgroup < ActiveRecord::Base  
   set_table_name "sds_workgroups"
 #  acts_as_reportable
