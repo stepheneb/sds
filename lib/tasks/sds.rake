@@ -77,6 +77,36 @@ namespace :sds do
     puts
   end
   
+  desc "Create all the Model Activity Data from the pods and socks"
+  task :rebuild_mad => :environment do
+    tracker = TimeTracker.new
+    tracker.start
+    failures = []
+    pods = Pod.find(:all, :conditions => "rim_name='model.activity.data'")
+    puts "Pods to process: #{pods.size}:"
+    count = 1
+    print "#{sprintf("%5d", count)}: "
+    pods.each do |p|
+      i = j = 0
+      p.socks.each do |s|
+        i += 1
+        begin
+          s.save!
+        rescue
+          j += 1
+          failures.push(s.id)
+        end
+      end
+      print (j > 0 ? (j > 10 ? "+" : "#{j}") : "p")
+      print "\n#{sprintf("%5d", count)}: " unless count.remainder(50) != 0
+      count += 1
+    end
+    puts "Processed #{i} socks, #{j} failed."
+    puts failures
+    tracker.stop
+    puts
+  end
+  
   desc 'Resave all the jnlp resources -- this will cause html_bodies and other web resource attributes to be set'
   task :rebuild_jnlps => :environment do
     require 'open-uri'
@@ -195,4 +225,5 @@ namespace :sds do
   task :rebuild_db => [:environment, :copy_bundle_content_to_related_model, :create_sail_session_attributes, :copy_curnit_jars_to_sds_cache, :rebuild_pods_and_socks] do
     puts "Don't forget to update any portals that are directly using the development SDS if the resources they refer to may have been deleted or had their primary keys changed.\nFor example the development TEEMSS2 DIY will need the following operations performed:\n  1. rake diy:delete_local_sds_attributes\n  2. manually update config/sds.yml to refer to the correct jnlp and curnit resources\n"
   end
+  
 end

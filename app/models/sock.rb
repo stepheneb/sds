@@ -17,10 +17,18 @@ class Sock < ActiveRecord::Base
 #  acts_as_reportable
   belongs_to :bundle
   belongs_to :pod
+  has_one :model_activity_dataset
   
 
   def after_save
     self.save_to_file_system
+    if self.pod.pas_type == "model_activity_data"
+      if self.model_activity_dataset
+        self.model_activity_dataset.save
+      else
+        self.create_model_activity_dataset
+      end
+    end
   end
 
   def text

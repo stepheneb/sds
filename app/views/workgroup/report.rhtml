@@ -17,21 +17,20 @@
 <% podnotes.each do |pod, socks| %>
   <%= render(:partial => 'pod', :locals => {:pod => pod, :socks => socks}) %>
 <% end%>
-
 <hr />
 <h2>Model Activity Reports</h2>
 
 <% podmads = @workgroup.valid_bundles.collect {|b| b.socks.find_model_activity_datasets}.flatten.group_by {|s| s.pod} %>
 <% podmads.each do |pod, socks| %>
-  <div style="background-color: #FF99CC; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px; font: 10px sans-serif;">
+  <div style="background-color: #FF99CC; padding: 10px; border: 1px dotted gray; margin: 5px 5px 10px 10px; font: 10px sans-serif;">
     <%= "Pod: id: #{pod.id}, uuid: #{pod.uuid}, rim name: #{pod.rim_name}"%>
-    <div style="background-color: #FFDDEE; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px; font: 12px sans-serif;">
-      <%= pod.html_body %>
-    </div>
     <% socks.each do |s| %>
-      <div style="background-color: white; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px; font: 11px sans-serif;">
-        <pre><%= CGI.escapeHTML(s.text) %></pre>
+    <div style="background-color: #FFDDEE; padding: 0px; border: 1px dotted gray; margin: 5px 5px 5px 5px; font: 10px sans-serif;">
+      <br/><%= "Sock: id: #{s.id},bundle: #{s.bundle.id}, created: #{s.bundle.sail_session_start_time}" %>
+      <div style="background-color: white; padding: 10px; border: 1px dotted gray; margin: 0px; font: 11px sans-serif;">
+        <%= render(:partial => 'mad', :locals => {:s => s}) %>
       </div>
+    </div>
     <% end %>
   </div>
 <% end %>

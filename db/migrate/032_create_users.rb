@@ -27,10 +27,11 @@ class CreateUsers < ActiveRecord::Migration
     Role.create(:title => 'portal_admin')
     Role.create(:title => 'portal_user')
 
-    u = User.new(:login => "stephen", :email => "stephen@concord.org", :password_hash => "fd035914661eb4f8b00a57be66a2be2b", :first_name => "Stephen", :last_name => "Bannasch")
-    u.save(false)
-    u.roles << Role.find_by_title('sds_admin')
-    u.save(false)
+# This doesn't work because the User table doesn't exist at this point in the migration
+#    u = User.new(:login => "stephen", :email => "stephen@concord.org", :password_hash => "fd035914661eb4f8b00a57be66a2be2b", :first_name => "Stephen", :last_name => "Bannasch")
+#    u.save(false)
+#    u.roles << Role.find_by_title('sds_admin')
+#    u.save(false)
        
   end
 
