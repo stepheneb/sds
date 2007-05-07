@@ -68,7 +68,6 @@ class ModelActivityDataset < ActiveRecord::Base
           val << "|" << civs_xml.attributes['max'].to_s
           val << "|" << civs_xml.attributes['avg'].to_s
           val << "|" << civs_xml.attributes['num'].to_s
-          self.notes = "setting civs to #{val}"
           civ = ci.computational_input_value.create(:value => val, :time => 0)
           mr.computational_input_value.push(civ)
         end
