@@ -9,7 +9,11 @@
             <% mad['headers'].each do |h| -%>
               <%# h = mad['headers'][k] -%>
               <th>
-              <%= "#{h['name']}<br/>#{h['units']}<br/>#{h['min']}-#{h['max']}" %>
+              <%= "#{h['name']}<br/>" %>
+              <%= h['units'] ? "(#{h['units']})<br/>" : "" %>
+              <%= h['min'] ? "#{h['min']}" : "" %>
+              <%= h['min'] && h['max'] ? "-" : "" %>
+              <% h['max'] ? "#{h['max']}" : "" %>
               </th>
             <% end -%>
             </thead>

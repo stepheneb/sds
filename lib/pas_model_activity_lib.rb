@@ -3,9 +3,52 @@ module PasModelActivityLib
   
   # TODO Create a worksheet based on a model.activity.data sock
   def create_worksheet(workbook, sock)
-    ws = workbook.add_worksheet("#{sock.pod.id}:#{sock.id}")
+    @count ? nil : @count = []
+    @count[sock.pod.id] ? @count[sock.pod.id] += 1 : @count[sock.pod.id] = 1
+    ws = workbook.add_worksheet("#{sock.pod.id}:#{@count[sock.pod.id]}")
     mad = get_mad(sock)
-    ws.write(0,0, mad['headers'].keys.sort.collect {|k| h = mad['headers'][k]; "#{h['name']}\n#{h['units']}\n#{h['min']}-#{h['max']}" } )
+    ws.write(0,0, ["Pod id:", sock.pod.id])
+    ws.write(1,0, ["Sock id:", sock.id, "Session start: ", sock.bundle.sail_session_start_time.to_s, "Session end:", sock.bundle.sail_session_end_time.to_s])
+    ws.write(2,0, mad['headers'].collect { |h|  "#{h['name']}\n" << (h['units'] ? "(#{h['units']})\n" : "") << (h['min'] ? "#{h['min']}" : "") << (h['min'] && h['max'] ? "-" : "") << (h['max'] ? "#{h['max']}" : "") } )
+    i = 0
+    row_num = 3
+    max_column_size = 0
+    mad['runs'].each do |r|
+      i += 1
+      h,m,s,f = DateTime.day_fraction_to_time(DateTime.parse(r['end'].to_s) - DateTime.parse(r['start'].to_s) )
+      run_data = "Run #{i}\nStart: #{r['start']}\nEnd: #{r['end']}\nDuration: "
+      run_data << (h == 0 ? "" : "#{h} hours, " )
+      run_data << (m == 0 ? "" : "#{m} minutes, ")
+      run_data << "#{s} seconds"
+      ws.write(row_num,0, run_data)
+      
+      r['by_time'].keys.sort.each do |timex|
+        row = []
+        
+        event_list = r['by_time'][timex]
+        row << timex.to_s
+        
+        # FIXME nasty embedded loops which allows the data to end up in the right column
+        # there's got to be a better way
+        mad['headers'].each do |h|
+          unless h['name'] == "Run" || h['name'] == "Time"
+            column_data = []
+            event_list.each do |event|
+              if event['name'] == h['name']
+                column_data << event['value']
+              end
+            end
+            row << column_data
+            if column_data.size > max_column_size
+              max_column_size = column_data.size
+            end
+          end
+        end
+        ws.write(row_num,1,row)
+        row_num += max_column_size
+        max_column_size = 0
+      end
+    end
   end
 
   def get_mad(sock)
