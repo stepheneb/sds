@@ -1,4 +1,4 @@
-       <% mad = get_mad(s) -%>
+ <% mad = get_mad_data(s) -%>
         <%# debug mad %>
         <% if mad -%>
         
@@ -6,14 +6,8 @@
           <tr>
         <!-- Headers -->
         <thead>
-              <th>
-              Run
-              </th>
-              <th>
-              Time
-              </th>
-            <% mad['headers'].keys.sort.each do |k| -%>
-              <% h = mad['headers'][k] -%>
+            <% mad['headers'].each do |h| -%>
+              <%# h = mad['headers'][k] -%>
               <th>
               <%= "#{h['name']}<br/>#{h['units']}<br/>#{h['min']}-#{h['max']}" %>
               </th>
@@ -48,14 +42,16 @@
               <%  event_list = r['by_time'][timex] -%>
               <tr>
                 <td><%=  timex %></td>
-                <%  mad['headers'].keys.sort.each do |k| -%>
+                <%  mad['headers'].each do |h| -%>
+                <% unless h['name'] == "Run" || h['name'] == "Time" -%>
                   <td>
                   <%  event_list.each do |event| -%>
-                      <%  if event['name'] == mad['headers'][k]['name'] -%>
+                      <%  if event['name'] == h['name'] -%>
                       <%=  event['value'] %> <br/>
                       <%  end -%>
                   <%  end -%>
                   </td>
+                <% end -%>
                 <% end -%>
               </tr>
             <%  end -%>

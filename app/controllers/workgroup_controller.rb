@@ -1,4 +1,6 @@
 class WorkgroupController < ApplicationController
+  require 'pas_model_activity_lib'
+  include PasModelActivityLib
 
   layout "standard", :except => [ :atom ] 
   before_filter :find_workgroup, :except => [ :list, :create, :list_by_offering ]
@@ -155,6 +157,44 @@ class WorkgroupController < ApplicationController
     @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects
   end
 
+  def report_xls
+    @members = @workgroup.sail_users.version(@workgroup.version) # array of SailUser objects
+    @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects
+
+    # Create the first worksheet which summarizes the workgroup information
+    file = "#{RAILS_ROOT}/tmp/xls/#{@workgroup.id}.xls"
+    f = File.new(file, "w")
+    f.write("")
+    f.close
+    
+    workbook = Spreadsheet::Excel.new(file)
+    worksheet = workbook.add_worksheet("Info")
+    row = 0
+    worksheet.write(row, 0, ["Workgroup:",@workgroup.name, "id:", @workgroup.id])
+    worksheet.write(row += 1, 0, ["Members:", @workgroup.member_names.split(", "), "ids:", @members.collect {|m| m.id} ])
+    worksheet.write(row += @workgroup.member_names.split(", ").size, 0, ["Valid Sessions:", @workgroup.valid_bundles.length.to_s ])
+    worksheet.write(row += 1, 0, ["Offering:", @workgroup.offering.name, "id:", @workgroup.offering.id ])
+    worksheet.write(row += 1, 0, ["Curnit:", @workgroup.offering.curnit.name, "id:", @workgroup.offering.curnit.id, "last updated:", @workgroup.offering.curnit.jar_last_modified.to_s ])
+    workbook.close
+    
+    # Create a worksheet for each sock
+    @workgroup.bundles.each do |b|
+      b.socks.each do |s|
+        if s.pod.pas_type == "model_activity_data"
+          # create_worksheet(workbook, s)
+          worksheet.write(row += 1, 0, "adding worksheet: #{s.pod.id}:#{s.id}")
+          ws = workbook.add_worksheet("#{s.pod.id}:#{s.id}")
+          mad = get_mad(s)
+          row_data = mad['headers'].collect {|h| "#{h['name']}\n#{h['units']}\n#{h['min']}-#{h['max']}" }
+          worksheet.write(row += 1, 0, "adding row: #{row_data}")
+          ws.write(0,0, row_data )
+ 
+        end
+      end
+    end
+    send_data(File.open(file).read, :type => "application/vnd.ms.excel", :filename => "#{@workgroup.id}.xls" )
+  end
+  
   def atom
     @workgroups = @portal.workgroups
     @headers["Content-Type"] = "application/atom+xml"
