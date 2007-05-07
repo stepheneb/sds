@@ -55,6 +55,24 @@ class ModelActivityDataset < ActiveRecord::Base
           civ = ci.computational_input_value.create(:value => civ_xml.elements['value'].get_text.to_s, :time => time)
           mr.computational_input_value.push(civ)
         end
+        
+        # model: computational_input_value
+        # This is where the civ's have been aggregated into one entry
+        mr_xml.elements.each('computational_input_values') do |civs_xml|
+          ci_ref = civs_xml.attributes['reference'].to_s
+          ci = self.computational_input.find(:first, :conditions => ["name = ?", ci_ref])
+          
+          val = civs_xml.attributes['start'].to_s
+          val << "|" << civs_xml.attributes['end'].to_s
+          val << "|" << civs_xml.attributes['min'].to_s
+          val << "|" << civs_xml.attributes['max'].to_s
+          val << "|" << civs_xml.attributes['avg'].to_s
+          val << "|" << civs_xml.attributes['num'].to_s
+          self.notes = "setting civs to #{val}"
+          civ = ci.computational_input_value.create(:value => val, :time => 0)
+          mr.computational_input_value.push(civ)
+        end
+        
         # model: representational_value
         mr_xml.elements.each('representational_attribute_value') do |rv_xml|
           ra_ref = rv_xml.attributes['reference'].to_s

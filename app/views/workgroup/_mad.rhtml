@@ -13,7 +13,7 @@
               <%= h['units'] ? "(#{h['units']})<br/>" : "" %>
               <%= h['min'] ? "#{h['min']}" : "" %>
               <%= h['min'] && h['max'] ? "-" : "" %>
-              <% h['max'] ? "#{h['max']}" : "" %>
+              <%= h['max'] ? "#{h['max']}" : "" %>
               </th>
             <% end -%>
             </thead>
@@ -46,14 +46,19 @@
               <%  event_list = r['by_time'][timex] -%>
               <tr>
                 <td><%=  timex %></td>
-                <%  mad['headers'].each do |h| -%>
+                <% mad['headers'].each do |h| -%>
                 <% unless h['name'] == "Run" || h['name'] == "Time" -%>
                   <td>
-                  <%  event_list.each do |event| -%>
-                      <%  if event['name'] == h['name'] -%>
-                      <%=  event['value'] %> <br/>
-                      <%  end -%>
-                  <%  end -%>
+                  <% event_list.each do |event| -%>
+                      <% if event['name'] == h['name'] -%>
+                        <% if event['value'].include? "|" -%>
+                          <% start, final, min, max, avg, num = event['value'].split("|") %>
+                          <%= "Start: #{start}<br/>End: #{final}<br/>Min: #{min}<br/>Max: #{max}<br/>Avg: #{avg}<br/>Num: #{num}"%>
+                        <% else -%>
+                          <%= event['value'] %> 
+                        <% end -%><br/>
+                      <% end -%>
+                  <% end -%>
                   </td>
                 <% end -%>
                 <% end -%>
