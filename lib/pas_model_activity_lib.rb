@@ -15,11 +15,11 @@ module PasModelActivityLib
     headers = []
     runs = []
     
+    begin
     if ! sock.model_activity_dataset && sock.pod.pas_type == "model_activity_data"
-      sock.save!
+      sock.save
     end
     
-   begin 
     ## Start with the headers
      headers << {
         "name"  => "Run"
