@@ -74,3 +74,4 @@ ActionController::Base.param_parsers[Mime::XML] = nil
 
 require 'sds_init'
 require 'uuidtools'
+PDF_SITE_ROOT="http://rails.dev.concord.org/workgroup-pdf"

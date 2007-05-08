@@ -71,6 +71,11 @@ class OfferingController < ApplicationController
     begin
       @offering = @portal.offerings.find(params[:id])
       if request.get?
+        begin
+          @sdsBaseUrl = "http://" << request.env['HTTP_HOST'] << (RAILS_RELATIVE_URL_ROOT ? "/#{RAILS_RELATIVE_URL_ROOT}" : "")
+        rescue
+          @sdsBaseUrl = "http://" << request.env['HTTP_HOST']
+        end
         respond_to do |wants|
           wants.html
           wants.xml  do
