@@ -5,6 +5,8 @@ class CreateRepresentationalValues < ActiveRecord::Migration
       t.column :representational_attribute_id, :integer
       t.column :time, :double
     end
+    add_index :sds_pas_representational_values, :model_activity_modelrun_id, :name => "rv_model_activity_modelrun_id_index"
+    add_index :sds_pas_representational_values, :representational_attribute_id, :name => "representational_attribute_id_index"
   end
 
   def self.down

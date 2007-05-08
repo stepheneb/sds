@@ -5,6 +5,7 @@ class CreateModelActivityModelruns < ActiveRecord::Migration
       t.column :start_time, :double
       t.column :end_time, :double
     end
+    add_index :sds_pas_model_activity_modelruns, :model_activity_dataset_id, :name => "mr_model_activity_dataset_id_index"
   end
 
   def self.down

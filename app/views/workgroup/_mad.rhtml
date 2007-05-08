@@ -23,23 +23,16 @@
           <% mad['runs'].each do |r| -%>
             <% i += 1 -%>
             <tr>
- <!--             <td rowspan=<%= r['civs'].size + r['mrvs'].size %> >Run <%= i %><br/>
-                 Start: <%= r['start'] %>, End: <%= r['end'] %><br/>
-                 Duration: <%= ((r['end'] - r['start']) / 1000) %> seconds
-              </td>
-              <% r['civs'].each do |k, civ| -%>
-              <td><%= civ['time'].to_s %></td><td><%= civ['value'] %></td>
-              <% end -%>
-              
-              <% r['mrvs'].each do |k, mrv| -%>
-              <td><%= mrv['time'].to_s %></td><td><%= mrv['value'] %></td>
-              <% end -%>
-              -->
-              
               <td rowspan=<%= r['by_time'].size + 1 %> valign="top">Run <%= i %><br/>
                  Start: <%= r['start'] %><br/>End: <%= r['end'] %><br/>
-                 Duration: <% h,m,s,f = DateTime.day_fraction_to_time(DateTime.parse(r['end'].to_s) - DateTime.parse(r['start'].to_s) ) %>
-                   <%= (h == 0 ? "" : "#{h} hours," ) %> <%= (m == 0) ? "" : "#{m} minutes," %> <%= s %> seconds 
+                 Duration: 
+                 <% if r['end'] == "no time" || r['start'] == "no time" -%>
+                 <% h = m = f = 0 -%>
+                 <% s = -1 -%>
+                 <% else -%>
+                 <% h,m,s,f = DateTime.day_fraction_to_time(DateTime.parse(r['end'].to_s) - DateTime.parse(r['start'].to_s) ) -%>
+                 <% end -%>
+                   <%= (h == 0 ? "" : "#{h} hours," ) %> <%= (m == 0) ? "" : "#{m} minutes," %> <%= s < 0 ? "unknown" : "#{s} seconds" %> 
               </td>
             </tr>
             <%  r['by_time'].keys.sort.each do |timex| -%>
@@ -68,5 +61,5 @@
           </tbody>
         </table>
     <% else -%>
-       There was no model activity data.
+       There was an error rendering the model activity data for this sock entry.
     <% end -%>

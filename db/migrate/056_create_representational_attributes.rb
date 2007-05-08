@@ -4,6 +4,7 @@ class CreateRepresentationalAttributes < ActiveRecord::Migration
       t.column :representational_type_id, :integer
       t.column :value, :string
     end
+    add_index :sds_pas_representational_attributes, :representational_type_id, :name => "representational_type_id_index"
   end
 
   def self.down

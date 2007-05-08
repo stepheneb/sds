@@ -13,8 +13,16 @@ class ModelActivityDataset < ActiveRecord::Base
     def process_attributes
       xml = REXML::Document.new(self.sock.value)
       self.name = xml.elements['/modelactivitydata/name'].get_text.to_s
-      self.start_time = Float(xml.elements['/modelactivitydata/start_time'].get_text.to_s)
-      self.end_time = Float(xml.elements['/modelactivitydata/end_time'].get_text.to_s)
+      begin
+        self.start_time = Float(xml.elements['/modelactivitydata/start_time'].get_text.to_s)
+      rescue
+        self.start_time = nil
+      end
+      begin
+        self.end_time = Float(xml.elements['/modelactivitydata/end_time'].get_text.to_s)
+      rescue
+        self.end_time = nil
+      end
     end
     
     def process_content
@@ -42,15 +50,29 @@ class ModelActivityDataset < ActiveRecord::Base
 
       # model: model_activity_modelrun
       xml.elements.each("//modelrun") do |mr_xml|
+      begin
+        st = Float(mr_xml.elements['start_time'].get_text.to_s)
+      rescue
+        st = nil
+      end
+      begin
+        et = Float(mr_xml.elements['end_time'].get_text.to_s)
+      rescue
+        et = nil
+      end
         mr = self.model_activity_modelrun.create(
-                   :start_time => Float(mr_xml.elements['start_time'].get_text.to_s),
-                   :end_time => Float(mr_xml.elements['end_time'].get_text.to_s)
+                   :start_time => st,
+                   :end_time => et
         )
         
         # model: computational_input_value
         mr_xml.elements.each('computational_input_value') do |civ_xml|
           ci_ref = civ_xml.attributes['reference'].to_s
-          time = (civ_xml.elements['time'] ? Float(civ_xml.elements['time'].get_text.to_s) : nil)
+          begin
+            time = Float(civ_xml.elements['time'].get_text.to_s)
+          rescue
+            time = nil
+          end
           ci = self.computational_input.find(:first, :conditions => ["name = ?", ci_ref])
           civ = ci.computational_input_value.create(:value => civ_xml.elements['value'].get_text.to_s, :time => time)
           mr.computational_input_value.push(civ)
@@ -68,7 +90,7 @@ class ModelActivityDataset < ActiveRecord::Base
           val << "|" << civs_xml.attributes['max'].to_s
           val << "|" << civs_xml.attributes['avg'].to_s
           val << "|" << civs_xml.attributes['num'].to_s
-          civ = ci.computational_input_value.create(:value => val, :time => 0)
+          civ = ci.computational_input_value.create(:value => val, :time => nil)
           mr.computational_input_value.push(civ)
         end
         
@@ -76,7 +98,11 @@ class ModelActivityDataset < ActiveRecord::Base
         mr_xml.elements.each('representational_attribute_value') do |rv_xml|
           ra_ref = rv_xml.attributes['reference'].to_s
           ra_val = rv_xml.elements['value'].get_text.to_s
-          time = (rv_xml.elements['time'] ? Float(rv_xml.elements['time'].get_text.to_s) : nil)
+          begin
+            time = Float(rv_xml.elements['time'].get_text.to_s)
+          rescue
+            time = nil
+          end
           ra = self.representational_type.find(:first, :conditions => ["name = ?", ra_ref])
           rt = ra.representational_attribute.find(:first, :conditions => ["value = ?", ra_val])
           rv = rt.representational_value.create(:time => time)

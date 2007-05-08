@@ -7,6 +7,7 @@ class CreateComputationalInputs < ActiveRecord::Migration
       t.column :range_max, :float
       t.column :range_min, :float
     end
+    add_index :sds_pas_computational_inputs, :model_activity_dataset_id, :name => "ci_model_activity_dataset_id_index"
   end
 
   def self.down

@@ -7,6 +7,7 @@ class CreateModelActivityDatasets < ActiveRecord::Migration
       t.column :start_time, :double
       t.column :end_time, :double
     end
+    add_index :sds_pas_model_activity_datasets, :sock_id, :name => "sock_id_index"
   end
 
   def self.down
