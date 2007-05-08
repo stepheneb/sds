@@ -1,0 +1,17 @@
+class CurnitMap < ActiveRecord::Migration
+  def self.up
+    create_table :sds_curnit_maps do |t|
+      t.column :parent_id, :integer
+      t.column :position, :integer
+      t.column :pod_uuid, :string, :limit => 36
+      t.column :title, :string
+      t.column :number, :integer
+      t.column :classname, :string
+      t.column :type, :string
+    end
+  end
+
+  def self.down
+    drop_table :sds_curnit_maps
+  end
+end

@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 50
+# Schema version: 58
 #
 # Table name: sds_jnlps
 #

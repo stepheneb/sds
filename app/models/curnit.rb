@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 50
+# Schema version: 58
 #
 # Table name: sds_curnits
 #
@@ -28,6 +28,7 @@ class Curnit < ActiveRecord::Base
   belongs_to :portal
   has_many :offerings, :order => "created_at DESC"
   has_many :pods
+  has_one :curnit_map
   
   before_save { |c| c.url.strip! }
   before_save :check_for_jar
