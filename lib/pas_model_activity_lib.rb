@@ -35,7 +35,7 @@ module PasModelActivityLib
               column_data = []
               event_list.each do |event|
                 if event['name'] == h['name']
-                  column_data << get_cell_info.join("\n")
+                  column_data << get_cell_info(event['value']).join("\n")
                 end
               end
               row << column_data
@@ -131,8 +131,8 @@ module PasModelActivityLib
     return_hash = {"headers" => headers, "runs" => runs}
     return return_hash
 		rescue => e
-		   flash[:notice] = "#{e}<br/><br/>#{e.backtrace.join('<br/>')}"
-			 return nil
+                  flash[:notice] = "<!-- #{$!}<br/><br/>#{e} -->"
+		  return nil
 		end
   end
   
