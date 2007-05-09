@@ -9,30 +9,17 @@
             <% mad['headers'].each do |h| -%>
               <%# h = mad['headers'][k] -%>
               <th>
-              <%= "#{h['name']}<br/>" %>
-              <%= h['units'] ? "(#{h['units']})<br/>" : "" %>
-              <%= h['min'] ? "#{h['min']}" : "" %>
-              <%= h['min'] && h['max'] ? "-" : "" %>
-              <%= h['max'] ? "#{h['max']}" : "" %>
+              <%= get_header_info(h).join("<br/>") %>
               </th>
             <% end -%>
             </thead>
             <tbody>
           </tr>
-          <% i = 0 -%>
+          <% @i = 0 -%>
           <% mad['runs'].each do |r| -%>
-            <% i += 1 -%>
             <tr>
-              <td rowspan=<%= r['by_time'].size + 1 %> valign="top">Run <%= i %><br/>
-                 Start: <%= r['start'] %><br/>End: <%= r['end'] %><br/>
-                 Duration: 
-                 <% if r['end'] == "no time" || r['start'] == "no time" -%>
-                 <% h = m = f = 0 -%>
-                 <% s = -1 -%>
-                 <% else -%>
-                 <% h,m,s,f = DateTime.day_fraction_to_time(DateTime.parse(r['end'].to_s) - DateTime.parse(r['start'].to_s) ) -%>
-                 <% end -%>
-                   <%= (h == 0 ? "" : "#{h} hours," ) %> <%= (m == 0) ? "" : "#{m} minutes," %> <%= s < 0 ? "unknown" : "#{s} seconds" %> 
+              <td rowspan=<%= r['by_time'].size + 1 %> valign="top">
+                <%= get_run_info(r).join("<br/>") %>
               </td>
             </tr>
             <%  r['by_time'].keys.sort.each do |timex| -%>
@@ -44,12 +31,8 @@
                   <td>
                   <% event_list.each do |event| -%>
                       <% if event['name'] == h['name'] -%>
-                        <% if event['value'].include? "|" -%>
-                          <% start, final, min, max, avg, num = event['value'].split("|") %>
-                          <%= "Start: #{start}<br/>End: #{final}<br/>Min: #{min}<br/>Max: #{max}<br/>Avg: #{avg}<br/>Num: #{num}"%>
-                        <% else -%>
-                          <%= event['value'] %> 
-                        <% end -%><br/>
+                        <%= get_cell_info(event['value']).join("<br/>") %> 
+                        <br/>
                       <% end -%>
                   <% end -%>
                   </td>

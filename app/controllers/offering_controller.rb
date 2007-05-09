@@ -71,11 +71,9 @@ class OfferingController < ApplicationController
     begin
       @offering = @portal.offerings.find(params[:id])
       if request.get?
-        begin
-          @sdsBaseUrl = "http://" << request.env['HTTP_HOST'] << (RAILS_RELATIVE_URL_ROOT ? "/#{RAILS_RELATIVE_URL_ROOT}" : "")
-        rescue
-          @sdsBaseUrl = "http://" << request.env['HTTP_HOST']
-        end
+        pdf_host = (request.env['HTTP_X_FORWARDED_SERVER'] ? request.env['HTTP_X_FORWARDED_SERVER'] : request.env['HTTP_HOST']) 
+        pdf_relative_root = request.env['REQUEST_URI'].match(/(.*)\/[\d]+\/offering\/[\d]+[\/]?/)[1]
+        @sdsBaseUrl = "http://#{pdf_host}#{pdf_relative_root}"
         respond_to do |wants|
           wants.html
           wants.xml  do

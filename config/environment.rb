@@ -72,6 +72,10 @@ end
 
 ActionController::Base.param_parsers[Mime::XML] = nil
 
+# Time Zone things for consistent timestamps in the db
+ActiveRecord::Base.default_timezone = :utc
+# ENV['TZ'] = 'EDT'
+
 require 'sds_init'
 require 'uuidtools'
 PDF_SITE_ROOT="http://rails.dev.concord.org/workgroup-pdf"

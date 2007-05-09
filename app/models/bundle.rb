@@ -161,8 +161,8 @@ class Bundle < ActiveRecord::Base
     if USE_LIBXML
       self.sail_curnit_uuid = @@session_bundle.sds_get_attribute_with_default('curnitUUID', 'x' * 36)
       self.sail_session_uuid = @@session_bundle.sds_get_attribute_with_default('sessionUUID', 0)
-      self.sail_session_start_time = @@session_bundle.sds_get_attribute_with_default('start', self.created_at) { |t| SdsTime.fix_java8601(t) }
-      self.sail_session_end_time = @@session_bundle.sds_get_attribute_with_default('stop', self.created_at) { |t| SdsTime.fix_java8601(t) }
+      self.sail_session_start_time = @@session_bundle.sds_get_attribute_with_default('start', self.created_at) { |t| SdsTime.fix_java8601(t).getutc }
+      self.sail_session_end_time = @@session_bundle.sds_get_attribute_with_default('stop', self.created_at) { |t| SdsTime.fix_java8601(t).getutc }
     else
       self.sail_curnit_uuid = @@session_bundle.attributes['curnitUUID'] || 'x' * 36
       self.sail_session_uuid = @@session_bundle.attributes['sessionUUID'] || 0
@@ -249,4 +249,13 @@ class Bundle < ActiveRecord::Base
       File.open("#{self.path}#{self.filename}", "w") { |f| f.write self.bundle_content.content }
     end
   end    
+
+  def sail_session_start_time
+    read_attribute("sail_session_start_time").getlocal
+  end
+  
+  def sail_session_end_time
+    read_attribute("sail_session_end_time").getlocal
+  end
+
 end

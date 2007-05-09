@@ -1,7 +1,7 @@
 module PasModelActivityLib
   require 'spreadsheet/excel'
   
-  # TODO Create a worksheet based on a model.activity.data sock
+  # Create a worksheet based on a model.activity.data sock
   def create_worksheet(workbook, sock)
     @count ? nil : @count = []
     @count[sock.pod.id] ? @count[sock.pod.id] += 1 : @count[sock.pod.id] = 1
@@ -11,21 +11,16 @@ module PasModelActivityLib
     row_num = 0
     ws.write(row_num, 0, ["Pod id:", sock.pod.id])
     ws.write(row_num += 1, 0, ["Sock entry id:", sock.id])
-    ws.write(row_num += 1, 0, ["Pod id:", sock.pod.id])
-    ws.write(row_num += 1, 0, ["Session start: ", sock.bundle.sail_session_start_time.to_s])
+    ws.write(row_num += 1, 0, ["Bundle id:", sock.bundle.id])
+    ws.write(row_num += 1, 0, ["Session start:", sock.bundle.sail_session_start_time.to_s])
     ws.write(row_num += 1, 0, ["Session end:", sock.bundle.sail_session_end_time.to_s])
     if mad
-      ws.write(row_num += 1, 0, mad['headers'].collect { |h|  "#{h['name']}\n" << (h['units'] ? "(#{h['units']})\n" : "") << (h['min'] ? "#{h['min']}" : "") << (h['min'] && h['max'] ? "-" : "") << (h['max'] ? "#{h['max']}" : "") } )
-      i = 0
+      ws.write(row_num += 1, 0, mad['headers'].collect { |h|  get_header_info(h).join("\n") } )
+      @i = 0
       max_column_size = 0
       mad['runs'].each do |r|
-        i += 1
-        h,m,s,f = DateTime.day_fraction_to_time(DateTime.parse(r['end'].to_s) - DateTime.parse(r['start'].to_s) )
-        run_data = "Run #{i}\nStart: #{r['start']}\nEnd: #{r['end']}\nDuration: "
-        run_data << (h == 0 ? "" : "#{h} hours, " )
-        run_data << (m == 0 ? "" : "#{m} minutes, ")
-        run_data << "#{s} seconds"
-        ws.write(row_num,0, run_data)
+        
+        ws.write(row_num += 1, 0, get_run_info(r).join("\n"))
         
         r['by_time'].keys.sort.each do |timex|
           row = []
@@ -40,12 +35,7 @@ module PasModelActivityLib
               column_data = []
               event_list.each do |event|
                 if event['name'] == h['name']
-                  if event['value'].include? '|'
-                    start, final, min, max, avg, num = event['value'].split("|")
-                    column_data << "Start: #{start}\nEnd: #{final}\nMin: #{min}\nMax: #{max}\nAvg: #{avg}\nNum: #{num}"
-                  else
-                    column_data << event['value']
-                  end
+                  column_data << get_cell_info.join("\n")
                 end
               end
               row << column_data
@@ -55,7 +45,7 @@ module PasModelActivityLib
             end
           end
           ws.write(row_num,1,row)
-          row_num += max_column_size
+          row_num += (max_column_size-1)
           max_column_size = 0
         end
       end
@@ -144,6 +134,52 @@ module PasModelActivityLib
 		   flash[:notice] = "#{e}<br/><br/>#{e.backtrace.join('<br/>')}"
 			 return nil
 		end
+  end
+  
+  def get_run_info(r)
+    @i += 1
+    begin
+      h,m,s,f = DateTime.day_fraction_to_time(DateTime.parse(r['end'].to_s) - DateTime.parse(r['start'].to_s) )
+    rescue
+      h = m = f = 0
+      s = -1
+    end
+    run_data = []
+    run_data << "Run #{@i}"
+    run_data << "Start: #{r['start']}"
+    run_data << "End: #{r['end']}"
+    run_data << ("Duration: " << (h == 0 ? "" : "#{h} hours, " ) << (m == 0 ? "" : "#{m} minutes, ") << (s < 0 ? "unknown" : "#{s} seconds"))
+    return run_data
+  end
+  
+  def get_header_info(h)
+    # need to put the header formatting here so that the xls and html can use the same code
+    header = []
+    header << "#{h['name']}"
+    if h['units']
+      header << "(#{h['units']})"
+    end
+    if h['min'] || h['max']
+      header << ((h['min'] ? "#{h['min']}" : "") << (h['min'] && h['max'] ? "-" : "") << (h['max'] ? "#{h['max']}" : ""))
+    end
+    return header
+  end
+  
+  def get_cell_info(c)
+  # need to put the cell formatting here so that the xls and html can use the same code
+    cell_data = []
+    if c.include? '|'
+      start, final, min, max, avg, num = c.split("|")
+      cell_data << "Start: #{start}"
+      cell_data << "End: #{final}"
+      cell_data << "Min: #{min}"
+      cell_data << "Max: #{max}"
+      cell_data << "Avg: #{avg}"
+      cell_data << "Num: #{num}"
+    else
+      cell_data << c
+    end
+    return cell_data
   end
   
   protected
