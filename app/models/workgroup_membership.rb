@@ -25,7 +25,11 @@ class WorkgroupMembership < ActiveRecord::Base
   # a collection of workgroup_memberships in an array, this is a class
   # method that renders the default xml representation for a wgm_array
   def self.wg_array_to_xml(wgm_array)
-    wgm_array.to_xml(:except => [:id, :workgroup_id, :version])
+    if wgm_array.size > 0
+      wgm_array.to_xml(:except => [:id, :workgroup_id, :version])
+    else
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<workgroup-memberships>\n</workgroup-memberships>"
+    end
   end
   
 end
