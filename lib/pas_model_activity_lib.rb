@@ -5,7 +5,7 @@ module PasModelActivityLib
   def create_worksheet(workbook, sock)
     @count ? nil : @count = []
     @count[sock.pod.id] ? @count[sock.pod.id] += 1 : @count[sock.pod.id] = 1
-    ws = workbook.add_worksheet("#{sock.pod.id}:#{@count[sock.pod.id]}")
+    ws = workbook.add_worksheet("#{sock.pod.id}-#{@count[sock.pod.id]}")
     mad = get_mad(sock)
     
     row_num = 0
