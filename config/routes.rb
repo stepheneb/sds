@@ -61,6 +61,7 @@ ActionController::Routing::Routes.draw do |map|
   map.connect ':pid/workgroup/report_csv/:id', :controller => 'workgroup', :action => 'report_csv'
   map.connect ':pid/workgroup/report/:id/xls', :controller => 'workgroup', :action => 'report_xls'
 #  map.connect ':pid/workgroup/destroy/:id', :controller => 'workgroup', :action => 'destroy'
+  map.connect ':pid/workgroup/:id/membership/:version', :controller => 'workgroup', :action => 'membership'
   map.connect ':pid/workgroup/:id/membership', :controller => 'workgroup', :action => 'membership'
 #  map.connect ':pid/workgroup/atom', :controller => 'workgroup', :action => 'atom'
    map.connect ':pid/workgroup/:id', :controller => 'workgroup', :action => 'show'

@@ -65,7 +65,8 @@ class WorkgroupController < ApplicationController
         render(:text => e, :status => 400) # Bad Request
       end
     else
-      @members = @workgroup.sail_users.version(@workgroup.version) # array of SailUser objects
+      version = params[:version] || @workgroup.version
+      @members = @workgroup.sail_users.version(version) # array of SailUser objects
       @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects
       respond_to do |wants|
         wants.html
