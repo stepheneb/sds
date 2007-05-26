@@ -44,24 +44,23 @@ class WorkgroupController < ApplicationController
 
   def membership
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
-      begin
-        @workgroup.version += 1
-        members = ConvertXml.xml_to_hash(request.raw_post)['workgroup_membership'] || 0
-        # a hack because ConvertXml only returns an array to iterate on if there are 2 or more members!
-        case members.length
-        when 0 
-          nil
-        when 1
-          @workgroup.workgroup_memberships.create!(:sail_user_id => members['sail_user_id'], :version => @workgroup.version)
-        else
-          members.each do |m|
-            @workgroup.workgroup_memberships.create!(:sail_user_id => m['sail_user_id'], :version => @workgroup.version)
-          end
+      @workgroup.version += 1
+      members = ConvertXml.xml_to_hash(request.raw_post)['workgroup_membership'] || 0
+      # a hack because ConvertXml only returns an array to iterate on if there are 2 or more members!
+      case members.length
+      when 0 
+        nil
+      when 1
+        @workgroup.workgroup_memberships.create!(:sail_user_id => members['sail_user_id'], :version => @workgroup.version)
+      else
+        members.each do |m|
+          @workgroup.workgroup_memberships.create!(:sail_user_id => m['sail_user_id'], :version => @workgroup.version)
         end
-        @workgroup.save!
+      end
+      if @workgroup.save
         response.headers['Location'] = url_for(:action => :membership, :id => @workgroup.id)
         render(:xml => "", :status => 201) # Created
-      rescue => e
+      else
         render(:text => e, :status => 400) # Bad Request
       end
     else

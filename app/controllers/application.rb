@@ -49,9 +49,7 @@ protected
   end
   
   def calc_content_length
-    if response.body
-      response.headers['Content-Length'] = response.body.length
-    end
+    response.headers['Content-Length'] = response.body.length
   end
   
   def to_filename(name)

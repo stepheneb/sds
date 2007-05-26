@@ -27,7 +27,7 @@ class WorkgroupMembership < ActiveRecord::Base
     if wgm_array.size > 0
       wgm_array.to_xml(:except => [:id, :workgroup_id, :version])
     else
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<workgroup-memberships>\n</workgroup-memberships>"
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<workgroup-memberships></workgroup-memberships>\n"
     end
   end
   
