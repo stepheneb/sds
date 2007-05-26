@@ -45,7 +45,7 @@ class WorkgroupController < ApplicationController
   def membership
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
       @workgroup.version += 1
-      members = ConvertXml.xml_to_hash(request.raw_post)['workgroup_membership'] || 0
+      members = ConvertXml.xml_to_hash(request.raw_post)['workgroup_membership'] || ''
       # a hack because ConvertXml only returns an array to iterate on if there are 2 or more members!
       case members.length
       when 0 
