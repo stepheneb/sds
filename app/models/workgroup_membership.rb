@@ -16,8 +16,7 @@ class WorkgroupMembership < ActiveRecord::Base
   belongs_to :workgroup
   belongs_to :sail_user
   
-  def self.find_all_in_workgroup(wid)
-    version = Workgroup.find(wid).version
+  def self.find_all_in_workgroup(wid, version = Workgroup.find(wid).version)
     WorkgroupMembership.find(:all, :conditions => ["workgroup_id = :wid and version = :version", {:wid => wid, :version => version}])
   end
   

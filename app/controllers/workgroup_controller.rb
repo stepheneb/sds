@@ -67,7 +67,7 @@ class WorkgroupController < ApplicationController
     else
       version = params[:version] || @workgroup.version
       @members = @workgroup.sail_users.version(version) # array of SailUser objects
-      @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects
+      @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id], version) # array of WorkgroupMembership objects
       respond_to do |wants|
         wants.html
         wants.xml { render :xml => WorkgroupMembership.wg_array_to_xml(@membership_array) }
