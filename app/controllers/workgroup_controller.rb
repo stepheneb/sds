@@ -50,7 +50,7 @@ class WorkgroupController < ApplicationController
         # a hack because ConvertXml only returns an array to iterate on if there are 2 or more members!
         case members.length
         when 0 
-          raise
+          nil
         when 1
           @workgroup.workgroup_memberships.create!(:sail_user_id => members['sail_user_id'], :version => @workgroup.version)
         else
