@@ -18,9 +18,10 @@ module PasModelActivityLib
       ws.write(row_num += 1, 0, mad['headers'].collect { |h|  get_header_info(h).join("\n") } )
       @i = 0
       max_column_size = 0
+      row_num += 1
       mad['runs'].each do |r|
         
-        ws.write(row_num += 1, 0, get_run_info(r).join("\n"))
+        ws.write(row_num, 0, get_run_info(r).join("\n"))
         
         r['by_time'].keys.sort.each do |timex|
           row = []
@@ -45,7 +46,7 @@ module PasModelActivityLib
             end
           end
           ws.write(row_num,1,row)
-          row_num += (max_column_size-1)
+          row_num += (max_column_size)
           max_column_size = 0
         end
       end
