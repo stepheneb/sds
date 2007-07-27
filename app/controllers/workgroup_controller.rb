@@ -161,6 +161,8 @@ class WorkgroupController < ApplicationController
     @members = @workgroup.sail_users.version(@workgroup.version) # array of SailUser objects
     @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects
 
+#    debugger
+    
     # Create the first worksheet which summarizes the workgroup information
     file = "#{RAILS_ROOT}/tmp/xls/#{@workgroup.id}.xls"
     f = File.new(file, "w")
@@ -168,7 +170,14 @@ class WorkgroupController < ApplicationController
     f.close
     
     @workbook = Spreadsheet::Excel.new(file)
+    format = @workbook.add_format(:color=>"blue", :text_h_align=>1)
     worksheet = @workbook.add_worksheet("Info")
+    worksheet.format_column(0, 16, format)
+    worksheet.format_column(1, 24, format)
+    worksheet.format_column(2..3, 8, format)
+    worksheet.format_column(4, 12, format)
+    worksheet.format_column(5, 20, format)
+    
     row = 0
     worksheet.write(row, 0, ["Workgroup:",@workgroup.name, "id:", @workgroup.id])
     worksheet.write(row += 1, 0, ["Members:", @workgroup.member_names.split(", "), "ids:", @members.collect {|m| m.id} ])
@@ -176,11 +185,37 @@ class WorkgroupController < ApplicationController
     worksheet.write(row += 1, 0, ["Offering:", @workgroup.offering.name, "id:", @workgroup.offering.id ])
     worksheet.write(row += 1, 0, ["Curnit:", @workgroup.offering.curnit.name, "id:", @workgroup.offering.curnit.id, "last updated:", @workgroup.offering.curnit.jar_last_modified.to_s ])
     
-    # Create a worksheet for each sock
+    notes_worksheet = @workbook.add_worksheet("Notes")
+    notes_worksheet.format_column(0, 8, format)
+    notes_worksheet.format_column(1, 36, format)
+    notes_worksheet.format_column(2, 16, format)
+    notes_worksheet.format_column(3, 30, format)
+    notes_worksheet.format_column(4, 16, format)
+    notes_worksheet.format_column(5, 32, format)
+    notes_worksheet.format_column(6, 8, format)
+    notes_worksheet.format_column(7, 16, format)
+    notes_worksheet.format_column(8, 50, format)
+    
+    row = 0
+    notes_worksheet.write(row, 0, ["Pod ID", "Pod UUID", "Rim Name", "Note HTML Content", "Session Bundle ID", "Session Bundle Date", "Sock ID", "Sock Time", "Sock Content"])    
+    podnotes = @workgroup.valid_bundles.collect {|b| b.socks.find_notes}.flatten.group_by {|s| s.pod}
+    podnotes.each do |pod, socks|
+      note_preamble = [pod.id, pod.uuid, pod.rim_name, pod.html_body]
+      socks.each do |s|
+        note_response = [s.bundle.id, s.bundle.sail_session_start_time.to_s, s.id, TimeTracker.seconds_to_s(s.ms_offset/1000), s.value]
+#        debugger
+        row += 1
+        notes_worksheet.write(row, 0, note_preamble + note_response)
+      end
+    end
+
+    
+    
+    # Create a worksheet for each mad sock
     @workgroup.bundles.each do |b|
       b.socks.each do |s|
         if s.pod.pas_type == "model_activity_data"
-          create_worksheet(@workbook, s)
+          create_mad_worksheet(@workbook, format, s)
         end
       end
     end

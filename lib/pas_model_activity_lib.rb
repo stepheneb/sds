@@ -2,10 +2,16 @@ module PasModelActivityLib
   require 'spreadsheet/excel'
   
   # Create a worksheet based on a model.activity.data sock
-  def create_worksheet(workbook, sock)
+  def create_mad_worksheet(workbook, format, sock)
     @count ? nil : @count = []
     @count[sock.pod.id] ? @count[sock.pod.id] += 1 : @count[sock.pod.id] = 1
     ws = workbook.add_worksheet("#{sock.pod.id}-#{@count[sock.pod.id]}")
+    
+    ws.format_column(0, 100, format)
+    ws.format_column(1, 30, format)
+    ws.format_column(2, 16, format)
+    ws.format_column(3..6, 20, format)
+    
     mad = get_mad(sock)
     
     row_num = 0
@@ -147,9 +153,9 @@ module PasModelActivityLib
     end
     run_data = []
     run_data << "Run #{@i}"
-    run_data << "Start: #{r['start']}"
-    run_data << "End: #{r['end']}"
-    run_data << ("Duration: " << (h == 0 ? "" : "#{h} hours, " ) << (m == 0 ? "" : "#{m} minutes, ") << (s < 0 ? "unknown" : "#{s} seconds"))
+    run_data << ", Start: #{r['start']}"
+    run_data << ", End: #{r['end']}"
+    run_data << (", Duration: " << (h == 0 ? "" : "#{h} hours, " ) << (m == 0 ? "" : "#{m} minutes, ") << (s < 0 ? "unknown" : "#{s} seconds"))
     return run_data
   end
   

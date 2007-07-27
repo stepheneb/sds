@@ -1,4 +1,5 @@
 if USE_LIBXML
+  gem 'libxml-ruby', '= 0.3.8.4.1'
   require 'xml/libxml'
 else
   require "rexml/document"

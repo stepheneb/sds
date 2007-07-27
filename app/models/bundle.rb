@@ -147,13 +147,18 @@ class Bundle < ActiveRecord::Base
       content_well_formed_xml = false
     end
   end
-  
+
+  # need to know the kind of exceptions LIBXML might throw with bad XML also
   def parse_content_xml
     if USE_LIBXML
       @@xml_parser.string = self.bundle_content.content
       nil || @@session_bundle = @@xml_parser.parse.root
     else
-      nil || @@session_bundle = REXML::Document.new(self.content).root
+      begin
+        nil || @@session_bundle = REXML::Document.new(self.content).root
+      rescue REXML::ParseException
+        nil
+      end        
     end
   end
   
