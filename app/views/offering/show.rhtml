@@ -8,7 +8,8 @@
   Curnit: <%= link_to @offering.curnit.name, {:controller => 'curnit', :action => 'show', :id => @offering.curnit.id }, {:title => "Show the curnit for this offering."}  %> <em>(id: <%= @offering.curnit.id %>), last updated: <%= @offering.curnit.jar_last_modified %></em>
 </p>
 
-<b>Workgroups:</b>
+<b>Workgroups:</b><br/>
+<%= link_to 'Full offering spreadsheet', :action => 'report_xls' %>
 <table cellpadding=3 cellspacing=1>
   <% odd_or_even = 0 %>
   <tr>

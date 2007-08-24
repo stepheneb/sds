@@ -1,6 +1,8 @@
 class OfferingController < ApplicationController
 
   require 'zlib'
+  # require 'spreadsheet/excel'
+  require 'csv'
 
   before_filter :log_referrer
   before_filter :find_offering, :except => [ :list, :create ]
@@ -216,6 +218,128 @@ class OfferingController < ApplicationController
     else
       @errorbundle = Errorbundle.new
     end
+  end
+  
+  def report_xls
+	  file = "#{RAILS_ROOT}/tmp/xls/#{@offering.id}.csv"
+	  f = File.new(file, "w")
+	  f.write("")
+	  f.close
+	  debug = []
+	  
+	  pod_info = @offering.curnit.pods.collect { |p|
+	  	if p.pas_type == 'note'
+	  		["#{p.id}", "#{p.uuid}", "#{p.rim_name}", "#{p.html_body.strip}"]
+		else
+			nil
+		end
+	  }
+	  pod_info = pod_info.compact
+	  debug += ["In the method"]
+	  workgroup_ids = @offering.workgroups.collect {|w| w.id }
+	  @offering_data = { }
+	  workgroup_ids.each do |wid|
+	  	workgroup_data = { }
+	  	w = Workgroup.find(wid)
+		w.bundles.each do |b|
+			debug += ["working with bundle #{b.id}"]
+			b.socks.each do |s|
+				debug += ["working with sock #{s.id}"]
+				if s.pod.pas_type != 'note'
+					debug += ["sock is not a note, skipping"]
+					next
+				end
+				data = [s.bundle.id, s.bundle.sail_session_start_time.to_s, s.id, TimeTracker.seconds_to_s(s.ms_offset/1000), s.value]
+				
+				if workgroup_data.has_key?("#{s.pod_id}")
+					w_counter = 1
+					
+					# put the sock data in a new or existing dummy workgroup
+					while (@offering_data.has_key?("#{wid}|#{w_counter}") && @offering_data["#{wid}|#{w_counter}"].has_key?(s.pod_id))
+						w_counter += 1
+					end
+					if (@offering_data.has_key?("#{wid}|#{w_counter}"))
+						debug += ["The workgroup #{wid}|#{w_counter} exists, but doesn't have this pod data defined"]
+						@offering_data["#{wid}|#{w_counter}"]["#{s.pod_id}"] = data
+					else
+						debug += ["The workgroup #{wid}|#{w_counter} doesn't exist yet"]
+						new_workgroup_data = { }
+						new_workgroup_data["#{s.pod_id}"] = data
+						@offering_data["#{wid}|#{w_counter}"] = new_workgroup_data
+					end
+				else
+					workgroup_data["#{s.pod_id}"] = data
+				end
+			end
+		end
+		@offering_data["#{wid}"] = workgroup_data
+	  end	
+	  debug +=  [ @offering_data ]
+	  
+	  # @workbook = Spreadsheet::Excel.new(file)
+	  # data_format = @workbook.add_format(:color=>"blue", :text_h_align=>1)
+	  # header_format = @workbook.add_format(:color=>"black", :bold=>1, :text_h_align=>1)
+	  # thick_bottom_border = @workbook.add_format(:bottom=>5)
+	  # thin_right_border = @workbook.add_format(:right=>1)
+	  # pod_info_merged_cells = @workbook.add_format()
+	  
+	  # notes_worksheet = @workbook.add_worksheet("Notes")
+	  # notes_worksheet.format_column(0, 8, format)
+	  
+	  row = 0
+	  col = 0
+	  # start with the headers for each pod
+	  # notes_worksheet.write(row, col, [["Pod ID", "Pod UUID", "Rim Name", "Note HTML Content", "Workgroup"]])
+	  pid_row = ["Pod ID"]
+	  puuid_row = ["Pod UUID"]
+	  rimname_row = ["Rim Name"]
+	  content_row = ["Note HTML Content"]
+	  header_row = ["Workgroup"]
+	  col = -4
+	  pod_info.each do |p|
+	  	# notes_worksheet.write(row, col += 5, [p])
+	  	pid_row += [p[0],'','','','']
+		puuid_row += [p[1],'','','','']
+		rimname_row += [p[2],'','','','']
+		content_row += [p[3],'','','','']
+		header_row += ["Bundle ID", "Bundle Date", "Sock ID", "Sock Time", "Sock Content"]
+	  end
+	  offerings = @offering_data.keys.sort
+	  CSV.open(file, "w") do |row|
+	  	row << pid_row
+		row << puuid_row
+		row << rimname_row
+		row << content_row
+	  	row << header_row
+	  # row = 4
+	  offerings.each do |wid|
+	  	# rename the dummy workgroups to match the real workgroup id
+	  	debug += ["Found key #{wid}"]
+	  	begin
+	  		clean_wid = wid.split("|")[0]
+	  	rescue
+	  		clean_wid = wid
+	  	end
+	  	row_data = [clean_wid]
+	  	pod_info.each do |p|
+	  		if @offering_data[wid] != nil && @offering_data[wid].has_key?(p[0])
+	  			# append the data to the row
+				row_data += @offering_data[wid][p[0]]
+	  		else
+	  			# pad the row with empty cells
+	  			row_data += ['','','','','']
+	  		end
+	  	end
+		row << row_data
+		# notes_worksheet.write(row += 1, 0, row_data)
+	  end
+	  # debug.each do |d|
+	  # 	row << [d]
+	  # end
+	  end
+	  
+	  # @workbook.close
+	  send_data(File.open(file).read, :type => "application/vnd.ms.excel", :filename => "#{@offering.id}.csv" )  	
   end
 
   protected 
