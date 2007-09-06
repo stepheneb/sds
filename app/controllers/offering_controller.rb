@@ -3,6 +3,7 @@ class OfferingController < ApplicationController
   require 'zlib'
   # require 'spreadsheet/excel'
   require 'csv'
+  require 'open-uri'
 
   before_filter :log_referrer
   before_filter :find_offering, :except => [ :list, :create ]
@@ -229,7 +230,12 @@ class OfferingController < ApplicationController
 	  
 	  pod_info = @offering.curnit.pods.collect { |p|
 	  	if p.pas_type == 'note'
-	  		["#{p.id}", "#{p.uuid}", "#{p.rim_name}", "#{p.html_body.strip}"]
+	  		if p.html_body != nil
+	  			body = p.html_body.strip
+	  		else
+	  			body = nil
+	  		end
+	  		["#{p.id}", "#{p.uuid}", "#{p.rim_name}", "#{body}"]
 		else
 			nil
 		end
@@ -298,10 +304,10 @@ class OfferingController < ApplicationController
 	  col = -4
 	  pod_info.each do |p|
 	  	# notes_worksheet.write(row, col += 5, [p])
-	  	pid_row += [p[0],'','','','']
-		puuid_row += [p[1],'','','','']
-		rimname_row += [p[2],'','','','']
-		content_row += [p[3],'','','','']
+	  	pid_row += [p[0],nil,nil,nil,nil]
+		puuid_row += [p[1],nil,nil,nil,nil]
+		rimname_row += [p[2],nil,nil,nil,nil]
+		content_row += [p[3],nil,nil,nil,nil]
 		header_row += ["Bundle ID", "Bundle Date", "Sock ID", "Sock Time", "Sock Content"]
 	  end
 	  offerings = @offering_data.keys.sort
@@ -327,7 +333,7 @@ class OfferingController < ApplicationController
 				row_data += @offering_data[wid][p[0]]
 	  		else
 	  			# pad the row with empty cells
-	  			row_data += ['','','','','']
+	  			row_data += [nil,nil,nil,nil,nil]
 	  		end
 	  	end
 		row << row_data
@@ -336,10 +342,69 @@ class OfferingController < ApplicationController
 	  # debug.each do |d|
 	  # 	row << [d]
 	  # end
+	  row << []
 	  end
 	  
 	  # @workbook.close
 	  send_data(File.open(file).read, :type => "application/vnd.ms.excel", :filename => "#{@offering.id}.csv" )  	
+  end
+  
+  def curnitmap
+  	# find or create a curnitmap sailuser for this portal
+  	cm_user = SailUser.find(:first, :conditions => "first_name = 'curnitmap' AND portal_id = #{@portal.id}")
+	if cm_user.blank?
+		cm_user = SailUser.new()
+		cm_user.first_name = "curnitmap"
+		cm_user.last_name = "curnitmap"
+		cm_user.portal = @portal
+		begin
+			cm_user.save!
+		rescue => e
+			render(:text => "#{e}", :status => 404)
+			return
+		end
+	end
+  	# find or create curnitmap workgroup
+	notdone = true
+  	@offering.workgroups.each do |w|
+  		if notdone
+	  		w.members.each do |wm|
+	  			if notdone && wm == cm_user
+	  				@workgroup = w
+					notdone = false
+	  			end
+	  		end
+		end
+  	end
+	
+	if notdone
+		@workgroup = Workgroup.new()
+		@workgroup.offering = @offering
+		@workgroup.name = "curnitmap"
+		@workgroup.save!
+		@workgroup.sail_users << cm_user
+		
+    end
+	
+	pdf_host = (request.env['HTTP_X_FORWARDED_SERVER'] ? request.env['HTTP_X_FORWARDED_SERVER'] : request.env['HTTP_HOST']) 
+	pdf_relative_root = request.env['REQUEST_URI'].match(/(.*)\/[\d]+\/offering\/[\d]+[\/]?/)[1]
+	@sdsBaseUrl = "http://#{pdf_host}#{pdf_relative_root}"	
+	
+  	# request the curnitmap from the pdfserver
+	cmap_url = "#{PDF_SITE_ROOT}/#{@portal.id}"
+	cmap_url << "/offering/#{@offering.id}"
+	cmap_url << "/workgroup/#{@workgroup.id}"
+	cmap_url << "/curnitmap?sdsBaseUrl=#{@sdsBaseUrl}"
+	cmap_url << "&curnitURL=#{@offering.curnit.url}"
+	cmap_url = cmap_url.gsub(/([^:])\/+/, '\1/')
+	open(cmap_url) do |cmap|
+		if cmap.status[0] != "200"
+			render(:text => "#{cmap.read}", :status => cmap.status[0])
+		else
+			# relay the response and file to the requestor
+			send_data(cmap.read, :type => "application/xml", :filename => "curnitmap-#{@offering.id}.xml" )
+		end
+	end
   end
 
   protected 
