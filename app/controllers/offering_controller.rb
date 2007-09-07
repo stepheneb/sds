@@ -184,7 +184,7 @@ class OfferingController < ApplicationController
 #        response.headers['Location'] = "#{url_for(:controller => 'bundle', :id => @bundle.id)}"
         response.headers['Cache-Control'] = 'public'
         render(:xml => "", :status => 201, :layout => false) # Created
-      rescue => e
+      rescue Exception => e
         render(:text => e, :status => 400) # Bad Request
       end
     else
@@ -378,12 +378,8 @@ class OfferingController < ApplicationController
   	end
 	
 	if notdone
-		@workgroup = Workgroup.new()
-		@workgroup.offering = @offering
-		@workgroup.name = "curnitmap"
-		@workgroup.save!
-		@workgroup.sail_users << cm_user
-		
+		@workgroup = Workgroup.create!(:offering => @offering, :name => "curnitmap")
+		@workgroup.workgroup_memberships.create!(:sail_user_id => cm_user.id, :version => 0)
     end
 	
 	pdf_host = (request.env['HTTP_X_FORWARDED_SERVER'] ? request.env['HTTP_X_FORWARDED_SERVER'] : request.env['HTTP_HOST']) 
@@ -397,6 +393,7 @@ class OfferingController < ApplicationController
 	cmap_url << "/curnitmap?sdsBaseUrl=#{@sdsBaseUrl}"
 	cmap_url << "&curnitURL=#{@offering.curnit.url}"
 	cmap_url = cmap_url.gsub(/([^:])\/+/, '\1/')
+	begin
 	open(cmap_url) do |cmap|
 		if cmap.status[0] != "200"
 			render(:text => "#{cmap.read}", :status => cmap.status[0])
@@ -404,6 +401,9 @@ class OfferingController < ApplicationController
 			# relay the response and file to the requestor
 			send_data(cmap.read, :type => "application/xml", :filename => "curnitmap-#{@offering.id}.xml" )
 		end
+	end
+	rescue OpenURI::HTTPError => error
+		render(:text => "Bad response code on curnitmap generation: #{error.message}", :status => error.io.status[0])
 	end
   end
 
