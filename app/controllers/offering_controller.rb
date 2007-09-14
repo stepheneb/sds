@@ -178,14 +178,20 @@ class OfferingController < ApplicationController
         else
           content = request.raw_post
         end
+		digest = Digest::MD5.hexdigest(content)
+		if request.env['HTTP_CONTENT_MD5'] != nil
+			if digest != request.env['HTTP_CONTENT_MD5']
+			  raise "Bundle MD5 Mismatch"
+		    end
+		end
         @bundle = Bundle.create!(:workgroup_id => params[:wid],
           :workgroup_version => params[:version], :content => content, :bc => content)
-        response.headers['Content-md5'] = Base64.b64encode(Digest::MD5.digest(@bundle.bundle_content.content))
+        response.headers['Content-md5'] = digest
 #        response.headers['Location'] = "#{url_for(:controller => 'bundle', :id => @bundle.id)}"
         response.headers['Cache-Control'] = 'public'
         render(:xml => "", :status => 201, :layout => false) # Created
       rescue Exception => e
-        render(:text => e, :status => 400) # Bad Request
+        render(:text => "#{e}", :status => 400) # Bad Request
       end
     else
       begin
