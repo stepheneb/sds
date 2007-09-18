@@ -16,6 +16,7 @@ module PasModelActivityLib
     
     row_num = 0
     ws.write(row_num, 0, ["Pod id:", sock.pod.id])
+	ws.write(row_num += 1, 0, ["Pod uuid:", sock.pod.uuid])
     ws.write(row_num += 1, 0, ["Sock entry id:", sock.id])
     ws.write(row_num += 1, 0, ["Bundle id:", sock.bundle.id])
     ws.write(row_num += 1, 0, ["Session start:", sock.bundle.sail_session_start_time.to_s])
