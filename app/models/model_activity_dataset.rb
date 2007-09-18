@@ -60,9 +60,22 @@ class ModelActivityDataset < ActiveRecord::Base
       rescue
         et = nil
       end
-        mr = self.model_activity_modelrun.create(
+      begin
+        tg = mr_xml.elements['trial'].attributes['goal'].to_s
+		  rescue
+		  	tg = nil
+		  end
+		  begin
+		    tn = Integer(mr_xml.elements['trial'].attributes['number'].to_s)
+		  rescue
+			  tn = nil
+		  end	  
+      
+      mr = self.model_activity_modelrun.create(
                    :start_time => st,
-                   :end_time => et
+                   :end_time => et,
+								   :trial_goal => tg,
+								   :trial_number => tn
         )
         
         # model: computational_input_value

@@ -21,6 +21,7 @@ module PasModelActivityLib
     ws.write(row_num += 1, 0, ["Bundle id:", sock.bundle.id])
     ws.write(row_num += 1, 0, ["Session start:", sock.bundle.sail_session_start_time.to_s])
     ws.write(row_num += 1, 0, ["Session end:", sock.bundle.sail_session_end_time.to_s])
+    row_num += 1;  # skip a line
     if mad
       ws.write(row_num += 1, 0, mad['headers'].collect { |h|  get_header_info(h).join("\n") } )
       @i = 0
@@ -28,7 +29,7 @@ module PasModelActivityLib
       row_num += 1
       mad['runs'].each do |r|
         
-        ws.write(row_num, 0, get_run_info(r).join("\n"))
+        ws.write(row_num, 0, [get_run_info(r).join("\n"), r['trial_number'], r['trial_goal']])
         
         r['by_time'].keys.sort.each do |timex|
           row = []
@@ -39,7 +40,7 @@ module PasModelActivityLib
           # FIXME nasty embedded loop which allows the data to end up in the right column
           # there's got to be a better way
           mad['headers'].each do |h|
-            unless h['name'] == "Run" || h['name'] == "Time"
+            unless h['name'] == "Run" || h['name'] == "Time" || h['name'] == "Trial #" || h['name'] == "Trial Goal"
               column_data = []
               event_list.each do |event|
                 if event['name'] == h['name']
@@ -52,7 +53,7 @@ module PasModelActivityLib
               end
             end
           end
-          ws.write(row_num,1,row)
+          ws.write(row_num,3,row)
           row_num += (max_column_size)
           max_column_size = 0
         end
@@ -79,9 +80,16 @@ module PasModelActivityLib
         "name"  => "Run"
      }
      headers << {
+        "name" => "Trial #"
+     }
+     headers << {
+        "name" => "Trial Goal"
+     }     
+     headers << {
         "name"  => "Time",
         "units" => "hh:mm:ss"
      }
+     
     
     sock.model_activity_dataset.computational_input.each do |ci|
       ci_hash = {
@@ -130,7 +138,9 @@ module PasModelActivityLib
         "end"   => ( (mr.end_time && mr.end_time != 0) ? Time.at(Float(mr.end_time)/1000) : "no time"),
         "civs"  => civs,
         "mrvs"  => mrvs,
-        "by_time" => time_hash
+        "by_time" => time_hash,
+        "trial_goal" => mr.trial_goal,
+        "trial_number" => mr.trial_number
       }
       
       runs.push(run)
@@ -154,9 +164,9 @@ module PasModelActivityLib
     end
     run_data = []
     run_data << "Run #{@i}"
-    run_data << ", Start: #{r['start']}"
-    run_data << ", End: #{r['end']}"
-    run_data << (", Duration: " << (h == 0 ? "" : "#{h} hours, " ) << (m == 0 ? "" : "#{m} minutes, ") << (s < 0 ? "unknown" : "#{s} seconds"))
+    run_data << "Start: #{r['start']}"
+    run_data << "End: #{r['end']}"
+    run_data << ("Duration: " << (h == 0 ? "" : "#{h} hours, " ) << (m == 0 ? "" : "#{m} minutes, ") << (s < 0 ? "unknown" : "#{s} seconds"))
     return run_data
   end
   

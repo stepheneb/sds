@@ -18,16 +18,29 @@
           <% @i = 0 -%>
           <% mad['runs'].each do |r| -%>
             <tr>
-              <td rowspan=<%= r['by_time'].size + 1 %> valign="top">
+              <td rowspan=<%= r['by_time'].size %> valign="top">
                 <%= get_run_info(r).join("<br/>") %>
               </td>
-            </tr>
+              <td rowspan=<%= r['by_time'].size %> valign="top">
+                <%= r['trial_number'] %>
+              </td>
+              <td rowspan=<%= r['by_time'].size %> valign="top">
+                <%= r['trial_goal'] %>
+              </td>
+            <!-- </tr> -->
+            <% first_time = true -%>
             <%  r['by_time'].keys.sort.each do |timex| -%>
               <%  event_list = r['by_time'][timex] -%>
-              <tr>
+              <%= if first_time
+              		first_time = false
+              		""
+              	  else
+              	    "<tr>"
+              	  end
+              %>
                 <td><%=  timex %></td>
                 <% mad['headers'].each do |h| -%>
-                <% unless h['name'] == "Run" || h['name'] == "Time" -%>
+                <% unless h['name'] == "Run" || h['name'] == "Time"  || h['name'] == "Trial #" || h['name'] == "Trial Goal" -%>
                   <td>
                   <% event_list.each do |event| -%>
                       <% if event['name'] == h['name'] -%>

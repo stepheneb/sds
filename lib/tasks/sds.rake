@@ -84,26 +84,34 @@ namespace :sds do
     tracker.start
     failures = []
     pods = Pod.find(:all, :conditions => "rim_name='model.activity.data'")
-    puts "Pods to process: #{pods.size}:"
+    puts "Pods to process: #{pods.size}"
     count = 1
     print "#{sprintf("%5d", count)}: "
+    i = j = 0
     pods.each do |p|
-      i = j = 0
       p.socks.each do |s|
         i += 1
         begin
           s.save!
-        rescue
+        rescue => e
+          # puts "#{e}\n"
           j += 1
           failures.push(s.id)
         end
       end
       print (j > 0 ? (j > 10 ? "+" : "#{j}") : "p")
-      print "\n#{sprintf("%5d", count)}: " unless count.remainder(50) != 0
+      if count.remainder(10) == 0
+        print '  '
+        tracker.mark
+        ave = tracker.elapsed / count
+        projected = (pods.size - count) * ave
+        print " :: ave: #{TimeTracker.seconds_to_s(ave)}, projected: #{TimeTracker.seconds_to_s(projected)}"
+        print "\n#{sprintf("%5d", count)}: "
+      end
       count += 1
     end
     puts "Processed #{i} socks, #{j} failed."
-    puts failures
+    # puts failures
     tracker.stop
     puts
   end
