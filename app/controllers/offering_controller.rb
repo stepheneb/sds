@@ -24,6 +24,7 @@ class OfferingController < ApplicationController
   
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
+      begin
         xml_parms = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
         @offering = Offering.new(xml_parms)
         @offering.curnit = Curnit.find(xml_parms['curnit_id'])
@@ -35,6 +36,9 @@ class OfferingController < ApplicationController
           errors =  @offering.errors.full_messages.collect {|e| "  <error>#{e}</error>\n"}.join
           render(:text => "<validation-errors>\n#{errors}</validation-errors>\n", :status => 400) # Bad Request
         end
+      rescue => e
+          render(:text => "Application error: #{e}", :status => 500)
+      end
     else
       @offerings = @portal.offerings
       respond_to do |wants|
