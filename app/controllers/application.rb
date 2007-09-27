@@ -36,7 +36,12 @@ include AuthenticatedSystem
 
   # Pick a unique cookie name to distinguish our session data from other rails apps
   session :session_key => '_sds_session_id'
-  
+ 
+  def rescue_action_in_public(e)
+    body = "<html><body><p><font color='red'>There was an error processing your request</font></p><p><!-- #{e} --></p></body></html>"
+    render(:text => body, :status => 500)
+  end
+ 
 protected
   
   class Time
