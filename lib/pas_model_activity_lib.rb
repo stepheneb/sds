@@ -3,9 +3,7 @@ module PasModelActivityLib
   
   # Create a worksheet based on a model.activity.data sock
   def create_mad_worksheet(workbook, format, sock)
-    @count ? nil : @count = []
-    @count[sock.pod.id] ? @count[sock.pod.id] += 1 : @count[sock.pod.id] = 1
-    ws = workbook.add_worksheet("#{sock.pod.id}-#{@count[sock.pod.id]}")
+    ws = workbook.add_worksheet("#{sock.id}")
     
     ws.format_column(0, 100, format)
     ws.format_column(1, 30, format)
@@ -149,7 +147,7 @@ module PasModelActivityLib
     return_hash = {"headers" => headers, "runs" => runs}
     return return_hash
 		rescue => e
-                  flash[:notice] = "<!-- #{$!}<br/><br/>#{e} -->"
+		  logger.error("#{$!}\n#{e}")
 		  return nil
 		end
   end

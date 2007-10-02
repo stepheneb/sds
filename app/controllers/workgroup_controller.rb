@@ -185,6 +185,9 @@ class WorkgroupController < ApplicationController
     worksheet.write(row += 1, 0, ["Offering:", @workgroup.offering.name, "id:", @workgroup.offering.id ])
     worksheet.write(row += 1, 0, ["Curnit:", @workgroup.offering.curnit.name, "id:", @workgroup.offering.curnit.id, "last updated:", @workgroup.offering.curnit.jar_last_modified.to_s ])
     
+    sequence_worksheet = @workbook.add_worksheet("Sequence")
+    generate_sequence_data(sequence_worksheet)
+    
     notes_worksheet = @workbook.add_worksheet("Notes")
     notes_worksheet.format_column(0, 8, format)
     notes_worksheet.format_column(1, 36, format)
@@ -197,7 +200,7 @@ class WorkgroupController < ApplicationController
     notes_worksheet.format_column(8, 50, format)
     
     row = 0
-    notes_worksheet.write(row, 0, ["Pod ID", "Pod UUID", "Rim Name", "Note HTML Content", "Session Bundle ID", "Session Bundle Date", "Sock ID", "Sock Time", "Sock Content"])    
+    notes_worksheet.write(row, 0, ["Pod ID", "Pod UUID", "Rim Name", "Note HTML Content", "Session Bundle ID", "Session Bundle Date", "Sock entry ID", "Sock Time", "Sock Content"])    
     podnotes = @workgroup.valid_bundles.collect {|b| b.socks.find_notes}.flatten.group_by {|s| s.pod}
     podnotes.each do |pod, socks|
       note_preamble = [pod.id, pod.uuid, pod.rim_name, pod.html_body]
@@ -238,6 +241,71 @@ class WorkgroupController < ApplicationController
     end
     redirect_to :action => :list
   end
+  
+  private
+  
+  def generate_sequence_data(ws)
+    first = true
+    row = 0
+      @workgroup.bundles.asc.each do |b|
+        cm = b.curnitmap
+        if first
+          ws.write(0,0, ["Bundle id", "Sock entry id", "Elapsed Time\r(hh:mm:ss)", "Action", "Step uuid", "Activity #", "Step #", "Title"])
+          first = false
+        end
+        row += 1
+        b.socks.by_time_asc.each do |s|
+          uuid = s.pod.uuid
+          pas_type = s.pod.pas_type
+          # filter by pas type
+          # navigation_log
+          # session_state
+          # note
+          # model_activity_data
+          # other
+          step_uuids = []
+          step_action = nil
+          if pas_type == "navigation_log"
+            log = REXML::Document.new(s.value).root
+            step_uuids = [log.attributes['podUUID']]
+            step_action = log.name
+          elsif pas_type == "session_state"
+            # these duplicate info in the navigation log
+            # only really need to have one set of nav info, and session_state has a problem
+            # step_uuids = s.value.split(' ')
+            # step_action = "inside step"
+          elsif pas_type == "curnit_map"
+            next
+          else
+            step_uuids = [s.pod.uuid]
+            step_action = s.pod.pas_type
+          end
+          count = 0
+          step_uuids.each do |step_uuid|
+            count += 1
+            # logger.info("Step uuid is: #{step_uuid}")
+            # logger.info("#{s.pod.uuid}|#{uuid}|#{s.pod.pas_type}")
+            bid = b.id
+            sid = s.id
+            elapsed_time = custom_time_string(Time::Time.at(Float(s.ms_offset)/1000).getgm)
+            # logger.info("ms offset: #{s.ms_offset}, time: #{Time::Time.at(Float(s.ms_offset)).getgm}, formatted: #{elapsed_time}")
+            if count > 1
+              bid = ""
+              elapsed_time = ""
+              sid = ""
+            end
+            if cm == nil || step_uuid == nil || step_uuid == "null" || cm[step_uuid] == nil
+              ws.write(row += 1, 0, [bid,sid,elapsed_time,step_action,step_uuid])
+            else
+              act_num = cm[step_uuid]["activity_number"]
+              step_num = cm[step_uuid]["step_number"]
+              title = cm[step_uuid]["title"]
+              ws.write(row += 1, 0, [bid,sid,elapsed_time,step_action,step_uuid,act_num,step_num,title])
+            end
+          end
+        end
+      end
+  end  
   
 end
 

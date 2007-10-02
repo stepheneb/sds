@@ -33,6 +33,9 @@ class Bundle < ActiveRecord::Base
       mad = 'model_activity_data'
       @find_mads ||= find(:all).select {|s| s.pod.pas_type == mad}
     end
+    def by_time_asc
+      @find_socks ||= find(:all, :order => "ms_offset ASC")
+    end
   end
 
 #  cattr_accessor :console_log
@@ -261,6 +264,63 @@ class Bundle < ActiveRecord::Base
   
   def sail_session_end_time
     read_attribute("sail_session_end_time").getlocal
+  end
+  
+  # return a hash of uuids and their associated attributes
+  # {uuid => {pod => p, title => "title", activity => #num, step => #num}}
+  def curnitmap
+    map_sock = nil
+    self.socks.by_time_asc.each do |s|
+      if s.pod.pas_type == 'curnit_map'
+        map_sock = s
+      end
+    end
+    
+    if map_sock == nil
+      return nil
+    end
+    data = {}
+    
+    # load the xml
+    xml = REXML::Document.new(map_sock.value).root
+    # debugger
+    # for each <project>
+    xml.children.each do |pr_xml|
+      # save proj data
+      # logger.info("-------proj-------------\n#{pr_xml}\n----------------------")
+      p_uuid =  pr_xml.attributes['podUUID'].to_s
+      p_title = pr_xml.attributes['title'].to_s
+      # logger.info("Saving project: #{p_uuid} -- #{p_title}")
+      # logger.info("project")
+      data[p_uuid] = {"title" => p_title}
+      # for each <activity>
+      # pr_xml.elements.each("//activity") {|ac_xml|
+      pr_xml.children.each do |ac_xml|
+        # save act data
+        # logger.info("-------act-------------\n#{ac_xml}\n----------------------")
+        a_uuid = ac_xml.attributes['podUUID'].to_s
+        act_num = ac_xml.attributes['number'].to_i + 1 ## Increment by one, because the curnitmap counts from 0
+        a_title = ac_xml.attributes['title'].to_s
+        # logger.info("Saving act: #{a_uuid} -- #{act_num} -- #{a_title}")
+        # logger.info("activity")
+        data[a_uuid] = {"title" => a_title, "activity_number" => act_num, "step_number" => nil }        
+        # for each <step>
+        # logger.info(ac_xml)
+        # ac_xml.elements.each("//step") {|st_xml|
+        ac_xml.children.each do |st_xml|
+          # save step data
+          # logger.info("------step-------------\n#{st_xml}\n----------------------")
+          s_uuid = st_xml.attributes['podUUID'].to_s
+          step_num = st_xml.attributes['number'].to_i + 1 ## curnitmap starts at 0, so increment
+          s_title = st_xml.attributes['title'].to_s
+          type = st_xml.attributes['type'].to_s
+          # logger.info("step")
+          # logger.info("Saving step: #{s_uuid} -- #{act_num} -- #{step_num} -- #{type} -- #{s_title}")
+          data[s_uuid] = {"activity_number" => act_num, "step_number" => step_num, "title" => s_title, "type" => type}
+        end
+      end
+    end
+    data
   end
 
 end
