@@ -3,33 +3,39 @@
         <% if mad -%>
         
         <table border=1>
-          <tr>
         <!-- Headers -->
         <thead>
+          <tr>
             <% mad['headers'].each do |h| -%>
-              <%# h = mad['headers'][k] -%>
               <th>
               <%= get_header_info(h).join("<br/>") %>
               </th>
             <% end -%>
+            </tr>
             </thead>
             <tbody>
-          </tr>
           <% @i = 0 -%>
           <% mad['runs'].each do |r| -%>
+          <% rowspan = r['by_time'].size %>
+          <% if rowspan == 0 %>
+          <% rowspan = 1 %>
+          <% end %>
             <tr>
-              <td rowspan=<%= r['by_time'].size %> valign="top">
+              <td rowspan=<%= rowspan %> valign="top">
+              	<!-- run info -->
                 <%= get_run_info(r).join("<br/>") %>
               </td>
-              <td rowspan=<%= r['by_time'].size %> valign="top">
+              <td rowspan=<%= rowspan %> valign="top">
+              	<!-- trial number -->
                 <%= r['trial_number'] %>
               </td>
-              <td rowspan=<%= r['by_time'].size %> valign="top">
+              <td rowspan=<%= rowspan %> valign="top">
+              	<!-- trial goal -->
                 <%= r['trial_goal'] %>
               </td>
-            <!-- </tr> -->
             <% first_time = true -%>
             <%  r['by_time'].keys.sort.each do |timex| -%>
+              <!-- run -->
               <%  event_list = r['by_time'][timex] -%>
               <%= if first_time
               		first_time = false
@@ -53,6 +59,9 @@
                 <% end -%>
               </tr>
             <%  end -%>
+            <% if first_time %>
+              <td> <!-- no events --> </td></tr>
+            <% end %>
           <% end -%>
           </tbody>
         </table>
