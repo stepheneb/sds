@@ -171,6 +171,10 @@ class WorkgroupController < ApplicationController
     
     @workbook = Spreadsheet::Excel.new(file)
     format = @workbook.add_format(:color=>"blue", :text_h_align=>1)
+    wrap_format = @workbook.add_format(:color=>"blue", :text_h_align=>1, :text_wrap=>1)
+    time_format = @workbook.add_format(:color=>"blue", :text_h_align=>1)
+    header_format = @workbook.add_format(:color=>"blue", :text_h_align=>1, :bold=>1, :bottom=>5, :text_wrap=>1 )
+    
     worksheet = @workbook.add_worksheet("Info")
     worksheet.format_column(0, 16, format)
     worksheet.format_column(1, 24, format)
@@ -186,24 +190,51 @@ class WorkgroupController < ApplicationController
     worksheet.write(row += 1, 0, ["Curnit:", @workgroup.offering.curnit.name, "id:", @workgroup.offering.curnit.id, "last updated:", @workgroup.offering.curnit.jar_last_modified.to_s ])
     
     sequence_worksheet = @workbook.add_worksheet("Sequence")
+    sequence_worksheet.format_column(0, 10, format)   # bundle id
+    sequence_worksheet.format_column(1, 12, format)   # sock entry id
+    sequence_worksheet.format_column(2, 12, format)   # elapsed time
+    sequence_worksheet.format_column(3, 12, format)   # action
+    sequence_worksheet.format_column(4, 36, format)   # step uuid
+    sequence_worksheet.format_column(5,  6, format)   # Activity #
+    sequence_worksheet.format_column(6,  6, format)   # Step #
+    sequence_worksheet.format_column(7, 40, format)   # Title
+
     generate_sequence_data(sequence_worksheet)
     
     notes_worksheet = @workbook.add_worksheet("Notes")
-    notes_worksheet.format_column(0, 8, format)
-    notes_worksheet.format_column(1, 36, format)
-    notes_worksheet.format_column(2, 16, format)
-    notes_worksheet.format_column(3, 30, format)
-    notes_worksheet.format_column(4, 16, format)
-    notes_worksheet.format_column(5, 32, format)
-    notes_worksheet.format_column(6, 8, format)
-    notes_worksheet.format_column(7, 16, format)
-    notes_worksheet.format_column(8, 50, format)
+    notes_worksheet.format_column(0,   8, format) # pod id
+    notes_worksheet.format_column(1,  36, format) # pod uuid
+    notes_worksheet.format_column(2,  16, format) # rim name
+    notes_worksheet.format_column(3,   3, format) # activity num
+    notes_worksheet.format_column(4,   3, format) # step num
+    notes_worksheet.format_column(5,  30, format) # step title
+    notes_worksheet.format_column(6,  30, format) # note html content
+    notes_worksheet.format_column(7,  16, format) # session bundle id
+    notes_worksheet.format_column(8,  32, format) # session bundle date
+    notes_worksheet.format_column(9,   8, format) # sock id
+    notes_worksheet.format_column(10, 16, format) # sock time
+    notes_worksheet.format_column(11, 50, format) # sock content
     
     row = 0
-    notes_worksheet.write(row, 0, ["Pod ID", "Pod UUID", "Rim Name", "Note HTML Content", "Session Bundle ID", "Session Bundle Date", "Sock entry ID", "Sock Time", "Sock Content"])    
+    notes_worksheet.write(row, 0, ["Pod ID", "Pod UUID", "Rim Name", "Activity Number", "Step Number", "Step Title", "Note HTML Content", "Session Bundle ID", "Session Bundle Date", "Sock entry ID", "Sock Time", "Sock Content"])    
     podnotes = @workgroup.valid_bundles.collect {|b| b.socks.find_notes}.flatten.group_by {|s| s.pod}
+    cmap = nil
+    @workgroup.valid_bundles.each do |b|
+      cmap = b.curnitmap
+      if cmap != nil
+        break
+      end
+    end
     podnotes.each do |pod, socks|
-      note_preamble = [pod.id, pod.uuid, pod.rim_name, pod.html_body]
+      act_num = ""
+      step_num = ""
+      step_title = ""
+      if (cmap[pod.uuid] != nil)
+        act_num = cmap[pod.uuid]['activity_number']
+        step_num = cmap[pod.uuid]['step_number']
+        step_title = cmap[pod.uuid]['title']
+      end
+      note_preamble = [pod.id, pod.uuid, pod.rim_name, act_num, step_num, step_title, pod.html_body]
       socks.each do |s|
         note_response = [s.bundle.id, s.bundle.sail_session_start_time.to_s, s.id, TimeTracker.seconds_to_s(s.ms_offset/1000), s.value]
 #        debugger
@@ -218,7 +249,7 @@ class WorkgroupController < ApplicationController
     @workgroup.bundles.each do |b|
       b.socks.each do |s|
         if s.pod.pas_type == "model_activity_data"
-          create_mad_worksheet(@workbook, format, s)
+          create_mad_worksheet(@workbook, s, [format, header_format, wrap_format])
         end
       end
     end

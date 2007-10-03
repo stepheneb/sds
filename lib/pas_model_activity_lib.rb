@@ -2,21 +2,33 @@ module PasModelActivityLib
   require 'spreadsheet/excel'
   
   # Create a worksheet based on a model.activity.data sock
-  def create_mad_worksheet(workbook, format, sock)
+  # formats is an array of format objects, [normal, header, multi-line]
+  def create_mad_worksheet(workbook, sock, formats)
     ws = workbook.add_worksheet("#{sock.id}")
+    cmap = sock.bundle.curnitmap
     
-    ws.format_column(0, 100, format)
-    ws.format_column(1, 30, format)
-    ws.format_column(2, 16, format)
-    ws.format_column(3..6, 20, format)
+    format = formats[0]
+    header_format = formats[1]
+    wrap_format = formats[2]
+    
+    ws.format_column(0,      32, wrap_format)  # run info
+    ws.format_column(1,       7, format)  # trial #
+    ws.format_column(2,      25, wrap_format)  # trial goal
+    ws.format_column(3,      10, format)  # Time
+    ws.format_column(4..20,  20, wrap_format)  # comp. inputs, rep. attrs
     
     mad = get_mad(sock)
     
     row_num = 0
     ws.write(row_num, 0, ["Pod id:", sock.pod.id])
-	ws.write(row_num += 1, 0, ["Pod uuid:", sock.pod.uuid])
+	  ws.write(row_num += 1, 0, ["Pod uuid:", sock.pod.uuid])
     ws.write(row_num += 1, 0, ["Sock entry id:", sock.id])
     ws.write(row_num += 1, 0, ["Bundle id:", sock.bundle.id])
+    if (cmap != nil && cmap[sock.pod.uuid] != nil)
+      ws.write(row_num += 1, 0, ["Activity #:", cmap[sock.pod.uuid]['activity_number']])
+      ws.write(row_num += 1, 0, ["Step #:", cmap[sock.pod.uuid]['step_number']])
+      ws.write(row_num += 1, 0, ["Step Title:", cmap[sock.pod.uuid]['title']])
+    end
     ws.write(row_num += 1, 0, ["Session start:", sock.bundle.sail_session_start_time.to_s])
     ws.write(row_num += 1, 0, ["Session end:", sock.bundle.sail_session_end_time.to_s])
     row_num += 1;  # skip a line
