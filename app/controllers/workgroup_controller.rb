@@ -229,7 +229,7 @@ class WorkgroupController < ApplicationController
       act_num = ""
       step_num = ""
       step_title = ""
-      if (cmap[pod.uuid] != nil)
+      if (cmap != nil && cmap[pod.uuid] != nil)
         act_num = cmap[pod.uuid]['activity_number']
         step_num = cmap[pod.uuid]['step_number']
         step_title = cmap[pod.uuid]['title']
