@@ -413,7 +413,7 @@ class OfferingController < ApplicationController
 		end
 	end
 	rescue OpenURI::HTTPError => error
-		render(:text => "Bad response code on curnitmap generation: #{error.message}", :status => error.io.status[0])
+		render(:text => "#{error.message}: #{error.io.read}", :status => error.io.status[0])
 	end
   end
 
