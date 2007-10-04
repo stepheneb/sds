@@ -414,6 +414,8 @@ class OfferingController < ApplicationController
 	end
 	rescue OpenURI::HTTPError => error
 		render(:text => "#{error.message}: #{error.io.read}", :status => error.io.status[0])
+	rescue Timeout::Error => error
+		render(:text => "Timeout on curnitmap generation: #{error.message}", :status => 408)
 	end
   end
 
