@@ -26,5 +26,14 @@ class Offering < ActiveRecord::Base
   has_many :workgroups
   has_many :errorbundles
   has_many :offerings_attributes
+  
+  before_destroy :delete_offerings_attributes
+  
+  def delete_offerings_attributes
+    attrs = OfferingsAttribute.find(:all, :conditions => "offering_id = #{self.id}")
+    attrs.each do |a|
+      a.destroy
+    end
+  end
     
 end

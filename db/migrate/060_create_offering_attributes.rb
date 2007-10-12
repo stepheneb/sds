@@ -6,8 +6,6 @@ class CreateOfferingAttributes < ActiveRecord::Migration
 	      t.column :name, :text, :null => false
 	      t.column :value, :text
 	    end
-	    
-	    add_index :sds_offerings_attributes, :offering_id
     rescue Exception => e
       if e.to_s.include?("Table 'sds_offerings_attributes' already exists")
         # don't worry about it, the db probably came from an sds 1.0 version in which this migration is #43
