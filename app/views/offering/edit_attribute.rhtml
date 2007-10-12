@@ -1,0 +1,6 @@
+<%= link_to 'Back', :action => 'show', :id => @offering %>
+
+<%= start_form_tag :action => 'edit_attribute', :id => @offering, :aid => @offering_attribute %>
+  <%= render :partial => 'attr_form' %>
+  <%= submit_tag 'Save' %>
+<%= end_form_tag %>

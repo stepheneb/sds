@@ -1,0 +1,11 @@
+<%= link_to 'Back', :action => 'edit', :id => @offering %>
+
+<table cellpadding="3" cellspacing="3">
+<tr><td><b>Attribute</b></td><td><b>Value</b></td></tr>
+<% @offering.offerings_attributes.each do |at| %>
+<tr><td><%= at.name %></td>
+<td><%= at.value %></td>
+<td>Edit | Remove</td></tr>
+<% end %>
+</table><br/>
+<%= link_to 'Add Attribute', :action => 'add_attribute', :id => @offering %>

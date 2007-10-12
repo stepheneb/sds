@@ -167,6 +167,17 @@ class OfferingController < ApplicationController
       @workgroup = Workgroup.find(params[:wid])
       @version = params[:version]
       @savedata = params[:savedata]
+      
+      # Create a hash of attributes, adding the url attributes last so they will overwrite any existing values
+      @offering_attributes = Hash.new
+      @offering.offerings_attributes.each do |at|
+        @offering_attributes[at.name] = at.value
+      end
+      @url_params=request.query_parameters()
+      @url_params.each do |k,v|
+        @offering_attributes[k] = v
+      end
+            
       render :action => 'config', :layout => false
     rescue => e
       render(:text => e, :status => 404) # Not Found
@@ -418,6 +429,45 @@ class OfferingController < ApplicationController
 		render(:text => "Timeout on curnitmap generation: #{error.message}", :status => 408)
 	end
   end
+  
+    
+  def add_attribute
+    @offering = Offering.find(params[:id])
+    if request.post?
+      @offering_attribute = OfferingsAttribute.new(params[:offering_attribute])
+      @offering_attribute.offering = @offering
+      if @offering_attribute.save
+        flash[:notice] = "Offering attribute '#{@offering_attribute.name}' was successfully created."
+        redirect_to :action => 'show'
+      else
+        flash[:notice] = "Error creating offering attribute."
+      end
+    end
+  end
+  
+  def edit_attribute
+    @offering = Offering.find(params[:id])
+    @offering_attribute = OfferingsAttribute.find(params[:aid])
+    if request.post?
+        if @offering_attribute.update_attributes(params[:offering_attribute])
+          flash[:notice] = "Offering attribute '#{@offering_attribute.name}' was successfully updated."
+          redirect_to :action => 'show'
+        else
+          flash[:notice] = "Error updating offering attribute."
+        end
+    end
+  end
+  
+  def remove_attribute
+    @offering = Offering.find(params[:id])
+    @offering_attribute = OfferingsAttribute.find(params[:aid])
+    if @offering_attribute.destroy
+      flash[:notice] = "Offering attribute '#{@offering_attribute.name}' was successfully removed."
+    else
+      flash[:notice] = "Error removing offering attribute."
+    end
+    redirect_to :action => 'show'
+  end  
 
   protected 
 

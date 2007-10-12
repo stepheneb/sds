@@ -38,7 +38,7 @@ xml.java("version" => "1.4.0", "class" => "java.beans.XMLDecoder") {
   xml.object("class" => "net.sf.sail.core.service.impl.LauncherServiceImpl") {
     xml.void("property" => "properties") {
       xml.object("class" => "java.util.Properties") {
-        request.query_parameters.each do |k,v| 
+        @offering_attributes.each do |k,v| 
           xml.void("method" => "setProperty") {
             xml.string(k)
             xml.string(v)

@@ -25,5 +25,6 @@ class Offering < ActiveRecord::Base
   belongs_to :jnlp
   has_many :workgroups
   has_many :errorbundles
+  has_many :offerings_attributes
     
 end
