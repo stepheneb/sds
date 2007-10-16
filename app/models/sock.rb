@@ -44,12 +44,12 @@ class Sock < ActiveRecord::Base
         hash = XmlSimple.new().xml_in(CGI.unescapeHTML(value), {'keeproot' => true})
         XmlSimple.xml_out(hash, {'keeproot' => true})
       rescue
-        self.value
+        value ? value : self.value
       end
     when /java_object/
       "java object: #{value.length.to_s} bytes"
     when /text/
-      self.value
+      value ? value : self.value
     else
       "can't determine how to render this sock as text"
     end
