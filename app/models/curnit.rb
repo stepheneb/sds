@@ -31,7 +31,7 @@ class Curnit < ActiveRecord::Base
   has_one :curnit_map
   
   before_save { |c| c.url.strip! }
-  before_save :check_for_jar
+  after_save :check_for_jar # need an id for this
   
   require 'fileutils'
   require 'open-uri'
