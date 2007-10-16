@@ -29,10 +29,10 @@ include AuthenticatedSystem
   filter_parameter_logging "password"
 
   before_filter :find_portal
-  before_filter :log_memory
+  before_filter :log_memory_start
 
   after_filter :calc_content_length 
-  after_filter :log_memory
+  after_filter :log_memory_end
 
   # Pick a unique cookie name to distinguish our session data from other rails apps
   session :session_key => '_sds_session_id'
@@ -141,12 +141,21 @@ private
       logger.info("\nREFERRER: " + refer.to_s + "\n")
     end
   end
+  
+  def log_memory_start
+    log_memory("START")
+  end
+  
+  def log_memory_end
+    log_memory("END")
+  end
 
-  def log_memory
+  def log_memory(cust)
     pid = Process.pid
     str = `ps -o vsz #{pid}`
+    req = request.env["REQUEST_URI"]
     mem = str[/[0-9]+/]
-    logger.info("PID: #{pid}   MEM: #{mem}")
+    logger.info("#{cust} -- PID: #{pid} -- MEM: #{mem} -- REQ: #{req}")
   end
  
 end
