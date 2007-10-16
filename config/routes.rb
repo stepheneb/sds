@@ -55,6 +55,7 @@ ActionController::Routing::Routes.draw do |map|
   map.connect ':pid/offering/:id/report_xls', :controller => 'offering', :action => 'report_xls'
   map.connect ':pid/offering/:id/curnitmap', :controller => 'offering', :action => 'curnitmap'
   map.connect ':pid/offering/:oid/workgroups', :controller => 'workgroup', :action => 'list_by_offering'
+  map.connect ':pid/offering/:oid/workgroup/create', :controller => 'workgroup', :action => 'create'
 
 # workgroup
 

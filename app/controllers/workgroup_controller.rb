@@ -116,6 +116,9 @@ class WorkgroupController < ApplicationController
       end
     else
       @workgroup = Workgroup.new
+      if params[:oid]
+        @workgroup.offering_id = params[:oid]
+      end
     end
   end
 
