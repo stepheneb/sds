@@ -127,7 +127,7 @@ class Curnit < ActiveRecord::Base
   # but they seemed too nice to just delete
 
   def update_jar
-    if self.jar_last_modified.blank? || (self.jar_last_modified < self.get_last_modified)
+    if self.jar_last_modified.blank? || (self.jar_last_modified < self.get_last_modified) || ! File.exists?(self.path)
       url_string = self.url
       open(url_string) do |urlfile|
         if File.exists?(self.path)
