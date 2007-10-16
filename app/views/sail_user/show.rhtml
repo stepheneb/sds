@@ -28,7 +28,7 @@ Workgroups
     <td><b>Offering Id</b></td>
     <td><b>Offering Name</b></td>
   </tr>
-  <% @sail_user.workgroups.uniq.each do |w| %>
+  <% @sail_user.workgroups.each do |w| %>
     <tr>
       <td><%= w.id.to_s %></td>
       <td><%= w.name %></td>

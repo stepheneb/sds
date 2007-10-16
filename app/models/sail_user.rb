@@ -23,7 +23,7 @@ class SailUser < ActiveRecord::Base
   
   # this creates the following possible search
   # workgroups = user.workgroups?
-  has_many :workgroups, :through => :workgroup_memberships
+  has_many :workgroups, :through => :workgroup_memberships, :select => 'DISTINCT sds_workgroups.*'
 
   def workgroup?
     self.workgroups_count != 0
