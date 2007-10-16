@@ -185,7 +185,7 @@ class WorkgroupController < ApplicationController
     row = 0
     worksheet.write(row, 0, ["Workgroup:",@workgroup.name, "id:", @workgroup.id])
     worksheet.write(row += 1, 0, ["Members:", @workgroup.member_names.split(", "), "ids:", @members.collect {|m| m.id} ])
-    worksheet.write(row += @workgroup.member_names.split(", ").size, 0, ["Valid Sessions:", @workgroup.valid_bundles.length.to_s ])
+    worksheet.write(row += @workgroup.member_names.split(", ").size, 0, ["Valid Sessions:", @workgroup.valid_bundles_count.to_s ])
     worksheet.write(row += 1, 0, ["Offering:", @workgroup.offering.name, "id:", @workgroup.offering.id ])
     worksheet.write(row += 1, 0, ["Curnit:", @workgroup.offering.curnit.name, "id:", @workgroup.offering.curnit.id, "last updated:", @workgroup.offering.curnit.jar_last_modified.to_s ])
     

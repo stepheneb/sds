@@ -17,7 +17,7 @@
       <td><%= w.name %></td>
       <td><%= w.version.to_s %></td>
       <td><%= w.member_names %></td>
-      <td><%= w.valid_bundles.length.to_s %>
+      <td><%= w.valid_bundles_count.to_s %>
       <td><%= link_to 'Show', :action => 'show', :id => w %> | 
           <%= link_to 'Edit', :action => 'edit', :id => w %> |
           <% if w.offering %>

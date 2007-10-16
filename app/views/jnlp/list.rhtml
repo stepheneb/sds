@@ -13,7 +13,7 @@
         <%= link_to 'Show', :action => 'show', :id => jnlp %> | 
         <%= link_to 'Edit', :action => 'edit', :id => jnlp %></td>
       <td><%= jnlp.url %><br />
-        <em>(<%= pluralize(jnlp.offerings.length, "offering")%>, created: <%= jnlp.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em>
+        <em>(<%= pluralize(jnlp.offerings_count, "offering")%>, created: <%= jnlp.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em>
       </td>
     </tr>
   <% end %>

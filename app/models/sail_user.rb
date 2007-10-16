@@ -26,7 +26,7 @@ class SailUser < ActiveRecord::Base
   has_many :workgroups, :through => :workgroup_memberships
 
   def workgroup?
-    self.workgroups.length != 0
+    self.workgroups_count != 0
   end
   
   def workgroup

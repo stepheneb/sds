@@ -214,7 +214,7 @@ class OfferingController < ApplicationController
         @bundles = @workgroup.valid_bundles.asc
         @portal = Portal.find(params[:pid])
         if @portal.last_bundle_only
-          last_bundle_with_data = @bundles.reverse.detect { |b| b.socks.length > 0 }
+          last_bundle_with_data = @bundles.reverse.detect { |b| b.socks_count > 0 }
           if last_bundle_with_data
             @bundles = [last_bundle_with_data]
           end

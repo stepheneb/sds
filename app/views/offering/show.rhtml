@@ -3,7 +3,7 @@
 
 <p>
   Offering: <%= @offering.name %>, <em>(id: <%= @offering.id %>)</em><br />
-  Workgroups: <%= @offering.workgroups.length.to_s %>, <em>(ids: <%=  @offering.workgroups.collect {|w| w.id }.join(', ') %>)</em>. <br />
+  Workgroups: <%= @offering.workgroups_count.to_s %>, <em>(ids: <%=  @offering.workgroups.collect {|w| w.id }.join(', ') %>)</em>. <br />
   Jnlp: <%= link_to @offering.jnlp.name, {:controller => 'jnlp', :action => 'show', :id => @offering.jnlp.id }, {:title => "Show the jnlp for this offering."} %>, <em>(id: <%= @offering.jnlp.id %>), last updated: <%= @offering.jnlp.last_modified %></em><br />
   Curnit: <%= link_to @offering.curnit.name, {:controller => 'curnit', :action => 'show', :id => @offering.curnit.id }, {:title => "Show the curnit for this offering."}  %> <em>(id: <%= @offering.curnit.id %>), last updated: <%= @offering.curnit.jar_last_modified %></em>
 </p>
@@ -24,7 +24,7 @@
       <td><%= w.id.to_s %></td>
       <td><%= w.name %></td>
       <td><%= w.member_names %></td>
-      <td><%= w.valid_bundles.length.to_s %>
+      <td><%= w.valid_bundles_count.to_s %>
       <td>Report:
         <%= link_to 'html', {:controller => 'workgroup', :action => 'report', :id => w.id}, {:title => "HTML report on the work done by this workgroup."} %>,
         <%= link_to 'xls', {:controller => 'workgroup', :action => 'report_xls', :id => w.id}, {:title => "XLS report on the work done by this workgroup."} %>,
