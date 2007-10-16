@@ -9,7 +9,7 @@ class SdsCache
   include Singleton
   attr_reader :path
   def initialize
-    @path = if Dir.getwd =~ /\/public$/ then "" else "public/" end << 'sds_cache/'
+    @path = "#{RAILS_ROOT}/public/sds_cache/"
   end
 end
 
