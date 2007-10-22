@@ -33,6 +33,13 @@ module PasModelActivityLib
     ws.write(row_num += 1, 0, ["Session end:", sock.bundle.sail_session_end_time.to_s])
     row_num += 1;  # skip a line
     if mad
+      if sock.model_activity_dataset.pas_findings_count > 0
+        ws.write(row_num += 1, 0, ['Finding','Evidence','Text'])
+        sock.model_activity_dataset.pas_findings.each do |f|
+          ws.write(row_num += 1, 0, ["#{f.sequence}", "#{f.evidence}", "#{f.text}"])
+        end
+        row_num += 1;  # skip a line
+      end
       ws.write(row_num += 1, 0, mad['headers'].collect { |h|  get_header_info(h).join("\n") } )
       @i = 0
       max_column_size = 0
