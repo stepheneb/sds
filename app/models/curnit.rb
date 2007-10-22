@@ -100,7 +100,7 @@ class Curnit < ActiveRecord::Base
   end
 
   def local_jar_empty?
-    !self.jar_last_modified || !File.exists?(self.jar_path)
+    !File.exists?(self.jar_path)
   end
   
   def filename
