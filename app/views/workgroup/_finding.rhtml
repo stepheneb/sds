@@ -1,0 +1,16 @@
+<table border='1' cellpadding='5'>
+	<thead align='left'>
+		<th>Finding</th>
+		<th>Evidence</th>
+		<th>Text</th>
+	</thead>
+	<tbody>
+	<% findings.each do |f| -%>
+	<tr>
+		<td><%= f.sequence %></td>
+		<td><%= f.evidence %></td>
+		<td><%= f.text %></td>
+	</tr>
+	<% end -%>
+	</tbody>
+</table>

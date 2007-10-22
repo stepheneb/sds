@@ -1,7 +1,10 @@
  <% mad = get_mad_data(s) -%>
         <%# debug mad %>
         <% if mad -%>
-        
+        <% if s.model_activity_dataset.pas_findings_count > 0 -%>
+		  <%= render(:partial => 'finding', :locals => {:findings => s.model_activity_dataset.pas_findings}) %>
+		  <br/>
+		<% end -%>
         <table border=1>
         <!-- Headers -->
         <thead>
