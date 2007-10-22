@@ -83,6 +83,10 @@ namespace :sds do
     tracker = TimeTracker.new
     tracker.start
     failures = []
+    # delete any existing model_activity_datasets and their associated data
+    ModelActivityDataset.find(:all) do |mad|
+      mad.destroy
+    end
     pods = Pod.find(:all, :conditions => "rim_name='model.activity.data'")
     puts "Pods to process: #{pods.size}"
     count = 1
