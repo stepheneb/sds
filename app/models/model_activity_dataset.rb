@@ -1,10 +1,10 @@
 class ModelActivityDataset < ActiveRecord::Base
   set_table_name "sds_pas_model_activity_datasets"
   belongs_to :sock
-  has_many :model_activity_modelrun
-  has_many :computational_input
-  has_many :representational_type
-  has_many :pas_findings
+  has_many :model_activity_modelrun, :dependent => :destroy
+  has_many :computational_input, :dependent => :destroy
+  has_many :representational_type, :dependent => :destroy
+  has_many :pas_findings, :dependent => :destroy
   
   validates_presence_of :sock
   

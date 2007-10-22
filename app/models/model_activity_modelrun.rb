@@ -12,8 +12,8 @@
 class ModelActivityModelrun < ActiveRecord::Base
   set_table_name "sds_pas_model_activity_modelruns"
   belongs_to :model_activity_dataset
-  has_many :computational_input_value
-  has_many :representational_value
+  has_many :computational_input_value, :dependent => :destroy
+  has_many :representational_value, :dependent => :destroy
   
   validates_presence_of :model_activity_dataset 
   
