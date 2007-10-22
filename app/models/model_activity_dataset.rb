@@ -4,6 +4,7 @@ class ModelActivityDataset < ActiveRecord::Base
   has_many :model_activity_modelrun
   has_many :computational_input
   has_many :representational_type
+  has_many :pas_findings
   
   validates_presence_of :sock
   
@@ -36,6 +37,27 @@ class ModelActivityDataset < ActiveRecord::Base
     end
     
     def create_model_activity_dataset(xml)
+      
+      xml.elements.each('/modelactivitydata/findings') do |finding_xml|
+        finding_xml.elements.each('finding') do |finding|
+          text = nil
+          evidence = nil
+          sequence = nil
+          begin
+            text = finding.attributes['text'].to_s
+          rescue
+          end
+          begin
+            evidence = finding.attributes['evidence'].to_s
+          rescue
+          end
+          begin
+            sequence = finding.attributes['sequence'].to_s
+          rescue
+          end
+          PasFinding.create(:model_activity_dataset_id => self.id, :evidence => evidence, :text => text, :sequence => sequence)
+          end
+      end
 
       xml.elements.each('/modelactivitydata/computational_input') do |ci_xml|
         find_computational_input_xml(ci_xml)
