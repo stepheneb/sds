@@ -9,7 +9,7 @@
 </p>
 
 <b>Workgroups:</b> (<%= link_to 'create a new workgroup', :controller => 'workgroup', :action => 'create', :oid => @offering.id %>)<br/>
-<%= link_to 'Full offering spreadsheet', :action => 'report_xls' %>
+<%= link_to 'Full offering spreadsheet', :action => 'report_xls' %> (<%= link_to 'compact', :action => 'report_xls', :compact => true %>)
 <table cellpadding=3 cellspacing=1>
   <% odd_or_even = 0 %>
   <tr>

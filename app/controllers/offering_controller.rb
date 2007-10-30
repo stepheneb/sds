@@ -243,23 +243,34 @@ class OfferingController < ApplicationController
   end
   
   def report_xls
+    compact = params[:compact] ? true : false
 	  file = "#{RAILS_ROOT}/tmp/xls/#{@offering.id}.csv"
 	  f = File.new(file, "w")
 	  f.write("")
 	  f.close
 	  debug = []
-	  
+	  workgroups_in_this_offering = @offering.workgroups.collect{|w| w.id}.uniq
 	  pod_info = @offering.curnit.pods.collect { |p|
 	  	if p.pas_type == 'note'
-	  		if p.html_body != nil
-	  			body = p.html_body.strip
-	  		else
-	  			body = nil
-	  		end
-	  		["#{p.id}", "#{p.uuid}", "#{p.rim_name}", "#{body}"]
-		else
-			nil
-		end
+        # we only want pods which have socks from workgroups within this offering
+        # by taking 2 unique arrays and combining them, we can use the uniq! command
+        # to return the duplicates of the combined array. If there are no duplicates,
+        # then there was no intersection between the 2 original arrays.  
+        workgroups_for_this_pod =  p.socks.collect{|s| s.bundle.workgroup.id}.uniq
+        temp = (workgroups_in_this_offering + workgroups_for_this_pod).uniq!
+        if temp != nil
+	  		  if p.html_body != nil
+	  			  body = p.html_body.strip
+	  		  else
+	  			  body = nil
+	  		  end
+	  		  ["#{p.id}", "#{p.uuid}", "#{p.rim_name}", "#{body}"]
+	      else	
+          nil
+        end
+      else
+			  nil
+      end
 	  }
 	  pod_info = pod_info.compact
 	  debug += ["In the method"]
@@ -275,9 +286,12 @@ class OfferingController < ApplicationController
 				if s.pod.pas_type != 'note'
 					debug += ["sock is not a note, skipping"]
 					next
-				end
-				data = [s.bundle.id, s.bundle.sail_session_start_time.to_s, s.id, TimeTracker.seconds_to_s(s.ms_offset/1000), s.value]
-				
+			end
+      data = [s.bundle.id, s.bundle.sail_session_start_time.to_s, s.id, TimeTracker.seconds_to_s(s.ms_offset/1000), s.value]
+      if compact
+        metadata = "#{s.bundle.id}\r#{s.bundle.sail_session_start_time.to_s}\r#{s.id}\r#{TimeTracker.seconds_to_s(s.ms_offset/1000)}"
+        data = [metadata, s.value]
+		  end
 				if workgroup_data.has_key?("#{s.pod_id}")
 					w_counter = 1
 					
@@ -316,6 +330,10 @@ class OfferingController < ApplicationController
 	  row = 0
 	  col = 0
 	  # start with the headers for each pod
+    pod_headers = ["Bundle ID", "Bundle Date", "Sock ID", "Sock Time", "Sock Content"]
+    if compact
+      pod_headers = ["Bundle ID\rBundle Date\rSock ID\rSock Time", "Content"]
+    end
 	  # notes_worksheet.write(row, col, [["Pod ID", "Pod UUID", "Rim Name", "Note HTML Content", "Workgroup"]])
 	  pid_row = ["Pod ID"]
 	  puuid_row = ["Pod UUID"]
@@ -323,13 +341,17 @@ class OfferingController < ApplicationController
 	  content_row = ["Note HTML Content"]
 	  header_row = ["Workgroup"]
 	  col = -4
+    padding = [nil,nil,nil,nil]
+    if compact
+      padding = [nil]
+    end
 	  pod_info.each do |p|
 	  	# notes_worksheet.write(row, col += 5, [p])
-	  	pid_row += [p[0],nil,nil,nil,nil]
-		puuid_row += [p[1],nil,nil,nil,nil]
-		rimname_row += [p[2],nil,nil,nil,nil]
-		content_row += [p[3],nil,nil,nil,nil]
-		header_row += ["Bundle ID", "Bundle Date", "Sock ID", "Sock Time", "Sock Content"]
+	  	pid_row += [p[0]] + padding
+		puuid_row += [p[1]] + padding
+		rimname_row += [p[2]] + padding
+		content_row += [p[3]] + padding
+		header_row += pod_headers
 	  end
 	  offerings = @offering_data.keys.sort
 	  CSV.open(file, "w") do |row|
@@ -354,7 +376,11 @@ class OfferingController < ApplicationController
 				row_data += @offering_data[wid][p[0]]
 	  		else
 	  			# pad the row with empty cells
-	  			row_data += [nil,nil,nil,nil,nil]
+          if compact
+            row_data += [nil, nil]
+          else
+	  			  row_data += [nil,nil,nil,nil,nil]
+          end
 	  		end
 	  	end
 		row << row_data
@@ -367,7 +393,7 @@ class OfferingController < ApplicationController
 	  end
 	  
 	  # @workbook.close
-	  send_data(File.open(file).read, :type => "application/vnd.ms.excel", :filename => "#{@offering.id}.csv" )  	
+	  send_data(File.open(file).read, :type => "application/vnd.ms.excel", :filename => "offering-report-#{@offering.id}.csv" )  	
   end
   
   def curnitmap
