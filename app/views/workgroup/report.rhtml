@@ -14,15 +14,8 @@
 <hr />
 <h2>Notes</h2>
 <% podnotes = @workgroup.valid_bundles.collect {|b| b.socks.find_notes}.flatten.group_by {|s| s.pod} %>
-<% cmap = nil -%>
-<% @workgroup.valid_bundles.each do |b| -%>
-	<% cmap = b.curnitmap -%>
-	<% if (cmap != nil) -%>
-	  <% break -%>
-	<% end -%>
-<% end -%>
 <% podnotes.each do |pod, socks| %>
-  <%= render(:partial => 'pod', :locals => {:pod => pod, :socks => socks, :curnitmap => cmap}) %>
+  <%= render(:partial => 'pod', :locals => {:pod => pod, :socks => socks, :curnitmap => @cmap}) %>
 <% end%>
 <hr />
 <h2>Model Activity Reports</h2>
@@ -31,8 +24,8 @@
 <% podmads.each do |pod, socks| %>
   <div style="background-color: #FF99CC; padding: 10px; border: 1px dotted gray; margin: 5px 5px 10px 10px; font: 10px sans-serif;">
     <%= "Pod: id: #{pod.id}, uuid: #{pod.uuid}, rim name: #{pod.rim_name}"%>
-    <% if (cmap != nil && cmap[pod.uuid] != nil) -%>
-  	  <%= "<br/>Activity: #{cmap[pod.uuid]['activity_number']}, Step: #{cmap[pod.uuid]['step_number']}, Title: #{cmap[pod.uuid]['title']}" %>
+    <% if (@cmap != nil && @cmap[pod.uuid] != nil) -%>
+  	  <%= "<br/>Activity: #{@cmap[pod.uuid]['activity_number']}, Step: #{@cmap[pod.uuid]['step_number']}, Title: #{@cmap[pod.uuid]['title']}" %>
     <% end -%>
     <% socks.each do |s| %>
     <div style="background-color: #FFDDEE; padding: 0px; border: 1px dotted gray; margin: 5px 5px 5px 5px; font: 10px sans-serif;">

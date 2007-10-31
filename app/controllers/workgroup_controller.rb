@@ -158,6 +158,11 @@ class WorkgroupController < ApplicationController
   def report
     @members = @workgroup.sail_users.version(@workgroup.version) # array of SailUser objects
     @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects
+    
+    @cmap = {}
+    @workgroup.valid_bundles.each do |b|
+      @cmap.merge!(b.curnitmap){|k,old,new| old }
+    end
   end
 
   def report_xls
@@ -165,9 +170,14 @@ class WorkgroupController < ApplicationController
     @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects
 
 #    debugger
+
+    @cmap = {}
+    @workgroup.valid_bundles.each do |b|
+      @cmap.merge!(b.curnitmap){|k,old,new| old }
+    end
     
     # Create the first worksheet which summarizes the workgroup information
-    file = "#{RAILS_ROOT}/tmp/xls/#{@workgroup.id}.xls"
+    file = "#{RAILS_ROOT}/tmp/xls/workgroup-#{@workgroup.id}.xls"
     f = File.new(file, "w")
     f.write("")
     f.close
@@ -221,13 +231,8 @@ class WorkgroupController < ApplicationController
     row = 0
     notes_worksheet.write(row, 0, ["Pod ID", "Pod UUID", "Rim Name", "Activity Number", "Step Number", "Step Title", "Note HTML Content", "Session Bundle ID", "Session Bundle Date", "Sock entry ID", "Sock Time", "Sock Content"])    
     podnotes = @workgroup.valid_bundles.collect {|b| b.socks.find_notes}.flatten.group_by {|s| s.pod}
-    cmap = nil
-    @workgroup.valid_bundles.each do |b|
-      cmap = b.curnitmap
-      if cmap != nil
-        break
-      end
-    end
+
+    logger.info("#{cmap}")
     podnotes.each do |pod, socks|
       act_num = ""
       step_num = ""
@@ -257,7 +262,7 @@ class WorkgroupController < ApplicationController
       end
     end
     @workbook.close
-    send_data(File.open(file).read, :type => "application/vnd.ms.excel", :filename => "#{@workgroup.id}.xls" )
+    send_data(File.open(file).read, :type => "application/vnd.ms.excel", :filename => "workgroup-#{@workgroup.id}.xls" )
   end
   
   def atom
