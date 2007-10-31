@@ -31,7 +31,8 @@ class Curnit < ActiveRecord::Base
   has_one :curnit_map
   
   before_save { |c| c.url.strip! }
-  after_save :check_for_jar # need an id for this
+  before_update :check_for_jar # run this when saving an existing object
+  after_create :check_for_jar_create # need an id for this, so in creation run it after_create
   
   require 'fileutils'
   require 'open-uri'
@@ -89,6 +90,11 @@ class Curnit < ActiveRecord::Base
     
   def check_always_update # if nil set to true
     self.always_update ||= true
+  end
+  
+  def check_for_jar_create
+    self.update_jar
+    self.save
   end
 
   # if no curnit jar exists then get curnit jar and set jar_digest and jar_last_modified
