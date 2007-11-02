@@ -130,7 +130,7 @@ class SailUserController < ApplicationController
     @workgroups =  @sail_user.workgroups.uniq
     respond_to do |wants|
       wants.html
-      wants.xml { render :xml => @workgroups.to_xml }
+      wants.xml { render :xml => @workgroups.empty? ? "<workgroups></workgroups>" : @workgroups.to_xml }
     end
   end
   
