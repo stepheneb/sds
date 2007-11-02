@@ -86,6 +86,15 @@ protected
     false # returing false in a controller filter stops the chain of proccessing
   end
 
+  def external_resource_not_well_formed_xml(resource, id, url)
+    msg = "#{resource} #{id.to_s}: external resource: #{url} not well-formed xml."
+    respond_to do |wants|
+      wants.html { flash[:notice] = msg ; redirect_to :action => 'list' }
+      wants.xml { render(:text => "<error>#{msg}<error/>", :status => 404) } # Not Found
+    end
+    false
+  end
+
   def external_resource_not_found(resource, id, url)
     msg = "#{resource} #{id.to_s}: external resource: #{url} not available."
     respond_to do |wants|

@@ -127,6 +127,8 @@ class OfferingController < ApplicationController
     end
     if @jnlp.body.blank?
       external_resource_not_found('Jnlp', @jnlp.id, @jnlp.url)
+    elsif !@jnlp.body_xml
+      external_resource_not_well_formed_xml('Jnlp', @jnlp.id, @jnlp.url)
     else
       case params[:type]
       when 'user'

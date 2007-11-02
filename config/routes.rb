@@ -79,6 +79,7 @@ ActionController::Routing::Routes.draw do |map|
   map.connect ':pid/sail_user/edit/:id', :controller => 'sail_user', :action => 'edit'
 #  map.connect ':pid/sail_user/destroy/:id', :controller => 'sail_user', :action => 'destroy'
   map.connect ':pid/sail_user/:id', :controller => 'sail_user', :action => 'show'
+  map.connect ':pid/sail_user/:id/workgroups', :controller => 'sail_user', :action => 'workgroups'
 
 # user
 

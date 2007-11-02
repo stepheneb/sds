@@ -17,17 +17,26 @@
 
 class Jnlp < ActiveRecord::Base  
   set_table_name "sds_jnlps"
-    
-  validates_presence_of :name, :url
 
   belongs_to :portal
   has_many :offerings
   has_many :offerings, :order => "created_at DESC"
+
+  before_validation :process_jnlp
+  validates_presence_of :name, :url
   
-  before_save { |j| j.url.strip! }
-  before_save :get_body
-  before_save :get_last_modified
-  
+  def validate 
+    unless body_xml
+      errors.add(:body, "jnlp body not well-formed xml") 
+    end
+  end
+
+  def process_jnlp
+    self.j.url.strip
+    get_body
+    get_last_modified
+  end
+
   def get_body
     if self.always_update || self.body.blank?      
       begin
@@ -37,11 +46,12 @@ class Jnlp < ActiveRecord::Base
           self.filename = File.basename(self.url)
         end
       rescue SocketError # getaddrinfo?
+      rescue OpenURI::HTTPError
       end
     end
     self.body
   end
-  
+
   def get_last_modified
     if self.always_update || self.body.blank?
       uri = URI.parse(url)
@@ -59,15 +69,25 @@ class Jnlp < ActiveRecord::Base
       end
     end
   end
-  
-  protected
-  
-# Jnlp.find_all.each {|j| print "#{j.id}: "; begin j.save! rescue print "error, " ensure puts "#{j.name}" end }; nil
-#  4: error: basic-emf-post
-#  5: error: basic-emf
-#  6: error: pedagogica-emf
-#  7: error: pedagogica-emf-snapshot
-#  9: error: pedagogica-emf
+
+  def body_xml
+    begin
+      if USE_LIBXML
+        XML::Parser.string(self.body).parse.root
+      else
+        require "rexml/document"
+        REXML::Document.new(self.body).root
+      end
+    rescue XML::Parser::ParseError
+      nil
+    end
+  end
+
+  # Jnlp.find_all.each {|j| print "#{j.id}: "; begin j.save! rescue print "error, " ensure puts "#{j.name}" end }; nil
+  #  4: error: basic-emf-post
+  #  5: error: basic-emf
+  #  6: error: pedagogica-emf
+  #  7: error: pedagogica-emf-snapshot
+  #  9: error: pedagogica-emf
 
 end
-  

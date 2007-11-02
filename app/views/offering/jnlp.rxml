@@ -1,10 +1,4 @@
-if USE_LIBXML
-  jnlp = XML::Parser.string(@jnlp.body).parse.root
-else
-  require "rexml/document"
-  jnlp = REXML::Document.new(@jnlp.body).root
-end
-
+jnlp = @jnlp.body_xml
 href_url = @controller.url_for(:controller => 'offering', :action => 'jnlp', :id => @offering.id, :wid => @workgroup.id, :version => @version, :only_path => false).to_s
 homepage_url = @controller.url_for(:controller => 'offering', :action => 'show', :id => @offering.id, :only_path => false).to_s
 

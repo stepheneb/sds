@@ -120,6 +120,20 @@ class SailUserController < ApplicationController
     end
   end
   
+  def workgroups
+    id = params[:id]
+    if id.length == 36
+      @sail_user = @portal.sail_users.find_by_uuid(id)
+    else
+      @sail_user = @portal.sail_users.find(id)
+    end
+    @workgroups =  @sail_user.workgroups.uniq
+    respond_to do |wants|
+      wants.html
+      wants.xml { render :xml => @workgroups.to_xml }
+    end
+  end
+  
   def destroy
     id = params[:id]
     flash[:notice] = "Deleting of SailUsers not permitted yet." 
