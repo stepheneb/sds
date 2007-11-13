@@ -148,7 +148,7 @@ class Curnit < ActiveRecord::Base
         self.jar_digest = Base64.b64encode(Digest::MD5.digest(urlfile.read)).strip
       end
       rescue => e
-        raise "There was a problem saving the curnit jar to the filesystem\n\n#{e.message}\n\n#{e.backtrace}"
+        raise "There was a problem saving the curnit jar to the filesystem\n\n#{e.message}\n\n#{e.backtrace.join("\n")}"
       end
       begin
       curnit_xml_file = File.read("#{self.path}curnit.xml")
@@ -164,7 +164,7 @@ class Curnit < ActiveRecord::Base
         self.title = REXML::XPath.first(curnit_xml, "//void[@property='title']/string").text
       end
       rescue => e
-        raise "There was a problem reading attributes from the curnit.\n\n#{e.message}\n\n#{e.backtrace}"
+        raise "There was a problem reading attributes from the curnit.\n\n#{e.message}\n\n#{e.backtrace.join("\n")}"
       end
     end
   end

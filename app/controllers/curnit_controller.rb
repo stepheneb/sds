@@ -26,7 +26,7 @@ class CurnitController < ApplicationController
            render(:text => "<validation-errors>\n#{errors}</validation-errors>\n", :status => 400) # Bad Request
         end
       rescue => e
-        render(:text => "<validation-errors>\n#{e}</validation-errors>\n", :status => 400) # Bad Request
+        render(:text => "<validation-errors>\n<error>\n#{e.message}\n</error>\n</validation-errors>\n", :status => 400) # Bad Request
       end
     else
       @curnits = @portal.curnits
@@ -62,7 +62,7 @@ class CurnitController < ApplicationController
           flash[:notice] = "Error creating Curnit." 
         end
       rescue => ex
-        flash[:notice] = "Error creating Curnit.\n\n<!-- #{ex}\n\n#{ex.backtrace} -->"
+        flash[:notice] = "Error creating Curnit.\n\n<!-- #{ex}\n\n#{ex.backtrace.join("\n")} -->"
       end
     else
       @curnit = Curnit.new
