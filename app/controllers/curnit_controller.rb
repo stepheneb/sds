@@ -15,14 +15,18 @@ class CurnitController < ApplicationController
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
       xml_parms = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
-      @curnit = Curnit.new(xml_parms)
-      @curnit.portal = Portal.find(xml_parms['portal_id'])
-      if @curnit.save
-        response.headers['Location'] = url_for(:action => :show, :id => @curnit.id)
-        render(:xml => "", :status => 201) # Created
-      else
-         errors =  @curnit.errors.full_messages.collect {|e| "  <error>#{e}</error>\n"}.join
-         render(:text => "<validation-errors>\n#{errors}</validation-errors>\n", :status => 400) # Bad Request
+      begin
+        @curnit = Curnit.new(xml_parms)
+        @curnit.portal = Portal.find(xml_parms['portal_id'])
+        if @curnit.save
+          response.headers['Location'] = url_for(:action => :show, :id => @curnit.id)
+          render(:xml => "", :status => 201) # Created
+        else
+           errors =  @curnit.errors.full_messages.collect {|e| "  <error>#{e}</error>\n"}.join
+           render(:text => "<validation-errors>\n#{errors}</validation-errors>\n", :status => 400) # Bad Request
+        end
+      rescue => e
+        render(:text => "<validation-errors>\n#{e}</validation-errors>\n", :status => 400) # Bad Request
       end
     else
       @curnits = @portal.curnits
@@ -34,7 +38,7 @@ class CurnitController < ApplicationController
   end
 
   def edit
-    if @curnit = @portal.curnits.find_by_id(params[:id])
+    if @curnit
       if request.post?
         @curnit.update_attributes(params[:curnit])
         flash[:notice] = "Curnit #{@curnit.id} was successfully updated."
@@ -49,12 +53,16 @@ class CurnitController < ApplicationController
   def create
     if request.post?
       c = params[:curnit].merge({ "portal_id" => params[:pid]})
-      @curnit = Curnit.new(c)
-      if @curnit.save
-        flash[:notice] = "Curnit #{@curnit.id} was successfully created."
-        redirect_to :action => 'list'
-      else
-        flash[:notice] = "Error creating Curnit." 
+      begin
+        @curnit = Curnit.new(c)
+        if @curnit.save
+          flash[:notice] = "Curnit #{@curnit.id} was successfully created."
+          redirect_to :action => 'list'
+        else
+          flash[:notice] = "Error creating Curnit." 
+        end
+      rescue => ex
+        flash[:notice] = "Error creating Curnit.\n\n<!-- #{ex}\n\n#{ex.backtrace} -->"
       end
     else
       @curnit = Curnit.new
@@ -63,7 +71,7 @@ class CurnitController < ApplicationController
 
   def show
     begin
-      if @curnit = @portal.curnits.find_by_id(params[:id])
+      if @curnit
         if request.get?
           respond_to do |wants|
             wants.html

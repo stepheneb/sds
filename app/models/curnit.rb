@@ -134,6 +134,7 @@ class Curnit < ActiveRecord::Base
 
   def update_jar
     if self.jar_last_modified.blank? || (self.jar_last_modified < self.get_last_modified) || ! File.exists?(self.path)
+      begin
       url_string = self.url
       open(url_string) do |urlfile|
         if File.exists?(self.path)
@@ -146,6 +147,10 @@ class Curnit < ActiveRecord::Base
         self.jar_last_modified = urlfile.last_modified
         self.jar_digest = Base64.b64encode(Digest::MD5.digest(urlfile.read)).strip
       end
+      rescue => e
+        raise "There was a problem saving the curnit jar to the filesystem\n\n#{e.message}\n\n#{e.backtrace}"
+      end
+      begin
       curnit_xml_file = File.read("#{self.path}curnit.xml")
       if USE_LIBXML
         curnit_xml = XML::Parser.string(curnit_xml_file).parse.root
@@ -157,6 +162,9 @@ class Curnit < ActiveRecord::Base
         self.uuid = REXML::XPath.first(curnit_xml, "//void[@property='curnitId']/object[@class='net.sf.sail.core.uuid.CurnitUuid']/string").text
         self.root_pod_uuid =  REXML::XPath.first(curnit_xml, "//void[@property='rootPodId']/object[@class='net.sf.sail.core.uuid.PodUuid']/string").text
         self.title = REXML::XPath.first(curnit_xml, "//void[@property='title']/string").text
+      end
+      rescue => e
+        raise "There was a problem reading attributes from the curnit.\n\n#{e.message}\n\n#{e.backtrace}"
       end
     end
   end
