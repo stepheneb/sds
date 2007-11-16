@@ -161,7 +161,10 @@ class WorkgroupController < ApplicationController
     
     @cmap = {}
     @workgroup.valid_bundles.each do |b|
-      @cmap.merge!(b.curnitmap){|k,old,new| old }
+      curnitmap = b.curnitmap
+      if curnitmap != nil
+        @cmap.merge!(b.curnitmap){|k,old,new| old }
+      end
     end
   end
 
