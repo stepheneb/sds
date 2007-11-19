@@ -180,4 +180,76 @@ class ModelActivityDataset < ActiveRecord::Base
         rt.representational_attribute.create(:value => value)
       end
     end
+    
+    def fix_incorrect_airbag_mad()
+      sock = self.sock
+    if self.name != "Airbag"
+      # we only need to check Airbag models
+      return
+    end
+    raw_data_socks = sock.bundle.socks.collect {|s|
+      if s.pod.pas_type == "trial_data"
+        s
+      end
+    }
+    arr = []
+    raw_data_socks = raw_data_socks.compact
+    ident = "p: #{self.sock.bundle.workgroup.offering.portal_id}, o: #{self.sock.bundle.workgroup.offering_id}, w: #{self.sock.bundle.workgroup_id}, mad: #{self.id}"
+    if raw_data_socks.length < 1
+      logger.error("MAD Dataset (#{ident}): Couldn't find a raw data sock entry.")
+      raise "MAD Dataset (#{ident}): Couldn't find a raw data sock entry."
+    else
+      ## Combine all of available raw datasets
+      # logger.error("MAD Dataset (#{ident}): Found more than 1 raw data sock entry.")
+      # raise "MAD Dataset (#{ident}): Found more than 1 raw data sock entry."
+      raw_data_socks.each do |rds|
+        raw_data = rds.unpack_gzip_b64_value
+        arr += raw_data.scan(/^[f|t]?.*Trial ([0-9]+) Dummy,([0-9\.\-]+),([0-9\.\-]+),([0-9\.\-]+),.*/).uniq
+      end
+    end
+    
+    # parse the raw data into a useable format
+    # format is "visible, Trial NNN Dummy,x,v,t,safe,rgb"
+    # x = "Dummy Position"
+    # v = "Dummy Velocity"
+    # t = "Dummy Time"
+    hash = {}
+    arr.each do |v|
+      if hash.has_key? v[0]
+        if hash[v[0]]["Dummy Position"] != v[1]
+          logger.warn("MAD Dataset (#{ident}): Data for Trial #{v[0]} already exists in the hash!")
+          logger.warn("Position is different: o: #{hash[v[0]]["Dummy Position"]}, n: #{v[1]}")
+        elsif hash[v[0]]["Dummy Velocity"] != v[2]
+          logger.warn("MAD Dataset (#{ident}): Data for Trial #{v[0]} already exists in the hash!")
+          logger.warn("Velocity is different: o: #{hash[v[0]]["Dummy Velocity"]}, n: #{v[2]}")
+        elsif hash[v[0]]["Dummy Time"] != v[3]
+          logger.warn("MAD Dataset (#{ident}): Data for Trial #{v[0]} already exists in the hash!")
+          logger.warn("Time is different: o: #{hash[v[0]]["Dummy Time"]}, n: #{v[3]}")
+        else
+          # logger.warn("Couldn't find a difference!")
+        end
+      end
+      hash[v[0]] = { "Dummy Position" => v[1], "Dummy Velocity" => v[2], "Dummy Time" => v[3]}
+    end
+    # compare the raw data with the existing mad data
+    # update the mad data if necessary
+    self.model_activity_modelrun.each do |mr|
+      # logger.info("Run: #{mr}, trial: #{mr.trial_number}")
+      raw_run_data = hash["#{mr.trial_number}"]
+      if raw_run_data == nil
+        logger.warn("MAD Dataset (#{ident}): No Raw Run data for trial: #{mr.trial_number}")
+      else
+        # logger.info("raw run: #{raw_run_data}")
+        mr.computational_input_value.each do |civ|
+          if civ.value != raw_run_data[civ.computational_input.name]
+            # logger.info("#{sock.bundle.workgroup.offering_id}.#{sock.bundle.workgroup_id}.#{sock.bundle_id} -- Updated #{civ.computational_input.name} from #{civ.value} to #{raw_run_data[civ.computational_input.name]}")
+            civ.value = raw_run_data[civ.computational_input.name]
+            civ.save
+          else
+            # logger.info("#{sock.bundle.workgroup.offering_id}.#{sock.bundle.workgroup_id}.#{sock.bundle_id} -- No Update Necessary")
+          end
+        end
+      end
+    end
+  end
   end

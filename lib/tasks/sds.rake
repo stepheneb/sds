@@ -30,6 +30,36 @@ namespace :sds do
     tracker.stop
   end
   
+    desc "Copy bundle.content to new model BundleContent.content (added in migration 45)."
+  task :fix_incorrect_airbag_data => :environment do
+    puts "\nFixing incorrect Airbag model activity data ..."
+    tracker = TimeTracker.new
+    tracker.start
+    puts "Datasets to process: #{ModelActivityDataset.count.to_s}:"
+    count = 1
+    print "#{sprintf("%5d", count)}: "
+    ModelActivityDataset.find(:all).each do |mad| 
+      begin
+        if mad.name == "Airbag"
+          mad.fix_incorrect_airbag_mad
+          print 'p'
+        else
+          print '.'
+        end
+      rescue => e
+        STDERR.puts "#{e}"
+        if "#{e}".include? "MAD Dataset"
+        else
+          STDERR.puts "#{e.backtrace.join("\n")}"
+        end
+        print 'X'
+      end
+      print "\n#{sprintf("%5d", count)}: " unless count.remainder(50) != 0
+      count += 1
+    end
+    tracker.stop
+  end
+  
   desc "Download copies of curnit jars to local sds cache."
   task :copy_curnit_jars_to_sds_cache => :environment do
     puts "\nCopying curnit jars to sds_cache ..."
