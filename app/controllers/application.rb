@@ -38,7 +38,7 @@ include AuthenticatedSystem
   session :session_key => '_sds_session_id'
  
   def rescue_action_in_public(e)
-    body = "<html><body><p><font color='red'>There was an error processing your request</font></p><p><!-- #{e} --></p></body></html>"
+    body = "<html><body><p><font color='red'>There was an error processing your request</font></p><p>\n<!-- #{e}\n #{e.backtrace.join("\n")} -->\n</p></body></html>"
     render(:text => body, :status => 500)
   end
  
