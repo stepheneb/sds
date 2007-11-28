@@ -235,15 +235,15 @@ class WorkgroupController < ApplicationController
     notes_worksheet.write(row, 0, ["Pod ID", "Pod UUID", "Rim Name", "Activity Number", "Step Number", "Step Title", "Note HTML Content", "Session Bundle ID", "Session Bundle Date", "Sock entry ID", "Sock Time", "Sock Content"])    
     podnotes = @workgroup.valid_bundles.collect {|b| b.socks.find_notes}.flatten.group_by {|s| s.pod}
 
-    logger.info("#{cmap}")
+    logger.info("#{@cmap}")
     podnotes.each do |pod, socks|
       act_num = ""
       step_num = ""
       step_title = ""
-      if (cmap != nil && cmap[pod.uuid] != nil)
-        act_num = cmap[pod.uuid]['activity_number']
-        step_num = cmap[pod.uuid]['step_number']
-        step_title = cmap[pod.uuid]['title']
+      if (@cmap != nil && @cmap[pod.uuid] != nil)
+        act_num = @cmap[pod.uuid]['activity_number']
+        step_num = @cmap[pod.uuid]['step_number']
+        step_title = @cmap[pod.uuid]['title']
       end
       note_preamble = [pod.id, pod.uuid, pod.rim_name, act_num, step_num, step_title, pod.html_body]
       socks.each do |s|
