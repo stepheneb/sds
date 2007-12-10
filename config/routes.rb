@@ -22,16 +22,28 @@ ActionController::Routing::Routes.draw do |map|
   map.connect ':pid/bundle/:id', :controller => 'bundle', :action => 'bundle'
 
 # offering: java web start services
-
-  map.connect ':pid/offering/:id/jnlp/:wid', :controller => 'offering', :action => 'jnlp', :type => 'workgroup', :savedata => true
-  map.connect ':pid/offering/:id/jnlp/:wid/view', :controller => 'offering', :action => 'jnlp', :type => 'workgroup', :savedata => nil
-  map.connect ':pid/offering/:id/jnlp/user/:uid', :controller => 'offering', :action => 'jnlp', :type => 'user', :savedata => true
-  map.connect ':pid/offering/:id/jnlp/user/:uid/view', :controller => 'offering', :action => 'jnlp', :type => 'user', :savedata => nil
-  map.connect ':pid/offering/:id/jnlp/workgroup/:wid', :controller => 'offering', :action => 'jnlp', :type => 'workgroup', :savedata => true
-  map.connect ':pid/offering/:id/jnlp/user/:uid/view', :controller => 'offering', :action => 'jnlp', :type => 'user', :savedata => nil
-  map.connect ':pid/offering/:id/config/:wid/:version', :controller => 'offering', :action => 'config', :savedata => true
-  map.connect ':pid/offering/:id/config/:wid/:version/view', :controller => 'offering', :action => 'config', :savedata => nil
-  map.connect ':pid/offering/:id/bundle/:wid/:version', :controller => 'offering', :action => 'bundle'
+  # jnlp routes
+  map.connect ':pid/offering/:id/jnlp/:wid', :controller => 'offering', :action => 'jnlp', :type => 'workgroup', :savedata => true, :nobundles => nil
+  map.connect ':pid/offering/:id/jnlp/:wid/view', :controller => 'offering', :action => 'jnlp', :type => 'workgroup', :savedata => nil, :nobundles => nil
+  map.connect ':pid/offering/:id/jnlp/user/:uid', :controller => 'offering', :action => 'jnlp', :type => 'user', :savedata => true, :nobundles => nil
+  map.connect ':pid/offering/:id/jnlp/user/:uid/view', :controller => 'offering', :action => 'jnlp', :type => 'user', :savedata => nil, :nobundles => nil
+  map.connect ':pid/offering/:id/jnlp/workgroup/:wid', :controller => 'offering', :action => 'jnlp', :type => 'workgroup', :savedata => true, :nobundles => nil
+  # with nobundles
+  map.connect ':pid/offering/:id/jnlp/:wid/nobundles', :controller => 'offering', :action => 'jnlp', :type => 'workgroup', :savedata => true, :nobundles => true
+  map.connect ':pid/offering/:id/jnlp/:wid/view/nobundles', :controller => 'offering', :action => 'jnlp', :type => 'workgroup', :savedata => nil, :nobundles => true
+  map.connect ':pid/offering/:id/jnlp/user/:uid/nobundles', :controller => 'offering', :action => 'jnlp', :type => 'user', :savedata => true, :nobundles => true
+  map.connect ':pid/offering/:id/jnlp/user/:uid/view/nobundles', :controller => 'offering', :action => 'jnlp', :type => 'user', :savedata => nil, :nobundles => true
+  map.connect ':pid/offering/:id/jnlp/workgroup/:wid/nobundles', :controller => 'offering', :action => 'jnlp', :type => 'workgroup', :savedata => true, :nobundles => true
+  
+  # config routes
+  map.connect ':pid/offering/:id/config/:wid/:version', :controller => 'offering', :action => 'config', :savedata => true, :nobundles => nil
+  map.connect ':pid/offering/:id/config/:wid/:version/view', :controller => 'offering', :action => 'config', :savedata => nil, :nobundles => nil
+  map.connect ':pid/offering/:id/config/:wid/:version/nobundles', :controller => 'offering', :action => 'config', :savedata => true, :nobundles => true
+  map.connect ':pid/offering/:id/config/:wid/:version/view/nobundles', :controller => 'offering', :action => 'config', :savedata => nil, :nobundles => true
+  
+  #bundle routes
+  map.connect ':pid/offering/:id/bundle/:wid/:version', :controller => 'offering', :action => 'bundle', :nobundles => nil
+  map.connect ':pid/offering/:id/bundle/:wid/:version/nobundles', :controller => 'offering', :action => 'bundle', :nobundles => true
 #  map.connect ':pid/offering/:id/pod/:uuid', :controller => 'offering', :action => 'pod'
 
   map.connect ':pid/offering/:id/errorbundle_create', :controller => 'offering', :action => 'errorbundle_create'

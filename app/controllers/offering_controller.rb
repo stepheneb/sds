@@ -137,6 +137,7 @@ class OfferingController < ApplicationController
         @workgroup = Workgroup.find(params[:wid])
       end
       @savedata = params[:savedata]
+      @nobundles = params[:nobundles]
       # need last mod?
       @headers["Content-Type"] = "application/x-java-jnlp-file"
       @headers["Cache-Control"] = "max-age=1"
@@ -169,6 +170,7 @@ class OfferingController < ApplicationController
       @workgroup = Workgroup.find(params[:wid])
       @version = params[:version]
       @savedata = params[:savedata]
+      @nobundles = params[:nobundles]
       
       # Create a hash of attributes, adding the url attributes last so they will overwrite any existing values
       @offering_attributes = Hash.new
@@ -212,13 +214,18 @@ class OfferingController < ApplicationController
       end
     else
       begin
+        @nobundles = params[:nobundles]
         @workgroup = @offering.find_in_workgroups(params[:wid])
-        @bundles = @workgroup.valid_bundles.asc
         @portal = Portal.find(params[:pid])
-        if @portal.last_bundle_only
-          last_bundle_with_data = @bundles.reverse.detect { |b| b.socks_count > 0 }
-          if last_bundle_with_data
-            @bundles = [last_bundle_with_data]
+        if @nobundles
+          @bundles = []
+        else
+          @bundles = @workgroup.valid_bundles.asc
+          if @portal.last_bundle_only
+            last_bundle_with_data = @bundles.reverse.detect { |b| b.socks_count > 0 }
+            if last_bundle_with_data
+              @bundles = [last_bundle_with_data]
+            end
           end
         end
         @headers["Content-Type"] = "text/xml"
