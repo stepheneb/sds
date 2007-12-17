@@ -103,10 +103,15 @@ class ModelActivityDataset < ActiveRecord::Base
         # model: computational_input_value
         mr_xml.elements.each('computational_input_value') do |civ_xml|
           ci_ref = civ_xml.attributes['reference'].to_s
+					time = nil
           begin
             time = Float(civ_xml.elements['time'].get_text.to_s)
           rescue
-            time = nil
+					  begin
+              time = Float(civ_xml.attributes['time'].to_s)
+		        rescue => ex
+              time = nil
+		        end
           end
           ci = self.computational_input.find(:first, :conditions => ["name = ?", ci_ref])
           civ = ci.computational_input_value.create(:value => civ_xml.elements['value'].get_text.to_s, :time => time)
@@ -118,6 +123,16 @@ class ModelActivityDataset < ActiveRecord::Base
         mr_xml.elements.each('computational_input_values') do |civs_xml|
           ci_ref = civs_xml.attributes['reference'].to_s
           ci = self.computational_input.find(:first, :conditions => ["name = ?", ci_ref])
+					time = 0
+          begin
+            time = Float(civs_xml.elements['time'].get_text.to_s)
+          rescue
+					  begin
+              time = Float(civs_xml.attributes['time'].to_s)
+		        rescue => ex
+              # logger.warn("Couldn't find a time attribute or element: #{civs_xml.to_s}")  
+		        end
+          end
           
           val = civs_xml.attributes['start'].to_s
           val << "|" << civs_xml.attributes['end'].to_s
@@ -125,7 +140,7 @@ class ModelActivityDataset < ActiveRecord::Base
           val << "|" << civs_xml.attributes['max'].to_s
           val << "|" << civs_xml.attributes['avg'].to_s
           val << "|" << civs_xml.attributes['num'].to_s
-          civ = ci.computational_input_value.create(:value => val, :time => nil)
+          civ = ci.computational_input_value.create(:value => val, :time => time)
           mr.computational_input_value.push(civ)
         end
         
