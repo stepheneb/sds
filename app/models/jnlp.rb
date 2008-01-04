@@ -27,7 +27,7 @@ class Jnlp < ActiveRecord::Base
   
   def validate 
     unless body_xml
-      errors.add(:body, "jnlp body not well-formed xml") 
+      errors.add("jnlp body: external resource: #{url} not well-formed xml.") 
     end
   end
 
