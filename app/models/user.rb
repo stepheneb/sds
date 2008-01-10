@@ -121,7 +121,7 @@ class User < ActiveRecord::Base
 
     # Encrypts just using MD5 hash
   def self.remote_encrypt(password)
-    MD5.hexdigest(password)
+    Digest::MD5.hexdigest(password)
   end
 
 
@@ -148,7 +148,7 @@ class User < ActiveRecord::Base
       return if password.blank?
       self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--") if new_record?
       self.crypted_password = local_encrypt(password)
-      self.password_hash = MD5.hexdigest(password)
+      self.password_hash = Digest::MD5.hexdigest(password)
     end
     
     def password_required?

@@ -15,7 +15,7 @@
     <td><%= @sail_user.portal.id.to_s %></td>
     <td><%= @sail_user.name %></td>
     <td>
-      <em>(<%= pluralize(@sail_user.workgroups_count, "workgroup")%>, created: <%= @sail_user.created_at.strftime("%a %b %d %H:%M %Z %Y") %>, UUID: <%= @sail_user.uuid %>)</em>
+      <em>(<%= pluralize(@sail_user.workgroups.count, "workgroup")%>, created: <%= @sail_user.created_at.strftime("%a %b %d %H:%M %Z %Y") %>, UUID: <%= @sail_user.uuid %>)</em>
     </td>
   </tr>
 </table>

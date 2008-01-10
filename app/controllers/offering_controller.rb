@@ -139,19 +139,19 @@ class OfferingController < ApplicationController
       @savedata = params[:savedata]
       @nobundles = params[:nobundles]
       # need last mod?
-      @headers["Content-Type"] = "application/x-java-jnlp-file"
-      @headers["Cache-Control"] = "max-age=1"
+      response.headers["Content-Type"] = "application/x-java-jnlp-file"
+      response.headers["Cache-Control"] = "max-age=1"
       # look for any dynamically added jnlp parameters
       # jnlp_filename's value is used by the sds when it constructs the Content-Disposition header
       jnlp_filename = request.query_parameters['jnlp_filename'] || "#{to_filename(@jnlp.name)}_#{to_filename(@offering.curnit.name)}.jnlp"
       # this is a bit of a hack because the real query_parameters are not a hash
       # so I delete the jnlp_filename parameter if it exists in request.query_string
       request.query_string.gsub!(/[?&]jnlp_filename=[^&]*/, '')
-      @headers["Content-Disposition"] = "attachment; filename=#{jnlp_filename}"
+      response.headers["Content-Disposition"] = "attachment; filename=#{jnlp_filename}"
       # jnlp_properties value is a string of key-value pairs in a url query-string format
       # in which the reserved characters 
       if request.query_parameters['jnlp_properties']
-        @jnlp_properties = CGIMethods.parse_query_parameters(URI.unescape(request.query_parameters['jnlp_properties']))
+        @jnlp_properties = parse_query_parameters(URI.unescape(request.query_parameters['jnlp_properties']))
         request.query_string.gsub!(/[?&]jnlp_properties=[^&]*/, '')
       end
       render :action => 'jnlp', :layout => false
@@ -161,7 +161,7 @@ class OfferingController < ApplicationController
   def atom
 #    @offering = Offering.find(params[:id])
 #    @workgroups = @offering.workgroups
-#    @headers["Content-Type"] = "application/atom+xml"
+#    response.headers["Content-Type"] = "application/atom+xml"
   end
   
   def config
@@ -215,7 +215,7 @@ class OfferingController < ApplicationController
     else
       begin
         @nobundles = params[:nobundles]
-        @workgroup = @offering.find_in_workgroups(params[:wid])
+        @workgroup = @offering.workgroups.find_by_id(params[:wid])
         @portal = Portal.find(params[:pid])
         if @nobundles
           @bundles = []
@@ -228,7 +228,7 @@ class OfferingController < ApplicationController
             end
           end
         end
-        @headers["Content-Type"] = "text/xml"
+        response.headers["Content-Type"] = "text/xml"
         render :action => 'bundlelist', :layout => false
       rescue => e
         render(:text => e, :status => 404) # Not Found
@@ -328,7 +328,7 @@ class OfferingController < ApplicationController
 	  
 	  # @workbook = Spreadsheet::Excel.new(file)
 	  # data_format = @workbook.add_format(:color=>"blue", :text_h_align=>1)
-	  # header_format = @workbook.add_format(:color=>"black", :bold=>1, :text_h_align=>1)
+	  # response.header_format = @workbook.add_format(:color=>"black", :bold=>1, :text_h_align=>1)
 	  # thick_bottom_border = @workbook.add_format(:bottom=>5)
 	  # thin_right_border = @workbook.add_format(:right=>1)
 	  # pod_info_merged_cells = @workbook.add_format()

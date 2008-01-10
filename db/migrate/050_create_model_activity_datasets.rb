@@ -4,8 +4,8 @@ class CreateModelActivityDatasets < ActiveRecord::Migration
       t.column :sock_id, :integer
       t.column :created_at, :timestamp
       t.column :name, :string
-      t.column :start_time, :double
-      t.column :end_time, :double
+      t.column :start_time, :float
+      t.column :end_time, :float
     end
     add_index :sds_pas_model_activity_datasets, :sock_id, :name => "sock_id_index"
   end

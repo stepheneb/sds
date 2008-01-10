@@ -4,7 +4,7 @@ class CreateComputationalInputValues < ActiveRecord::Migration
       t.column :model_activity_modelrun_id, :integer
       t.column :computational_input_id, :integer
       t.column :value, :text
-      t.column :time, :double
+      t.column :time, :float
     end
     add_index :sds_pas_computational_input_values, :model_activity_modelrun_id, :name => "civ_model_activity_modelrun_id_index"
     add_index :sds_pas_computational_input_values, :computational_input_id, :name => "computational_input_id_index"

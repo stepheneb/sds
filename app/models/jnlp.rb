@@ -83,7 +83,7 @@ class Jnlp < ActiveRecord::Base
     end
   end
 
-  # Jnlp.find_all.each {|j| print "#{j.id}: "; begin j.save! rescue print "error, " ensure puts "#{j.name}" end }; nil
+  # Jnlp.find(:all).each {|j| print "#{j.id}: "; begin j.save! rescue print "error, " ensure puts "#{j.name}" end }; nil
   #  4: error: basic-emf-post
   #  5: error: basic-emf
   #  6: error: pedagogica-emf

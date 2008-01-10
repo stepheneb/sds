@@ -65,7 +65,7 @@ namespace :sds do
     puts "\nCopying curnit jars to sds_cache ..."
     tracker = TimeTracker.new
     tracker.start
-    Curnit.find_all.each do |c| 
+    Curnit.find(:all).each do |c| 
       cmdstring = "#{c.id}: #{c.name}: "
       c.jar_last_modified = nil
       begin 

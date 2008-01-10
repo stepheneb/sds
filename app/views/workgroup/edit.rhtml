@@ -1,7 +1,7 @@
 <%= link_to 'List', :action => 'list' %> | 
 <%= link_to 'Show', :action => 'show', :id => @workgroup %>
 
-<%= start_form_tag :action => 'edit', :id => @workgroup %>
+<% form_for :workgroup, @workgroup, :url => { :action => "edit" } do |f| %>
   <%= render :partial => 'form' %>
-  <%= submit_tag 'Save' %>
-<%= end_form_tag %>
+  <%= f.submit "Save" %>
+<% end %>

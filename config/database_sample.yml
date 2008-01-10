@@ -33,3 +33,28 @@ production:
   username: root
   password: 
   host: localhost
+
+# this form works with mysql from JRuby 1.1 using the gems:
+# * activerecord-jdbc-adapter (0.7.1 or later)
+# * activerecord-jdbcmysql-adapter (0.7.1 or later)
+# development:
+#   adapter: jdbcmysql
+#   database: sds_development
+#   username: root
+#   password: 
+#   host: localhost
+# 
+# test:
+#   adapter: jdbcmysql
+#   database: sds_test
+#   username: root
+#   password: 
+#   host: localhost
+# 
+# production:
+#   adapter: jdbcmysql
+#   database: sds_production
+#   username: root
+#   password: 
+#   host: localhost
+# 

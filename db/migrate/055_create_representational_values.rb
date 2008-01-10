@@ -3,7 +3,7 @@ class CreateRepresentationalValues < ActiveRecord::Migration
     create_table :sds_pas_representational_values do |t|
       t.column :model_activity_modelrun_id, :integer
       t.column :representational_attribute_id, :integer
-      t.column :time, :double
+      t.column :time, :float
     end
     add_index :sds_pas_representational_values, :model_activity_modelrun_id, :name => "rv_model_activity_modelrun_id_index"
     add_index :sds_pas_representational_values, :representational_attribute_id, :name => "representational_attribute_id_index"

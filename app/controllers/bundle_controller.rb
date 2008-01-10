@@ -41,7 +41,7 @@ class BundleController < ApplicationController
           render(:text => e, :status => 400) # Bad Request
         end
       elsif request.get?
-        @headers["Content-Type"] = "text/xml"
+        response.headers["Content-Type"] = "text/xml"
         render :text => @bundle.bundle_content.content, :layout => false
       else
         render(:text => "Forbidden: request not allowed. Only PUT and GET requests are allowed.", :status => 403) # Forbidden

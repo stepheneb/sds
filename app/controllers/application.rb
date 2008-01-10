@@ -1,24 +1,17 @@
 # Filters added to this controller will be run for all controllers in the application.
 # Likewise, all the methods added will be available for all controllers.
 class ApplicationController < ActionController::Base
+  helper :all # include all helpers, all the time
+
+  # See ActionController::RequestForgeryProtection for details
+  # Uncomment the :secret if you're not using the cookie session store
+  protect_from_forgery :secret => 'ace4fa914693f0739e588729756205e7'
 
 include AuthenticatedSystem
 # before_filter :login_from_cookie
 # before_filter :check_user
 
   session :off, :if => proc { |request| (request.env['CONTENT_TYPE'] == "application/xml") || (request.env['HTTP_ACCEPT'] == "application/xml")}
-
-  model :portal
-  model :curnit
-  model :jnlp
-  model :offering
-  model :sail_user
-  model :workgroup
-  model :bundle
-  
-  model :user
-  model :sunflower_model
-  model :sunflower_mystri_user
   
   require 'conversions'
   require 'convert'
@@ -166,5 +159,21 @@ private
     mem = str[/[0-9]+/]
     logger.info("#{cust} -- PID: #{pid} -- MEM: #{mem} -- REQ: #{req}")
   end
+ 
+ # copied from rails/actionpack/lib/action_controller/request.rb
+ # rails 2 made this method private!
+ def parse_query_parameters(query_string)
+   return {} if query_string.blank?
+
+   pairs = query_string.split('&').collect do |chunk|
+     next if chunk.empty?
+     key, value = chunk.split('=', 2)
+     next if key.empty?
+     value = value.nil? ? nil : CGI.unescape(value)
+     [ CGI.unescape(key), value ]
+   end.compact
+
+   ActionController::UrlEncodedPairParser.new(pairs).result
+ end
  
 end

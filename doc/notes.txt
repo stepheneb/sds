@@ -1,6 +1,6 @@
 >> w = Workgroup.find(86)
 => #<Workgroup:0x286d914 @attributes={"name"=>"wisegroup-169881", "updated_at"=>"2006-11-07 16:37:38", "portal_id"=>"3", "uuid"=>"2ff898e6-6ea8-11db-8514-0014c2c34555", "id"=>"86", "version"=>"2", "offering_id"=>"63", "created_at"=>"2006-11-07 16:37:37"}>
->> w.bundles_count
+>> w.bundles.count
 => 1
 >> w.bundles[0].socks.length
 => 191
@@ -38,7 +38,7 @@ dddddddd-6004-0015-0000-000000000000: undefined16: text
 
 >> w = Workgroup.find(89)
 => #<Workgroup:0x28fdb54 @attributes={"name"=>"wisegroup-169884", "updated_at"=>"2006-11-07 16:38:42", "portal_id"=>"3", "uuid"=>"5659ca78-6ea8-11db-8514-0014c2c34555", "id"=>"89", "version"=>"2", "offering_id"=>"63", "created_at"=>"2006-11-07 16:38:41"}>
->> w.bundles_count
+>> w.bundles.count
 => 4
 
 Here are the session start and stop times:
@@ -107,7 +107,7 @@ dddddddd-6004-0007-0000-000000000000: undefined9: text
 => 192
 >> pods = socks.collect {|s| s.pod}.uniq ; pods.length
 => 33
->> pods.each {|p| puts "#{p.id.to_s}: #{socks.find_all {|s| s.pod == p}.length.to_s}: #{p.rim_name}: #{p.uuid}: #{p.rim_shape}" }; nil
+>> pods.each {|p| puts "#{p.id.to_s}: #{socks.find(:all) {|s| s.pod == p}.length.to_s}: #{p.rim_name}: #{p.uuid}: #{p.rim_shape}" }; nil
 328: 4: curnit_map: cccccccc-0001-9530-0000-000000000000: text
 282: 96: navigation_log: cccccccc-0001-9530-0000-000000000000: text
 283: 50: session_state: cccccccc-0001-9530-0000-000000000000: text
@@ -144,17 +144,17 @@ dddddddd-6004-0007-0000-000000000000: undefined9: text
 
 Here's more detail about the pods that had three versions of content:
 
->> socks.find_all {|s| s.pod_id == 290}.sort {|a,b| a.created_at <=> b.created_at}.each {|s| puts "#{s.id.to_s}: #{s.created_at.to_s}: #{s.value}"}; nil
+>> socks.find(:all) {|s| s.pod_id == 290}.sort {|a,b| a.created_at <=> b.created_at}.each {|s| puts "#{s.id.to_s}: #{s.created_at.to_s}: #{s.value}"}; nil
 3392: Tue Nov 07 17:14:11 PST 2006: 2-5
 4083: Tue Nov 07 18:05:48 PST 2006: it moves at a constant speed during the 3rd second
 4082: Tue Nov 07 18:05:48 PST 2006: 3
 => nil
->> socks.find_all {|s| s.pod_id == 291}.sort {|a,b| a.created_at <=> b.created_at}.each {|s| puts "#{s.id.to_s}: #{s.created_at.to_s}: #{s.value}"}; nil
+>> socks.find(:all) {|s| s.pod_id == 291}.sort {|a,b| a.created_at <=> b.created_at}.each {|s| puts "#{s.id.to_s}: #{s.created_at.to_s}: #{s.value}"}; nil
 3393: Tue Nov 07 17:14:12 PST 2006: 1 
 4085: Tue Nov 07 18:05:48 PST 2006: the airbag speeds up during the 1st and 2nd seconds
 4084: Tue Nov 07 18:05:48 PST 2006: 1-2
 => nil
->> socks.find_all {|s| s.pod_id == 292}.sort {|a,b| a.created_at <=> b.created_at}.each {|s| puts "#{s.id.to_s}: #{s.created_at.to_s}: #{s.value}"}; nil
+>> socks.find(:all) {|s| s.pod_id == 292}.sort {|a,b| a.created_at <=> b.created_at}.each {|s| puts "#{s.id.to_s}: #{s.created_at.to_s}: #{s.value}"}; nil
 3394: Tue Nov 07 17:14:12 PST 2006: 5-end
 4087: Tue Nov 07 18:05:48 PST 2006: the airbag slows down during the 4th second
 4086: Tue Nov 07 18:05:48 PST 2006: 3-4
@@ -187,15 +187,15 @@ Note that the answer was first revised about 1 minute into the fourth session an
 
 Here's a look at the other three pods that had two versions:
 
->> socks.find_all {|s| s.pod_id == 299}.sort {|a,b| a.created_at <=> b.created_at}.each {|s| puts "#{s.id.to_s}: #{s.created_at.to_s}: #{s.value}"}; nil
+>> socks.find(:all) {|s| s.pod_id == 299}.sort {|a,b| a.created_at <=> b.created_at}.each {|s| puts "#{s.id.to_s}: #{s.created_at.to_s}: #{s.value}"}; nil
 4095: Tue Nov 07 18:05:50 PST 2006: 4
 4096: Tue Nov 07 18:05:50 PST 2006: the driver moves at a constant speed during the 4th second
 => nil
->> socks.find_all {|s| s.pod_id == 300}.sort {|a,b| a.created_at <=> b.created_at}.each {|s| puts "#{s.id.to_s}: #{s.created_at.to_s}: #{s.value}"}; nil
+>> socks.find(:all) {|s| s.pod_id == 300}.sort {|a,b| a.created_at <=> b.created_at}.each {|s| puts "#{s.id.to_s}: #{s.created_at.to_s}: #{s.value}"}; nil
 4097: Tue Nov 07 18:05:50 PST 2006: 3
 4098: Tue Nov 07 18:05:50 PST 2006: the driver speeds up during the 3rd second
 => nil
->> socks.find_all {|s| s.pod_id == 301}.sort {|a,b| a.created_at <=> b.created_at}.each {|s| puts "#{s.id.to_s}: #{s.created_at.to_s}: #{s.value}"}; nil
+>> socks.find(:all) {|s| s.pod_id == 301}.sort {|a,b| a.created_at <=> b.created_at}.each {|s| puts "#{s.id.to_s}: #{s.created_at.to_s}: #{s.value}"}; nil
 4099: Tue Nov 07 18:05:50 PST 2006: 5
 4100: Tue Nov 07 18:05:50 PST 2006: the driver slows down during the 5th second
 
@@ -207,7 +207,7 @@ Here's a look at the other three pods that had two versions:
 => 138
 >> pods = socks.collect {|s| s.pod}.uniq ; pods.length
 => 27
->> pods.each {|p| puts "#{p.id.to_s}: #{socks.find_all {|s| s.pod == p}.length.to_s}: #{p.rim_name}: #{p.uuid}: #{p.rim_shape}" }; nil
+>> pods.each {|p| puts "#{p.id.to_s}: #{socks.find(:all) {|s| s.pod == p}.length.to_s}: #{p.rim_name}: #{p.uuid}: #{p.rim_shape}" }; nil
 328: 2: curnit_map: cccccccc-0001-9530-0000-000000000000: text
 282: 68: navigation_log: cccccccc-0001-9530-0000-000000000000: text
 283: 39: session_state: cccccccc-0001-9530-0000-000000000000: text
@@ -236,7 +236,7 @@ Here's a look at the other three pods that had two versions:
 294: 1: undefined15: dddddddd-6004-0015-0000-000000000000: text
 295: 1: undefined16: dddddddd-6004-0015-0000-000000000000: text
 
->> socks.find_all {|s| s.pod.rim_name =~ /undefined*/}.sort {|a,b| a.created_at <=> b.created_at}.each {|s| puts "#{s.id.to_s}: #{s.created_at.to_s}: #{s.value}"}; nil
+>> socks.find(:all) {|s| s.pod.rim_name =~ /undefined*/}.sort {|a,b| a.created_at <=> b.created_at}.each {|s| puts "#{s.id.to_s}: #{s.created_at.to_s}: #{s.value}"}; nil
 3478: Tue Nov 07 17:35:12 PST 2006: the velocity slows down quicker than it increases because the air in the bag has completely expanded.
 3477: Tue Nov 07 17:35:12 PST 2006: Through segment A and E, the airbag is not moving. Segment B, the airbag is increasing in velocity. In C segment the airbag has a constant velocity. In segment D the airbag's velocity is decreasing.
 3476: Tue Nov 07 17:35:12 PST 2006: we considered 0 to be the time when the bag started to move, and they left it until 1.5 seconds. 
@@ -276,7 +276,7 @@ workgroup/146/0/bundle
 
 def list_max_bundles(n)
   puts "The #{n} largest bundles."
-  b = Bundle.find_all.sort {|x,y| y.content.length <=> x.content.length}[0..n-1]
+  b = Bundle.find(:all).sort {|x,y| y.content.length <=> x.content.length}[0..n-1]
   b.each {|b| bundle_info(b)}; nil
 end
 
@@ -334,7 +334,7 @@ end
 
 ----
 
-b = Bundle.find_all; nil
+b = Bundle.find(:all); nil
  (-40..-1).each {|i| puts "id: #{b[i].id}, length: #{b[i].content.length}, #{b[i].workgroup.member_names}" }; nil
  
 ----

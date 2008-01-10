@@ -5,7 +5,7 @@
   <%= %{
     Workgroup: "#{@workgroup.name}", <em>(id: #{@workgroup.id})</em><br />
     Members: #{@workgroup.member_names}, <em>(ids: #{@members.collect {|m| m.id}.join(', ')})</em>. <br />
-    Valid Sessions: #{@workgroup.valid_bundles_count.to_s}, total size: #{number_to_human_size(@workgroup.bundles.inject(0) {|sum, b| sum + b.bundle_content.content.length })}<br />
+    Valid Sessions: #{@workgroup.valid_bundles.count.to_s}, total size: #{number_to_human_size(@workgroup.bundles.inject(0) {|sum, b| sum + b.bundle_content.content.length })}<br />
     Offering: "#{@workgroup.offering.name}", <em>(id: #{@workgroup.offering.id})</em><br />
     Curnit: "#{@workgroup.offering.curnit.name}" <em>(id: #{@workgroup.offering.curnit.id}), last updated: #{@workgroup.offering.curnit.jar_last_modified}</em>
     } %>

@@ -26,7 +26,7 @@ class SailUser < ActiveRecord::Base
   has_many :workgroups, :through => :workgroup_memberships, :select => 'DISTINCT sds_workgroups.*'
 
   def workgroup?
-    self.workgroups_count != 0
+    self.workgroups.count != 0
   end
   
   def workgroup

@@ -1,6 +1,6 @@
 <%= link_to 'List', :action => 'list' %>
 
-<%= start_form_tag :action => 'create', :pid => params[:pid] %>
+<% form_for :workgroup, @workgroup, :url => { :action => "create" } do |f| %>
   <%= render :partial => 'form' %>
-  <%= submit_tag "Create" %>
-<%= end_form_tag %>
+  <%= f.submit "Create" %>
+<% end %>

@@ -186,7 +186,7 @@ class Curnit < ActiveRecord::Base
   end
 end
 
-# Curnit.find_all.each {|c| c.jar_last_modified=nil; print "#{c.id}: #{c.name}"; begin c.save! rescue print " error " ensure puts end }
+# Curnit.find(:all).each {|c| c.jar_last_modified=nil; print "#{c.id}: #{c.name}"; begin c.save! rescue print " error " ensure puts end }
 # Feb 13, 2007
 #
 # 7: Airbag complete (testing REST creation)

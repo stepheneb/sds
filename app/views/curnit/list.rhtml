@@ -16,7 +16,7 @@
     </tr>
       <td></td>
       <td colspan="3">
-        <em>(<%= pluralize(curnit.offerings_count, "offering") %>, created: <%= curnit.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em>
+        <em>(<%= pluralize(curnit.offerings.count, "offering") %>, created: <%= curnit.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em>
         </td>
   <% end %>
 </table>
