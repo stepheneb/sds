@@ -434,7 +434,7 @@ class OfferingController < ApplicationController
   	end
 	
 	if notdone
-		@workgroup = Workgroup.create!(:offering => @offering, :name => "curnitmap")
+		@workgroup = Workgroup.create!(:offering => @offering, :name => "curnitmap", :version => 0)
 		@workgroup.workgroup_memberships.create!(:sail_user_id => cm_user.id, :version => 0)
     end
 	
