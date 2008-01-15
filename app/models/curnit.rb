@@ -42,6 +42,15 @@ class Curnit < ActiveRecord::Base
     @podxml_cache = Hash.new
   end
 
+	def url
+    if Thread.current[:request] && read_attribute(:url)
+      u = URI.parse("#{Thread.current[:request].protocol}#{Thread.current[:request].host}:#{Thread.current[:request].port}/#{Thread.current[:request].path}")
+      u.merge(read_attribute(:url)).to_s
+    else
+      read_attribute(:url)
+    end
+  end
+	
   # look for the pod in this curnit: 
   # look in this order
   # 1) memory cache

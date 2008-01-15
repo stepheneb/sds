@@ -23,13 +23,18 @@ include AuthenticatedSystem
 
   before_filter :find_portal
   before_filter :log_memory_start
-
+  before_filter :setup_request_var
+ 
   after_filter :calc_content_length 
   after_filter :log_memory_end
 
   # Pick a unique cookie name to distinguish our session data from other rails apps
   session :session_key => '_sds_session_id'
  
+   def setup_request_var
+	   Thread.current[:request] = request
+	 end
+	
   def rescue_action_in_public(e)
     body = "<html><body><p><font color='red'>There was an error processing your request</font></p><p>\n<!-- #{e}\n #{e.backtrace.join("\n")} -->\n</p></body></html>"
     render(:text => body, :status => 500)
