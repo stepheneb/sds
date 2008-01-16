@@ -122,14 +122,24 @@ class Curnit < ActiveRecord::Base
     File.basename(self.url)
   end
   
+  # Returns full path to jar without the base filename of the jar
+  #
   # deal with strange issue of chroot at railsapp/ in development
   # mode and railsapp/public/ in production on the server
   def path  
     "#{SdsCache.instance.path}#{self.portal.id}/curnits/#{self.id}/"
   end
   
+  # Returns full path to jar on filesystem
+  #
   def jar_path
     "#{self.path}#{self.filename}"
+  end
+  
+  # Returns partial path to jar rooted at public/ dir
+  #
+  def jar_public_path
+    self.jar_path[/(\/public\/)(.*)/, 2]
   end
 
   # a coding of time to a generic filesystem compatible string
@@ -195,72 +205,3 @@ class Curnit < ActiveRecord::Base
   end
 end
 
-# Curnit.find(:all).each {|c| c.jar_last_modified=nil; print "#{c.id}: #{c.name}"; begin c.save! rescue print " error " ensure puts end }
-# Feb 13, 2007
-#
-# 7: Airbag complete (testing REST creation)
-# 8: airbag test curnit error 
-# 9: basic curnit (zip) error 
-# 10: full airbag curnit1B2M2Y8AsgTpgAmY7PhCfg==
-# 11: velocity and kinematics curnit error 
-# 12: malaria (converted-4439, zip) error 
-# 13: global warming: virtual earth curnit         error 
-# 14: Airbag3 error 
-# 15: Airbag3 error 
-# 16: Hiroki Airbag! Sept. 14 error 
-# 17: Hiroki Airbag Sept. 14 error 
-# 18: Hiroki Airbag Sept. 14 error 
-# 19: Hiroki Airbag Sept. 14 error 
-# 20: Hiroki Oct 4 copy airbag error 
-# 21: [Sail] Airbags Complete1B2M2Y8AsgTpgAmY7PhCfg==
-# 22: [Sail] Airbags Complete1B2M2Y8AsgTpgAmY7PhCfg==
-# 23: [SAIL] Airbags complete1B2M2Y8AsgTpgAmY7PhCfg==
-# 24: Full Airbag Snapshot1B2M2Y8AsgTpgAmY7PhCfg==
-# 25: Test Airbag Model Step in Old Wise Project (23305)1B2M2Y8AsgTpgAmY7PhCfg==
-# 26: Airbag Complete (19530) version 161B2M2Y8AsgTpgAmY7PhCfg==
-# 27: Concord Curnit1B2M2Y8AsgTpgAmY7PhCfg==
-# 28: Chemical Reactions Test1B2M2Y8AsgTpgAmY7PhCfg==
-# 29: Airbag3 error 
-# 30: Chemical Reactions1B2M2Y8AsgTpgAmY7PhCfg==
-# 31: Chemical Reactions Version A1B2M2Y8AsgTpgAmY7PhCfg==
-# 32: Chemical Reactions Version B1B2M2Y8AsgTpgAmY7PhCfg==
-# 33: full airbag snapshot version 201B2M2Y8AsgTpgAmY7PhCfg==
-# 34: Chemical Reactions Sail Conversion master copy1B2M2Y8AsgTpgAmY7PhCfg==
-# 35: Chemical Reactions Sail Conversion master copy1B2M2Y8AsgTpgAmY7PhCfg==
-# 36: Chemical Reactions (A)1B2M2Y8AsgTpgAmY7PhCfg==
-# 37: Chemical Reactions (B)1B2M2Y8AsgTpgAmY7PhCfg==
-# 38: Chemical Reactions Sail Conversion alternate copy1B2M2Y8AsgTpgAmY7PhCfg==
-# 39: Global Warming test curnit1B2M2Y8AsgTpgAmY7PhCfg==
-# 40: Global Warming Test Curnit1B2M2Y8AsgTpgAmY7PhCfg==
-# 41: ChallengeQuest Global Warming1B2M2Y8AsgTpgAmY7PhCfg==
-# 42: ChallengeQuestThursday1B2M2Y8AsgTpgAmY7PhCfg==
-# 43: OTrunk Test1B2M2Y8AsgTpgAmY7PhCfg==
-# 44: (SAIL) Global Warming: Virtual Earth version 41B2M2Y8AsgTpgAmY7PhCfg==
-# 45: TrudiTestingTheConverter1B2M2Y8AsgTpgAmY7PhCfg==
-# 46: Ken SAILism Convert1B2M2Y8AsgTpgAmY7PhCfg==
-# 47: Trudi's Chem Reactions Test1B2M2Y8AsgTpgAmY7PhCfg==
-# 48: Chemical Reactions Test by Trudi1B2M2Y8AsgTpgAmY7PhCfg==
-# 49: Trudi's Test of Chem Reactions-Netlogo1B2M2Y8AsgTpgAmY7PhCfg==
-# 50: Trudi's Global with Eds new files1B2M2Y8AsgTpgAmY7PhCfg==
-# 51: Chemical Reactions Test by Trudi V21B2M2Y8AsgTpgAmY7PhCfg==
-# 52: Global Warming Ariel Release1B2M2Y8AsgTpgAmY7PhCfg==
-# 53: (SAIL) Global Warming version 6 (no slider logging)1B2M2Y8AsgTpgAmY7PhCfg==
-# 54: Chemical Reactions (B-final)1B2M2Y8AsgTpgAmY7PhCfg==
-# 55: airbags fullsnap shot 221B2M2Y8AsgTpgAmY7PhCfg==
-# 56: [SAIL] TELS Chemistry: Chemical Reactions (1)1B2M2Y8AsgTpgAmY7PhCfg==
-# 57: [SAIL] TELS Chemistry: Chemical Reactions (2)1B2M2Y8AsgTpgAmY7PhCfg==
-# 58: [SAIL] TELS Chemistry: Chemical Reactions (3)1B2M2Y8AsgTpgAmY7PhCfg==
-# 59: [SAIL] TELS Chemistry: Chemical Reactions (4)1B2M2Y8AsgTpgAmY7PhCfg==
-# 60: OTrunk Untangled Test
-# 61: otrunk-curnit-untangled1B2M2Y8AsgTpgAmY7PhCfg==
-# 62: otrunk-curnit-external-diytest1B2M2Y8AsgTpgAmY7PhCfg==
-# 63: otrunk-curnit-external-diytest1B2M2Y8AsgTpgAmY7PhCfg==
-# 64: otrunk-curnit-external-diytest-6-11B2M2Y8AsgTpgAmY7PhCfg==
-# 65: otrunk-curnit-external-diytest-6-41B2M2Y8AsgTpgAmY7PhCfg==
-# 66: Full Curtain Airbags1B2M2Y8AsgTpgAmY7PhCfg==
-# 67: Apollo, Stop that Global Warming!1B2M2Y8AsgTpgAmY7PhCfg==
-# 68: Better Living Through Chemicals (V1)1B2M2Y8AsgTpgAmY7PhCfg==
-# 69: Better Living Through Chemicals (V2)1B2M2Y8AsgTpgAmY7PhCfg==
-# 70: Better Living Through Chemicals (V3)1B2M2Y8AsgTpgAmY7PhCfg==
-# 71: Better Living Through Chemicals (V4)1B2M2Y8AsgTpgAmY7PhCfg==
-# 72: Two kinds of processes1B2M2Y8AsgTpgAmY7PhCfg==
