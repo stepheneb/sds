@@ -98,7 +98,11 @@ class Curnit < ActiveRecord::Base
   end
     
   def check_always_update # if nil set to true
-    self.always_update ||= true
+    # self.always_update ||= true
+    # ||= doesn't work as it will set nil OR false to be true
+    if self.always_update == nil
+      self.always_update = true
+    end
   end
   
   def check_for_jar_create

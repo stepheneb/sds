@@ -17,6 +17,7 @@ class CurnitController < ApplicationController
       xml_parms = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
       begin
         @curnit = Curnit.new(xml_parms)
+        @curnit.check_always_update
         @curnit.portal = Portal.find(xml_parms['portal_id'])
         if @curnit.save
           response.headers['Location'] = url_for(:action => :show, :id => @curnit.id)
@@ -55,6 +56,7 @@ class CurnitController < ApplicationController
       c = params[:curnit].merge({ "portal_id" => params[:pid]})
       begin
         @curnit = Curnit.new(c)
+        @curnit.check_always_update
         if @curnit.save
           flash[:notice] = "Curnit #{@curnit.id} was successfully created."
           redirect_to :action => 'list'
