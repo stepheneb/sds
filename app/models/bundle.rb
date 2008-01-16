@@ -85,7 +85,7 @@ class Bundle < ActiveRecord::Base
         end
       end
       tracker.mark; puts
-      puts "Erasing Pods from sds_cache ... "
+      puts "Erasing Pods from cache ... "
       Pod.find(:all).each do |p|
         if p.curnit
           path = p.path
@@ -107,7 +107,7 @@ class Bundle < ActiveRecord::Base
     
   def self.process_bundles
     bundle.count = Bundle.count
-    puts "Processing Bundles in database, recreating Pods and Socks in database and sds_cache ..."
+    puts "Processing Bundles in database, recreating Pods and Socks in database and cache ..."
     puts "Bundles to process: #{bundle.count}:"
     tracker = TimeTracker.new
     tracker.start

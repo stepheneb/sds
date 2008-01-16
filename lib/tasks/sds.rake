@@ -61,8 +61,8 @@ namespace :sds do
   end
   
   desc "Download copies of curnit jars to local sds cache."
-  task :copy_curnit_jars_to_sds_cache => :environment do
-    puts "\nCopying curnit jars to sds_cache ..."
+  task :copy_curnit_jars_to_cache => :environment do
+    puts "\nCopying curnit jars to cache ..."
     tracker = TimeTracker.new
     tracker.start
     Curnit.find(:all).each do |c| 
@@ -78,7 +78,7 @@ namespace :sds do
       puts
     end
     tracker.stop
-    puts "\nDon't forget to run 'sudo chmod -R lighttpd.lighttpd public/sds_cache' to reset all the cache permissions so that it is usable by lighttpd!"
+    puts "\nDon't forget to run 'sudo chmod -R lighttpd.lighttpd public/cache' to reset all the cache permissions so that it is usable by lighttpd!"
   end
   
   desc "Process Pods to set derived type information.."
@@ -182,11 +182,11 @@ namespace :sds do
     invalid_jnlps.each {|j| puts "id: #{j.id}, name: #{j.name}\n             url: #{j.url}"}
   end
  
-  desc "Clear sds_cache of Bundles, Pods; and Socks, delete Pods and Socks from db; regenerate db and sds_cache"
+  desc "Clear cache of Bundles, Pods; and Socks, delete Pods and Socks from db; regenerate db and cache"
   task :rebuild_pods_and_socks => :environment do
     puts "\nRebuilding Pods and Socks ..."
     Bundle.rebuild_pods_and_socks(true)
-    puts "\nDon't forget to run 'sudo chmod -R lighttpd.lighttpd public/sds_cache' to reset all the cache permissions so that it is usable by lighttpd!"
+    puts "\nDon't forget to run 'sudo chmod -R lighttpd.lighttpd public/cache' to reset all the cache permissions so that it is usable by lighttpd!"
   end
   
   desc "Process the Bundle content to update the sail_session attributes added in migration 42."
@@ -266,9 +266,9 @@ namespace :sds do
   end
 
   desc "Rebuild database newly converted from stable. First apply migrations!"
-  task :rebuild_db => [:environment, :copy_bundle_content_to_related_model, :create_sail_session_attributes, :copy_curnit_jars_to_sds_cache, :rebuild_pods_and_socks] do
+  task :rebuild_db => [:environment, :copy_bundle_content_to_related_model, :create_sail_session_attributes, :copy_curnit_jars_to_cache, :rebuild_pods_and_socks] do
     puts "Don't forget to update any portals that are directly using the development SDS if the resources they refer to may have been deleted or had their primary keys changed.\nFor example the development TEEMSS2 DIY will need the following operations performed:\n  1. rake diy:delete_local_sds_attributes\n  2. manually update config/sds.yml to refer to the correct jnlp and curnit resources\n"
-    puts "\nDon't forget to run 'sudo chmod -R lighttpd.lighttpd public/sds_cache' to reset all the cache permissions so that it is usable by lighttpd!"
+    puts "\nDon't forget to run 'sudo chmod -R lighttpd.lighttpd public/cache' to reset all the cache permissions so that it is usable by lighttpd!"
   end
   
 end
