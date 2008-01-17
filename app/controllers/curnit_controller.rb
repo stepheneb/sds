@@ -14,11 +14,11 @@ class CurnitController < ApplicationController
 
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
-      xml_parms = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
+      xml_parms = ConvertXml.xml_to_hash(request.raw_post)
+      # debugger
       begin
         @curnit = Curnit.new(xml_parms)
-        @curnit.check_always_update
-        @curnit.portal = Portal.find(xml_parms['portal_id'])
+        @curnit.portal = @portal
         if @curnit.save
           response.headers['Location'] = url_for(:action => :show, :id => @curnit.id)
           render(:xml => "", :status => 201) # Created
@@ -53,10 +53,10 @@ class CurnitController < ApplicationController
 
   def create
     if request.post?
-      c = params[:curnit].merge({ "portal_id" => params[:pid]})
+      c = params[:curnit]
       begin
         @curnit = Curnit.new(c)
-        @curnit.check_always_update
+        @curnit.portal = @portal
         if @curnit.save
           flash[:notice] = "Curnit #{@curnit.id} was successfully created."
           redirect_to :action => 'list'

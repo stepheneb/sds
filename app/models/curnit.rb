@@ -25,6 +25,7 @@ class Curnit < ActiveRecord::Base
   attr_reader :podxml_cache, :test
   
   validates_presence_of :name, :url
+  validate :validate_always_update
   belongs_to :portal
   has_many :offerings, :order => "created_at DESC"
   has_many :pods
@@ -96,12 +97,23 @@ class Curnit < ActiveRecord::Base
       end
     end
   end
-    
-  def check_always_update # if nil set to true
-    # self.always_update ||= true
-    # ||= doesn't work as it will set nil OR false to be true
-    if self.always_update == nil
+  
+  # valid values for always_update attribute are wither
+  # true, false, or not specified (which is a value of nil)
+  # default will be true if not specified
+  # returns: true when attribute valid
+  # returns false otherwise
+  def validate_always_update
+    case  self.always_update_before_type_cast
+    when "true"
+      true
+    when "false"
+      true
+    when nil
       self.always_update = true
+    else
+      errors.add_to_base("Invalid attribute value: \"#{self.always_update_before_type_cast}\": always_update attribute must be either 'true', 'false' or not set. Default: true")
+      false
     end
   end
   
