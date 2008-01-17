@@ -29,6 +29,15 @@ class Portal < ActiveRecord::Base
   has_many :sail_users, :order => "created_at DESC"
   has_many :workgroups, :order => "created_at DESC"
   has_many :portal_urls
+  
+  def image_url
+    if Thread.current[:request] && read_attribute(:image_url)
+      u = URI.parse("#{Thread.current[:request].protocol}#{Thread.current[:request].host}:#{Thread.current[:request].port}/#{Thread.current[:request].path}")
+      u.merge(read_attribute(:image_url)).to_s
+    else
+      read_attribute(:image_url)
+    end
+  end
 
 end
 
