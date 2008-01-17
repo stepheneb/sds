@@ -24,4 +24,7 @@ unless RUBY_PLATFORM =~ /java/
   # Debugger.stop_on_connect = true
   # Debugger.start_remote
   Debugger.start
+  Debugger.settings[:autolist] = true
+  Debugger.settings[:autoeval] = true
+  Debugger.settings[:reload_source_on_change] = true  
 end
