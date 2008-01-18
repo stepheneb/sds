@@ -41,9 +41,12 @@ class CurnitController < ApplicationController
   def edit
     if @curnit
       if request.post?
-        @curnit.update_attributes(params[:curnit])
-        flash[:notice] = "Curnit #{@curnit.id} was successfully updated."
-        redirect_to :action => 'list'
+        if @curnit.update_attributes(params[:curnit])
+          flash[:notice] = "Curnit #{@curnit.id} was successfully updated."
+          redirect_to :action => 'list'
+        else
+          flash[:notice] = "Error updating Curnit." 
+        end        
       end
     else
       flash[:notice] = "Curnit #{@curnit.id} does not exist." 

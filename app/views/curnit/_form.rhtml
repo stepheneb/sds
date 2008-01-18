@@ -6,5 +6,6 @@
 <p><label for="curnit_url">Url</label><br/>
 <%= text_field 'curnit', 'url', :size => 80 %></p>
 
-<p><label for="curnit_always_update">Always update from url when generating jnlp?</label><br/>
-<%= check_box 'curnit', 'always_update'  %></p>
+<p><label for="curnit_always_update">Always use curnit jar from external url instead of locally cached copy?</label><br/>
+<%= check_box 'curnit', 'always_update'  %><br/>
+<small>Leaving this unset will instead use the local copy of the curnit jar created when this resource was last updated.</small></p>

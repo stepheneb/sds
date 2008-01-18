@@ -2,7 +2,7 @@ xml.instruct! :xml, :version=>"1.0", :encoding=>"UTF-8"
 xml.java("version" => "1.4.0", "class" => "java.beans.XMLDecoder") {
   xml.object("class" => "net.sf.sail.core.service.impl.CurnitUrlProviderImpl") {
     xml.void("property" => "url") {
-      xml.string("#{request.protocol}#{request.host_with_port}#{ActionController::AbstractRequest.relative_url_root}/#{@offering.curnit.jar_public_path}")
+      xml.string(@curnit_url)
     }
   }
   xml.object("class" => "net.sf.sail.emf.launch.PortfolioManagerService") {

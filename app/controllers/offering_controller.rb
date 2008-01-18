@@ -171,6 +171,16 @@ class OfferingController < ApplicationController
       @version = params[:version]
       @savedata = params[:savedata]
       @nobundles = params[:nobundles]
+      # if curnit.always_update is true 
+      #   then use the external url when generating the config file
+      # else
+      #   generate a url to the curnit stored in the local cache
+      curnit = @offering.curnit
+      if curnit.always_update
+        @curnit_url = curnit.url
+      else
+        @curnit_url = "#{request.protocol}#{request.host_with_port}#{ActionController::AbstractRequest.relative_url_root}/#{curnit.jar_public_path}"
+      end
       
       # Create a hash of attributes, adding the url attributes last so they will overwrite any existing values
       @offering_attributes = Hash.new
