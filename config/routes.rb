@@ -1,4 +1,5 @@
 ActionController::Routing::Routes.draw do |map|
+
   # The priority is based upon order of creation: first created -> highest priority.
 
   # Sample of regular route:
@@ -67,6 +68,11 @@ ActionController::Routing::Routes.draw do |map|
   map.connect ':pid/offering/:id/errorbundle_create', :controller => 'offering', :action => 'errorbundle_create'
   map.connect ':pid/offering/:id/errorbundle/:ebid', :controller => 'offering', :action => 'errorbundle', :ebid => 'ebid'
 
+  # map.connect ':pid/offering/:id/logs/:wid/:lid/edit', :controller => 'log_bundles', :action => 'edit'
+  map.connect ':pid/offering/:id/logs/:wid/:lid', :controller => 'log_bundles', :action => 'show'
+  map.connect ':pid/offering/:id/logs/:wid', :controller => 'log_bundles', :action => 'index'
+  map.connect ':pid/offering/:id/logs/:wid/new', :controller => 'log_bundles', :action => 'new'
+  
 #  map.connect ':pid/offering/:id/atom', :controller => 'offering', :action => 'jnlp', :type => 'workgroup'
 #  map.connect ':pid/offering/:id/atom/:wid', :controller => 'offering', :action => 'jnlp', :type => 'workgroup'
 #  map.connect ':pid/offering/:id/atom/:wid/:version', :controller => 'offering', :action => 'jnlp', :type => 'workgroup'

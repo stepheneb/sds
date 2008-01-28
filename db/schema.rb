@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define() do
+ActiveRecord::Schema.define(:version => 63) do
 
   create_table "sds_bundle_contents", :force => true do |t|
     t.text "content"
@@ -82,6 +82,18 @@ ActiveRecord::Schema.define() do
   end
 
   add_index "sds_jnlps", ["portal_id"], :name => "index_sds_jnlps_on_portal_id"
+
+  create_table "sds_log_bundles", :force => true do |t|
+    t.integer  "bundle_id"
+    t.integer  "workgroup_id"
+    t.integer  "portal_id"
+    t.integer  "offering_id"
+    t.string   "sail_session_uuid", :limit => 36, :default => "", :null => false
+    t.string   "sail_curnit_uuid",  :limit => 36, :default => "", :null => false
+    t.text     "content"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "sds_offerings", :force => true do |t|
     t.integer  "portal_id"
@@ -236,10 +248,6 @@ ActiveRecord::Schema.define() do
     t.string   "uuid",       :limit => 36, :default => "", :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "sds_schema_info", :id => false, :force => true do |t|
-    t.integer "version"
   end
 
   create_table "sds_sessions", :force => true do |t|

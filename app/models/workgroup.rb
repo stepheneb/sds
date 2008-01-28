@@ -19,6 +19,7 @@ class Workgroup < ActiveRecord::Base
   belongs_to :portal
   belongs_to :offering
   has_many :workgroup_memberships
+  has_many :log_bundles
   
   # see: http://weblog.jamisbuck.org/2007/1/18/activerecord-association-scoping-pitfalls
   # and http://weblog.jamisbuck.org/2006/10/18/skinny-controller-fat-model

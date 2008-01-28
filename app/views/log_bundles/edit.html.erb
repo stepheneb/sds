@@ -1,0 +1,12 @@
+<h1>Editing log_bundle</h1>
+
+<%= error_messages_for :log_bundle %>
+
+<% form_for(@log_bundle) do |f| %>
+  <p>
+    <%= f.submit "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', url_for(:action => 'show', :lid => @log_bundle.id) %> |
+<%= link_to 'Back', url_for(:action => 'index') %>

@@ -1,5 +1,6 @@
 <%= link_to 'List', :action => 'list'  %> | 
-<%= link_to 'Edit', :action => 'edit' %>
+<%= link_to 'Edit', :action => 'edit' %> |
+<%= link_to 'Logs', :controller => 'log_bundles', :action => 'index', :pid => @workgroup.portal_id, :id => @workgroup.offering_id, :wid => @workgroup.id %>
 
 <p>
   <%= %{

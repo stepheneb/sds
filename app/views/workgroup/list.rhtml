@@ -20,6 +20,7 @@
       <td><%= w.valid_bundles.count.to_s %>
       <td><%= link_to 'Show', :action => 'show', :id => w %> | 
           <%= link_to 'Edit', :action => 'edit', :id => w %> |
+		  <%= link_to 'Logs', :controller => 'log_bundles', :action => 'index', :id => w.offering_id, :wid => w, :pid => w.portal_id %> |
           <% if w.offering %>
             <%= link_to "Offering:#{w.offering.id.to_s}", :controller => 'offering', :action => 'show', :id => w.offering.id %>
           <% else %>

@@ -1,0 +1,11 @@
+<%= link_to 'Back', url_for(:action => 'index') %>
+
+<p>
+  Offering: <%= link_to @offering.name, :controller => 'offering', :action => 'show', :id => @offering.id %>, <em>(id: <%= @offering.id %>)</em><br />
+  Workgroup: <%= link_to @workgroup.name, :controller => 'workgroup', :action => 'show', :id => @workgroup.id %>, <em>(id: <%=  @workgroup.id %>)</em>. <br />
+  Curnit: <%= link_to @offering.curnit.name, {:controller => 'curnit', :action => 'show', :id => @offering.curnit.id }, {:title => "Show the curnit for this offering."}  %> <em>(id: <%= @offering.curnit.id %>), last updated: <%= @offering.curnit.jar_last_modified %></em> <br/>
+  Created: <%= @log_bundle.created_at %></em>. <br />
+</p>
+<p><pre><%= CGI.escapeHTML(@log_bundle.content) %></pre></p>
+
+<%= link_to 'Back', url_for(:action => 'index') %>

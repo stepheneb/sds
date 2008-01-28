@@ -23,6 +23,8 @@ class Bundle < ActiveRecord::Base
 #  acts_as_reportable
   belongs_to :workgroup
   belongs_to :bundle_content
+  
+  has_one :log_bundle
 
   has_many :socks do
     def find_notes

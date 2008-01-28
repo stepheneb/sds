@@ -1,0 +1,23 @@
+<p><%= link_to 'Back to workgroup', :controller => 'workgroup', :action => 'show', :id => @workgroup %></p>
+
+<table cellpadding="3" cellspacing="3">
+  <tr>
+    <td><b>Id</b></td>
+    <td><b>Info</b></td>
+  </tr>
+  <% if @log_bundles.length == 0 -%>
+    <tr>
+    	<td colspan='2'>No logs.</td>
+	</tr>
+  <% else -%>
+	  <% @log_bundles.each do |log_bundle| %>
+	    <tr>
+	      <td><%= log_bundle.id.to_s %></td>
+	      <td>
+	        <%= link_to 'Show', :action => 'show', :lid => log_bundle %> 
+	        <em>(created: <%= log_bundle.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em>
+	      </td>
+	    </tr>
+	  <% end %>
+  <% end -%>
+</table>

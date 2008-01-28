@@ -33,7 +33,8 @@
         <%= link_to 'Show', {:controller => 'workgroup', :action => 'show', :id => w.id}, {:title => "Show the raw data returned by this workgroup."} %> | 
         <%= link_to 'Run', {:controller => 'offering', :action => 'jnlp', :id => @offering.id, :wid => w.id, :type => 'workgroup', :savedata => true, :only_path => false}, {:title => "Run the SAIL curnit for this workgroup"} %> | 
         <%= link_to 'View', {:controller => 'offering', :action => 'jnlp', :id => @offering.id, :wid => w.id, :type => 'workgroup', :savedata => nil, :only_path => false}, {:title => "View the SAIL curnit for this workgroup (saving data is disabled)"} %> | 
-        <%= link_to 'Edit', {:controller => 'workgroup', :action => 'edit', :id => w.id}, {:title => "Edit the membership of this workgroup."} %> 
+        <%= link_to 'Edit', {:controller => 'workgroup', :action => 'edit', :id => w.id}, {:title => "Edit the membership of this workgroup."} %> |
+        <%= link_to 'Logs', {:controller => 'log_bundles', :action => 'index', :id => @offering.id, :wid => w.id }, {:title => "View the runtime logs of this workgroup."} %> 
       </td>
     </tr>
   <% end %>
