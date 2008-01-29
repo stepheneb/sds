@@ -6,6 +6,24 @@
   Curnit: <%= link_to @offering.curnit.name, {:controller => 'curnit', :action => 'show', :id => @offering.curnit.id }, {:title => "Show the curnit for this offering."}  %> <em>(id: <%= @offering.curnit.id %>), last updated: <%= @offering.curnit.jar_last_modified %></em> <br/>
   Created: <%= @log_bundle.created_at %></em>. <br />
 </p>
-<p><pre><%= CGI.escapeHTML(@log_bundle.content) %></pre></p>
 
+<p>
+	<table cellpadding="0" cellspacing="0">
+		<tr>
+			<td><b>Offset</b></td>
+			<td>&nbsp;&nbsp;&nbsp;</td>
+			<td><b>Message</b></td>
+		</tr>
+		<% mycontent = @log_bundle.extracted_content -%>
+		<% mycontent.keys.sort.each do |k| -%>
+		<tr valign="top">
+			<td><%= k %> ms </td>
+			<td></td>
+			<td><%= mycontent[k].join("<br/>") %></td>
+		</tr>
+		<% end -%>
+	</table>
+</p>
+<p>
 <%= link_to 'Back', url_for(:action => 'index') %>
+</p>

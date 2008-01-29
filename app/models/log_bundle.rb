@@ -1,10 +1,31 @@
 class LogBundle < ActiveRecord::Base
   set_table_name "sds_log_bundles"
+  require 'cgi'
   
   belongs_to :workgroup
   belongs_to :bundle
   
   before_save :process_content
+  
+  def extracted_content
+    # basically pull each sockEntry value, associate with the timestamp and return a hash: hash[ms] = [value, value, ...]
+    lines = self.content.scan(/<sockEntries value="([^"]+)"\/>/)
+    self.content.scan(/<sockEntries value="([^"]+)" millisecondsOffset="(\d+)"\/>/).each do |m|
+      lines << m
+    end
+    out = {}
+    lines.each do |l|
+      l[0]
+      if (l[1])
+        out[l[1]] ||= []
+        out[l[1]] << l[0].gsub("&#9;", "&nbsp;&nbsp;&nbsp;&nbsp;")
+      else
+        out["0"] ||= []
+        out["0"] << l[0].gsub("&#9;", "&nbsp;&nbsp;&nbsp;&nbsp;")
+      end
+    end
+    return out
+  end
   
   def process_content
     # extract session uuid
