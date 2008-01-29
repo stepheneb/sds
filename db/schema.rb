@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 63) do
+ActiveRecord::Schema.define(:version => 65) do
 
   create_table "sds_bundle_contents", :force => true do |t|
     t.text "content"
@@ -31,6 +31,14 @@ ActiveRecord::Schema.define(:version => 63) do
 
   add_index "sds_bundles", ["workgroup_id"], :name => "index_sds_bundles_on_workgroup_id"
   add_index "sds_bundles", ["workgroup_version"], :name => "index_sds_bundles_on_workgroup_version"
+
+  create_table "sds_config_versions", :force => true do |t|
+    t.string   "name"
+    t.float    "version"
+    t.text     "template"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "sds_curnit_maps", :force => true do |t|
     t.integer "parent_id"
@@ -71,14 +79,15 @@ ActiveRecord::Schema.define(:version => 63) do
 
   create_table "sds_jnlps", :force => true do |t|
     t.integer  "portal_id"
-    t.string   "name",          :limit => 60,  :default => "", :null => false
-    t.string   "url",           :limit => 256, :default => "", :null => false
+    t.string   "name",              :limit => 60,  :default => "", :null => false
+    t.string   "url",               :limit => 256, :default => "", :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "body"
     t.boolean  "always_update"
     t.datetime "last_modified"
     t.string   "filename"
+    t.integer  "config_version_id"
   end
 
   add_index "sds_jnlps", ["portal_id"], :name => "index_sds_jnlps_on_portal_id"

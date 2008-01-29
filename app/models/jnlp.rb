@@ -19,6 +19,7 @@ class Jnlp < ActiveRecord::Base
   set_table_name "sds_jnlps"
 
   belongs_to :portal
+  belongs_to :config_version
   has_many :offerings
   has_many :offerings, :order => "created_at DESC"
 

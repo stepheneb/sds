@@ -6,6 +6,9 @@
 <p><label for="jnlp_url">Url</label><br/>
 <%= text_field 'jnlp', 'url', :size => 80 %></p>
 
+<p><label for="jnlp_config_version_id">Config version</label><br/>
+<%= select 'jnlp', 'config_version_id', ConfigVersion.find(:all).map { |c| ["#{c.id}: #{c.name} (v: #{c.version})", c.id] }  %></p>
+
 <p><label for="jnlp_always_update">Always update from url when generating jnlp?</label><br/>
 <%= check_box 'jnlp', 'always_update'  %></p>
 
