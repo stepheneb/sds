@@ -1,5 +1,24 @@
 xml.instruct! :xml, :version=>"1.0", :encoding=>"UTF-8"
 xml.java("version" => "1.4.0", "class" => "java.beans.XMLDecoder") {
+  if (@offering.jnlp.config_version && @offering.jnlp.config_version.version > 1.0)
+    xml.object("class" => "net.sf.sail.emf.launch.ConsoleLogServiceImpl") {
+      if @savedata
+      xml.void("property" => "bundlePoster") {
+        xml.object("class" => "net.sf.sail.emf.launch.BundlePoster") {
+          xml.void("property" => "postUrl") {
+            xml.string(@controller.url_for(
+                                  :controller => "log_bundles", 
+                                  :action => "index", 
+                                  :id => @offering.id, 
+                                  :wid => @workgroup.id,
+                                  :pid => @portal.id,
+                                  :only_path => false))
+          }
+        }
+      }
+      end
+    }
+  end
   xml.object("class" => "net.sf.sail.core.service.impl.CurnitUrlProviderImpl") {
     xml.void("property" => "url") {
       xml.string(@curnit_url)
