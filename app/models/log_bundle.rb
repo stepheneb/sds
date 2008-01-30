@@ -7,6 +7,10 @@ class LogBundle < ActiveRecord::Base
   
   before_save :process_content
   
+  if USE_LIBXML 
+    @@xml_parser = XML::Parser.new
+  end
+  
   def extracted_content
     # basically pull each sockEntry value, associate with the timestamp and return a hash: hash[ms] = [value, value, ...]
     lines = self.content.scan(/<sockEntries value="([^"]+)"\/>/)
