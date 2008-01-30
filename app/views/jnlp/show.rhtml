@@ -7,7 +7,10 @@
   <tr><td>Url: </td><td><%= @jnlp.url %></td></tr>
   <tr><td>Last Modified: </td><td><%= @jnlp.last_modified.to_s %></td></tr>
   <tr><td>Always Update: </td><td><b><%= @jnlp.always_update ? "true" : "false" %></b></td></tr>
+  <% @jnlp.config_version ||= ConfigVersion.find(:first) -%>
+  <% if @jnlp.config_version -%>
   <tr><td>Config version: </td><td><%= @jnlp.config_version.name %>, (id: <%= @jnlp.config_version.id %>, ver: <%= @jnlp.config_version.version %> )</td></tr>
+  <% end -%>
 </table>
 <div style="background-color: #BBFFEE; padding: 10px; border: 1px solid gray; margin: 10px; font: 11px sans-serif;">
   Original Jnlp Body:
