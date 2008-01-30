@@ -36,6 +36,8 @@ ActionController::Routing::Routes.draw do |map|
 
 #  map.connect ':pid/offering/:id/atom', :controller => 'offering', :action => 'atom', :type => 'offering'
 
+  map.resources :config_versions
+  
 # direct bundle manipulation
 
   map.connect ':pid/bundle/:id', :controller => 'bundle', :action => 'bundle'

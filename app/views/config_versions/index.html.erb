@@ -1,0 +1,22 @@
+<p>
+  <%= link_to 'New Config Version', new_config_version_path %>
+</p>
+<table>
+  <tr>
+  	<td><b>Id</b></td>
+	<td><b>Name</b></td>
+	<td><b>Version</b></td>
+	<td><b>Options</b></td>
+  </tr>
+
+<% for config_version in @config_versions %>
+  <tr>
+  	<td><%= config_version.id %></td>
+  	<td><%= config_version.name %></td>
+	<td><%= config_version.version %></td>
+    <td><%= link_to 'Show', config_version %> | <%= link_to 'Edit', edit_config_version_path(config_version) %></td>
+  </tr>
+<% end %>
+</table>
+
+

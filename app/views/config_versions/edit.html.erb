@@ -1,0 +1,13 @@
+<h1>Edit</h1>
+
+<%= link_to 'List', config_versions_path %> |
+<%= link_to 'Show', @config_version %>
+
+<%= error_messages_for :config_version %>
+
+<% form_for(@config_version) do |f| %>
+  <p>
+  	<%= render :partial => 'form' %>
+    <%= f.submit "Update" %>
+  </p>
+<% end %>

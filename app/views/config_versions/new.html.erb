@@ -1,0 +1,12 @@
+<h1>New</h1>
+
+<%= link_to 'List', config_versions_path %>
+
+<%= error_messages_for :config_version %>
+
+<% form_for(@config_version) do |f| %>
+  <p>
+  	<%= render :partial => 'form' %>
+    <%= f.submit "Create" %>
+  </p>
+<% end %>

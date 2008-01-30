@@ -1,0 +1,22 @@
+<%= link_to 'List', config_versions_path %> | 
+<%= link_to 'Edit', edit_config_version_path(@config_version) %>
+
+<table cellpadding="1" cellspacing="1">
+  <tr><td>Id: </td><td><%= @config_version.id.to_s %></td></tr>
+  <tr><td>Name: </td><td><%= @config_version.name %></td></tr>
+  <tr><td>Updated at: </td><td><%= @config_version.updated_at.to_s %></td></tr>
+  <tr><td>Created at: </td><td><%= @config_version.created_at.to_s %></td></tr>
+  <tr><td>Used by: </td><td><%= @config_version.jnlp.count.to_s %> jnlp files</td></tr>
+</table>
+<div style="background-color: #BBFFEE; padding: 10px; border: 1px solid gray; margin: 10px; font: 11px sans-serif;">
+  Template:
+  <div style="background-color: #99FFCC; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px font: sans-serif;">
+    <%= if @config_version.template
+          CGI.escapeHTML(@config_version.template)
+        else
+          "No template defined."
+    end %>
+  </div>
+</div>
+
+<%= display_xml(@config_version) %>
