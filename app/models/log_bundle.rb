@@ -21,11 +21,11 @@ class LogBundle < ActiveRecord::Base
     lines.each do |l|
       l[0]
       if (l[1])
-        out[l[1]] ||= []
-        out[l[1]] << l[0].gsub("&#9;", "&nbsp;&nbsp;&nbsp;&nbsp;")
+        out[l[1].to_i] ||= []
+        out[l[1].to_i] << l[0].gsub("&#9;", "&nbsp;&nbsp;&nbsp;&nbsp;")
       else
-        out["0"] ||= []
-        out["0"] << l[0].gsub("&#9;", "&nbsp;&nbsp;&nbsp;&nbsp;")
+        out[0] ||= []
+        out[0] << l[0].gsub("&#9;", "&nbsp;&nbsp;&nbsp;&nbsp;")
       end
     end
     return out
