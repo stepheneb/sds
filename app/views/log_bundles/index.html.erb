@@ -15,7 +15,7 @@
 	      <td><%= log_bundle.id.to_s %></td>
 	      <td>
 	        <%= link_to 'Show', :action => 'show', :lid => log_bundle %> 
-	        <em>(created: <%= log_bundle.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em>
+	        <em>(session: <%= log_bundle.bundle.sail_session_start_time.strftime("%a %b %d %H:%M %Z %Y") %>)</em>
 	      </td>
 	    </tr>
 	  <% end %>
