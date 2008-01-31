@@ -6,7 +6,7 @@
   	<td><b>Id</b></td>
 	<td><b>Name</b></td>
 	<td><b>Version</b></td>
-	<td><b>Options</b></td>
+	<td></td>
   </tr>
 
 <% for config_version in @config_versions %>
@@ -14,7 +14,7 @@
   	<td><%= config_version.id %></td>
   	<td><%= config_version.name %></td>
 	<td><%= config_version.version %></td>
-    <td><%= link_to 'Show', config_version %> | <%= link_to 'Edit', edit_config_version_path(config_version) %></td>
+    <td><%= link_to 'Show', config_version %> <%# | <%= link_to 'Edit', edit_config_version_path(config_version) %></td>
   </tr>
 <% end %>
 </table>

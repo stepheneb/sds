@@ -1,4 +1,4 @@
-<%= link_to 'List', config_versions_path %> | 
+<%= link_to 'List', config_versions_path %><%# | 
 <%= link_to 'Edit', edit_config_version_path(@config_version) %>
 
 <table cellpadding="1" cellspacing="1">
@@ -12,7 +12,7 @@
   Template:
   <div style="background-color: #99FFCC; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px font: sans-serif;">
     <%= if @config_version.template
-          CGI.escapeHTML(@config_version.template)
+          "<pre>" << CGI.escapeHTML(@config_version.template) << "</pre>"
         else
           "No template defined."
     end %>
