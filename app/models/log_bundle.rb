@@ -5,7 +5,8 @@ class LogBundle < ActiveRecord::Base
   belongs_to :workgroup
   belongs_to :bundle
   
-  before_save :process_content
+  before_create :process_content
+  before_save :associate_bundle
   
   if USE_LIBXML 
     @@xml_parser = XML::Parser.new
@@ -31,13 +32,31 @@ class LogBundle < ActiveRecord::Base
     return out
   end
   
+  def associate_bundle
+    if self.sail_session_uuid.length == 36
+      self.bundle = Bundle.find(:first, :conditions => ["sail_session_uuid = ?", self.sail_session_uuid])
+    end
+  end
+  
+  def bundle
+    if bid = read_attribute(:bundle_id)
+      Bundle.find(bid)
+    else
+      self.save
+      if bid = read_attribute(:bundle_id)
+        Bundle.find(bid)
+      else
+        nil
+      end
+    end
+  end
+  
   def process_content
     # extract session uuid
     # extract curnit uuid
     if parse_content_xml     
       # content_well_formed_xml = true
       process_session_attributes
-      self.bundle = Bundle.find(:first, :conditions => ["sail_curnit_uuid = ? && sail_session_uuid = ?", self.sail_curnit_uuid, self.sail_session_uuid])
     else
       # content_well_formed_xml = false
     end
@@ -58,10 +77,10 @@ class LogBundle < ActiveRecord::Base
   
   def process_session_attributes
     if USE_LIBXML
-      self.sail_curnit_uuid = @@logs_bundle.sds_get_attribute_with_default('curnitUUID', 'x' * 36)
+      self.sail_curnit_uuid = @@logs_bundle.sds_get_attribute_with_default('curnitUUID', 0)
       self.sail_session_uuid = @@logs_bundle.sds_get_attribute_with_default('sessionUUID', 0)
     else
-      self.sail_curnit_uuid = @@logs_bundle.attributes['curnitUUID'] || 'x' * 36
+      self.sail_curnit_uuid = @@logs_bundle.attributes['curnitUUID'] || 0
       self.sail_session_uuid = @@logs_bundle.attributes['sessionUUID'] || 0
     end
   end
