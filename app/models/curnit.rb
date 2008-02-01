@@ -183,7 +183,13 @@ class Curnit < ActiveRecord::Base
             FileUtils.mkdir_p(self.path)
           end
           File.open(self.jar_path, 'wb') {|jar| jar.write(urlfile.read) }
-          sys = system("cd #{self.path};jar xf #{self.filename}")
+          Zip::ZipFile.foreach("#{self.path}/#{self.filename}") do |zipfile|
+            # create the path for the file, if it doesn't exist
+            fpath = File.join(self.path, zipfile.name)
+            FileUtils.mkdir_p(File.dirname(fpath))
+            zipfile.extract(fpath)
+          end
+          # sys = system("cd #{self.path};jar xf #{self.filename}")
           self.jar_last_modified = urlfile.last_modified
           self.jar_digest = Base64.b64encode(Digest::MD5.digest(urlfile.read)).strip
         end
