@@ -46,8 +46,13 @@ class Jnlp < ActiveRecord::Base
           self.last_modified = f.last_modified
           self.filename = File.basename(self.url)
         end
-      rescue SocketError # getaddrinfo?
-      rescue OpenURI::HTTPError
+      rescue SocketError, OpenURI::HTTPError, OpenSSL::SSL::SSLError => e
+        if RAILS_ENV == 'production'
+          additional_info = ''
+        else
+          additional_info = "\n#{e.message}\n\n#{e.backtrace.join("\n")}"
+        end
+        raise "There was a problem saving the jnlp to the filesystem\n#{additional_info}"
       end
     end
     self.body

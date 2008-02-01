@@ -15,9 +15,10 @@ class WorkgroupController < ApplicationController
   
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
-      xml_parms = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]}).merge({ "version" => "0"})
+      xml_parms = ConvertXml.xml_to_hash(request.raw_post)
       @workgroup = Workgroup.new(xml_parms)
       @workgroup.offering = Offering.find(xml_parms['offering_id'])
+      @workgroup.portal = @portal
       if @workgroup.save
         response.headers['Location'] = url_for(:action => :show, :id => @workgroup.id)
         render(:xml => "", :status => 201) # Created

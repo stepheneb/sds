@@ -25,10 +25,11 @@ class OfferingController < ApplicationController
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
       begin
-        xml_parms = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
+        xml_parms = ConvertXml.xml_to_hash(request.raw_post)
         @offering = Offering.new(xml_parms)
         @offering.curnit = Curnit.find(xml_parms['curnit_id'])
         @offering.jnlp = Jnlp.find(xml_parms['jnlp_id'])
+        @offering.portal = @portal
         if @offering.save
           response.headers['Location'] = url_for(:action => :show, :id => @offering.id)
           render(:xml => "", :status => 201) # Created
@@ -207,12 +208,12 @@ class OfferingController < ApplicationController
         else
           content = request.raw_post
         end
-		digest = Digest::MD5.hexdigest(content)
-		if request.env['HTTP_CONTENT_MD5'] != nil
-			if digest != request.env['HTTP_CONTENT_MD5']
-			  raise "Bundle MD5 Mismatch"
-		    end
-		end
+        digest = Digest::MD5.hexdigest(content)
+        if request.env['HTTP_CONTENT_MD5'] != nil
+          if digest != request.env['HTTP_CONTENT_MD5']
+            raise "Bundle MD5 Mismatch"
+          end
+        end
         @bundle = Bundle.create!(:workgroup_id => params[:wid],
           :workgroup_version => params[:version], :content => content, :bc => content)
         response.headers['Content-md5'] = digest

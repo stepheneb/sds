@@ -16,9 +16,9 @@ class JnlpController < ApplicationController
     case
     when request.post?
       if request.env['CONTENT_TYPE'] == "application/xml"
-        xml_parms = ConvertXml.xml_to_hash(request.raw_post).merge({"portal_id" => params[:pid]})
+        xml_parms = ConvertXml.xml_to_hash(request.raw_post)
         @jnlp = Jnlp.new(xml_parms)
-        @jnlp.portal = Portal.find(xml_parms['portal_id'])
+        @jnlp.portal = @portal
         @jnlp.config_version ||= ConfigVersion.find(:first)
         if @jnlp.save
           response.headers['Location'] = url_for(:action => :show, :id => @jnlp.id)
