@@ -19,12 +19,20 @@ class ConfigVersionsController < ApplicationController
   # GET /config_versions/1
   # GET /config_versions/1.xml
   def show
-    @config_version = ConfigVersion.find(params[:id])
-
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @config_version }
+    begin
+      @config_version = ConfigVersion.find(params[:id])
+    rescue
+      @config_version = nil
     end
+    if @config_version
+      respond_to do |format|
+        format.html # show.html.erb
+        format.xml  { render :xml => @config_version }
+      end
+    else
+      render(:text => "Not Found", :status => 404) # Not Found
+    end
+
   end
 
   # GET /config_versions/new
