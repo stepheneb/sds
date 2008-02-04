@@ -1,13 +1,15 @@
 h2. REST protocol for SAIL Data Services (SDS)
 
-The initial implementation of the SAIL Data Service has been created using the Ruby on Rails web framework and is located here: http://rails.dev.concord.org/sds. The source code is in a Subversion repository located here: http://svn.rails.dev.concord.org/svn/sds/trunk/.
+The initial implementation of the SAIL Data Service has been created using the Ruby on Rails web framework and is located here: [http://rails.dev.concord.org/sds]. The source code is in a Subversion repository located here: [http://svn.rails.dev.concord.org/svn/sds/trunk/].
 
 REST web service protocols are based on the HTTP verbs POST (create), PUT (update), GET (show), and DELETE (delete) applied to  resources specified with urls. When a REST protocol is used the data exchanged is formatted as XML. The SDS implements REST-based services for communication with external portals to support the delivery of SAIL-based curriculum units. Many of the administrative services are also available as html rendered in a browser.
 
 h3. Child Pages
+
 {children}
 
 h3. Table of Contents
+
 # [#Resources managed in the SDS]
 # [#Interpreting Response Headers]
 # [#Accessing SDS resources with Atom feeds]
@@ -21,17 +23,21 @@ h3. Table of Contents
 # [#Create a new SDS jnlp for a portal]
 #* [#Info on all SDS jnlps for a portal]
 #* [#Info on one SDS jnlp for a portal]
+# [#Info on all SDS config_versions for the sds]
+#* [#Info on one SDS config_version for the sds]
 # [#Create a new SDS user for a portal]
 #* [#Info on all SDS users for a portal]
 #* [#Info on one SDS user for a portal]
 # [#Create a new SDS offering for a portal]
 #* [#Info on all SDS offerings for a portal]
 #* [#Info on one SDS offering for a portal]
+#* [#Curnitmap of one SDS offering for a portal]
 # [#Create a new SDS workgroup for an offering]
 #* [#Create the membership for a workgroup]
 #* [#List the members in a workgroup]
 #* [#Info on all SDS workgroups for a portal]
 #* [#Info on one SDS workgroup for a portal]
+#* [#Info on all SDS workgroups for an offering]
 # [#Producing a Java Webstart JNLP]
 #* [#Adding additional portal-specific config parameters]
 # [#Producing a config file for the Java client]
@@ -39,19 +45,17 @@ h3. Table of Contents
 # [#Producing a collection of session bundle files for the Java client]
 
 ----
-
 Rest Architecture and Tutorial links
 
 Java
 * [Great tutorial at Sun on RESTful Web Services with Java|http://java.sun.com/developer/technicalArticles/WebServices/restful/?feed=JSC] (Turadg)
 * See [Crossing borders: REST on Rails|http://www-128.ibm.com/developerworks/java/library/j-cb08016/index.html] for an example of Java code for interfacing to a REST interface.
 
-----
+\---\-{anchor:Resources managed in the SDS}
 
-{anchor:Resources managed in the SDS}
 h3. Resources managed in the SDS:
 
-  *portal*: this is an SDS realm managed for an external portal. 
+ *portal*: this is an SDS realm managed for an external portal.
 
 h5. The following resources related to the portal are created and managed through administrative services:
 
@@ -60,62 +64,59 @@ h5. The following resources related to the portal are created and managed throug
 * *jnlp*: a reference to a java web start jnlp whose resources are needed to run a curnit
 * *offering*: a composition of a curnit, and a jnlp
 * *workgroup*: a SAIL workgroup is related to an offering and consists of 1 or more SAIL users (actually saved in a workgroup_membership)
-* *workgroup/membership*: the collection of users in a workgroup is specified in a  workgroup/membership. When new membership collections are created the workgroup version is incremented. 
+* *workgroup/membership*: the collection of users in a workgroup is specified in a  workgroup/membership. When new membership collections are created the workgroup version is incremented.
 
 Learner data is in general associated with a workgroup. When learner data is requested by the Java client all data available are returned. However at a lower level in the SDS all the session bundles are actually related to workgroup versions. It is possible using the datamodel to distinguish learner data contributed by different cohorts of learners in a single workgroup. This functionality is not exposed yet.
 
 h5. The following resources are created dynamically and are used in communication with the SAIL java learner runtime. There is no interface to change these resources directly. All of these resources are specified by their relationship to to a portal, offering, and workgroup.
 
-    *offering/jnlp*: the dynamically generated jnlp file that relates a portal, offering, and workgroup.
-    *offering/config*: the dynamically generated config file that the PLR uses to setup operation
-    *offering/sessionBundle*: a collection of all learner generated data that occurred during one session
-    *offering/sessionBundleCollection*: a collection of all sessionBundles for a specific offering and either a workgroup or a user
+ *offering/jnlp*: the dynamically generated jnlp file that relates a portal, offering, and workgroup.
+*offering/config*: the dynamically generated config file that the PLR uses to setup operation
+*offering/sessionBundle*: a collection of all learner generated data that occurred during one session
+*offering/sessionBundleCollection*: a collection of all sessionBundles for a specific offering and either a workgroup or a user
 
 h5. These resources are created when learner data are sent back sent back to the SDS.
-   
-    *socks*: user data related to pod_uuid, rim name, offering, and workgroup
-    *rims*: rim name, related to offering, and workgroup (should be related to step also)
-    *step*: this is actually very hard to get -- it is only in the curnit in a very opaque XML structure
 
-All interaction is through a url of the form: http://rails.dev.concord.org/sds (or in the future https://rails.dev.concord.org/sds) where sds is the uri for the Sail Data Service. Obviously the service can be deployed on a different server which will change the url.
+ *socks*: user data related to pod_uuid, rim name, offering, and workgroup
+*rims*: rim name, related to offering, and workgroup (should be related to step also)
+*step*: this is actually very hard to get - it is only in the curnit in a very opaque XML structure
+
+All interaction is through a url of the form: [http://rails.dev.concord.org/sds] (or in the future [https://rails.dev.concord.org/sds]) where sds is the uri for the Sail Data Service. Obviously the service can be deployed on a different server which will change the url.
 
 When the HTTP operation is a PUT or POST and the HTTP Content-Type header is set to 'application/xml' the SDS will assume that a REST connection is being made and will expect resources to be sent in the appropriate XML format. When the HTTP operation is a GET and the HTTP Accept header is set to 'application/xml' the SDS will assume that a REST connection is being made and will return resources in the appropriate XML format. A specific header is not needed when an HTTP DELETE operation is performed because no data is sent or returned except for the specification of the resource with a url, the headers that are sent and the headers that are returned.
 
-In the case of HTTP GET or POST commands if the appropriate header is not set to 'application/xml' the SDS will assume that an html page is requested and will render the appropriate UI in html. In the examples below I use 'wise' as an example of an SDS portal relationship. 
+In the case of HTTP GET or POST commands if the appropriate header is not set to 'application/xml' the SDS will assume that an html page is requested and will render the appropriate UI in html. In the examples below I use 'wise' as an example of an SDS portal relationship.
 
 At this time all of the following resources are also editable through a browser using http/html interactions.
 
-----
+\---\-{anchor:Interpreting Response Headers}
 
-{anchor:Interpreting Response Headers}
 h3. Interpreting Response Headers
 
 In general if the url you are using to access the REST API is misspelled the following error is returned in an HTTP header:
-* HTTP/1.1 404 Not Found 
+* HTTP/1.1 404 Not Found
 
 The SDS is now returning an MD5 digest hash in the return headers to bundle creation POSTS. The return of a MD5 message digest hah header will be extended to all REST POSTS or PUT operations.
 
 Later Both the client and server can calculate these and include them as headers in both connections and responses.
 
-See: http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.15
-and: http://www.ietf.org/rfc/rfc1864.txt
+See: [http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.15]
+and: [http://www.ietf.org/rfc/rfc1864.txt]
 
-An example from a POST of a sessionBundles: 
-
+An example from a POST of a sessionBundles:
 {panel}
-HTTP/1.1 201 Created 
+HTTP/1.1 201 Created
 Date: Sat, 28 Oct 2006 22:10:25 GMT
 Content-Type: application/xml
 Content-Length: 0
-Location: http://localhost:3000/1/offering/2/bundle/3/1
+Location: [http://localhost:3000/1/offering/2/bundle/3/1]
 Content-Md5: C0LhalzTHn3vcOe41KY1xA==
 {panel}
-
 *Creation*
 When a new resource creation request is made with an HTTP POST to a url referencing a collection of resources the following status codes are returned in the HTTP headers indicating success or failure:
 * Success
-** HTTP/1.1 201 Created 
-** Location: http://localhost:3000/1/jnlp/8
+** HTTP/1.1 201 Created
+** Location: [http://localhost:3000/1/jnlp/8]
 * Failure
 ** HTTP/1.1 400 Bad Request
 ** Failure can occur if a required static or relational element of the resource is missing.
@@ -125,1330 +126,1469 @@ When a request is made to read a single existing resource with an HTTP GET to a 
 * Success
 ** HTTP/1.1 200 OK
 ** Content-Type: application/xml
-** Content-Length: 1577 
+** Content-Length: 1577
 * Failure
 ** HTTP/1.1 400 Bad Request
 
 *Read*: a collection of resources
 When a request is made to read a collection of resources with an HTTP GET to a url referencing a collection of resources the following status codes are returned in the HTTP headers indicating success:
 * Success
-** HTTP/1.1 200 OK  
-It is not a failure if there are no members of the resource collection. In this case an empty xml element which is the pluralized form of he sigular element name is returned. For example if there were no jnlp resources defined this empty element would be returned as content: "<jnlps />". 
-
+** HTTP/1.1 200 OK
+It is not a failure if there are no members of the resource collection. In this case an empty xml element which is the pluralized form of he sigular element name is returned. For example if there were no jnlp resources defined this empty element would be returned as content: "<jnlps />".
 
 *Update*
 When an existing resource update request is made with an HTTP PUT to a url referencing that specific resource the following status codes are returned in the HTTP headers indicating success or failure:
 * Success
-** HTTP/1.1 201 Created 
-** Location: http://localhost:3000/1/jnlp/8
+** HTTP/1.1 201 Created
+** Location: [http://localhost:3000/1/jnlp/8]
 * Failure
 ** HTTP/1.1 400 Bad Request
 
 *Delete*
-  
+
 {anchor:Accessing SDS resources with Atom feeds}
+
 h3. Accessing SDS resources with Atom feeds
 
 Collections of workgroup data are accessible as Atom news feeds by adding "/atom" to the url. These feeds are viewable in News Aggregators as well as the web browsers Safari and Firefox 2.0. Earlier versions of Firefox do not have this capability. I don't know he state of viewing news feeds on IE or Opera.
 
 The plan is that any resource on the SDS which can be interpreted as referring to a collection of user data will also be accessible as a news feed. So for example accessing this url in a browser:
-* http://rails.dev.concord.org/sds/1/workgroups
+* [http://rails.dev.concord.org/sds/1/workgroups]
 will display a list of Workgroups defined for SDS portal realm 1. While accessing this url:
-* http://rails.dev.concord.org/sds/1/workgroups/atom
+* [http://rails.dev.concord.org/sds/1/workgroups/atom]
 Will instead display a newsfeed of all the workgroups and all the data sent back by workgroup sessions.
 
 This url is used to display information about a specific Offering (the Wise term would be Run):
-* http://rails.dev.concord.org/sds/1/offering/2
+* [http://rails.dev.concord.org/sds/1/offering/2]
 While adding "/atom" on the end will produce instead a news feed of just the workgroups and their data for the offering with id 2.
-* http://rails.dev.concord.org/sds/1/offering/2/atom
+* [http://rails.dev.concord.org/sds/1/offering/2/atom]
 
-----
+\---\-{anchor:Create a new portal relationship}
 
-{anchor:Create a new portal relationship}
 h3. Create a new SDS portal relationship.
 
 In order to create a portal relationship the SDS portal the username and password must be sent in the HTTP header as Basic Authentication must be sent. The username and password can be obtained from the SDS administrator. In addition the portal host url is sent. Any further requests for creation or changing resources associated with this portal must come from the portal host url.
-
 {panel}
-  POST 
-  Content-Type: application/xml
-  http://rails.dev.concord.org/sds/portal
+ POST
+ Content-Type: application/xml
+[http://rails.dev.concord.org/sds/portal]
 
+ POST data:
 
-  POST data:
+ <portal>
+ <name>Wise2</name>
+ <use-authenticatio>false</use-authentication>
+ <auth-username>user</auth-username>
+ <auth-password>password</auth-password>
+ </portal>
 
-  <portal>
-    <name>Wise2</name>
-    <use-authenticatio>false</use-authentication>
-    <auth-username>user</auth-username>
-    <auth-password>password</auth-password>
-  </portal>
+ return headers:
 
-  return headers:
-  
-      HTTP/1.1 201 Created 
-      Location: http://rails.dev.concord.org/sds/portal/1
+ HTTP/1.1 201 Created
+ Location: [http://rails.dev.concord.org/sds/portal/1]
 
-  return data:
-
+ return data:
 {panel}
-
 Example (note: don't pass an <id /> element in when creating a portal, this is generated by the SDS):
-
 {panel}
-  curl -i -H 'Content-Type: application/xml' -X POST -d '<portal><name>Wise2</name><use-authentication>false</use-authentication><auth-username>user</auth-username><auth-password>password</auth-password></portal>' http://rails.dev.concord.org/sds/portal/
+ curl \-i \-H 'Content-Type: application/xml' \-X POST \-d '<portal><name>Wise2</name><use-authentication>false</use-authentication><auth-username>user</auth-username><auth-password>password</auth-password></portal>' [http://rails.dev.concord.org/sds/portal/]
 
-  HTTP/1.1 201 Created
-  Date: Fri, 11 Aug 2006 08:35:08 GMT
-  Content-Type: application/xml
-  Location: http://rails.dev.concord.org/sds/portal/1
-  Content-Length: 0
+ HTTP/1.1 201 Created
+ Date: Fri, 11 Aug 2006 08:35:08 GMT
+ Content-Type: application/xml
+ Location: [http://rails.dev.concord.org/sds/portal/1]
+ Content-Length: 0
 {panel}
-
 If you pass in malformed xml or are missing required elements a HTTP/1.1 400 Bad Request error will be reported in the returned HTTP headers.
 
 {anchor:Info on all SDS portals}
+
 h4. Info on all SDS portals.
 
 {panel}
-  GET 
-  Accept: application/xml
-  http://rails.dev.concord.org/sds/portal
+ GET
+ Accept: application/xml
+[http://rails.dev.concord.org/sds/portal]
 
-  return headers:
+ return headers:
 
-  return data:
+ return data:
 {panel}
-
 Example:
-
 {panel}
-  curl -i -X GET -H 'Accept: application/xml' http://rails.dev.concord.org/sds/portal
-  HTTP/1.1 200 OK 
-  Cache-Control: no-cache
-  Connection: Keep-Alive
-  Date: Tue, 08 Aug 2006 13:28:56 GMT
-  Content-Type: application/xml
-  Server: WEBrick/1.3.1 (Ruby/1.8.4/2005-12-24)
-  Content-Length: 363
-  Set-Cookie: _session_id=3d6d0815169f908f61cd89967d0b65f4; path=/
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/portal]
+ HTTP/1.1 200 OK
+ Cache-Control: no-cache
+ Connection: Keep-Alive
+ Date: Tue, 08 Aug 2006 13:28:56 GMT
+ Content-Type: application/xml
+ Server: WEBrick/1.3.1 (Ruby/1.8.4/2005-12-24)
+ Content-Length: 363
+ Set-Cookie: \_session_id=3d6d0815169f908f61cd89967d0b65f4; path=/
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <portals>
-    <portal>
-      <name>Test</name>
-      <auth-username>user</auth-username>
-      <use-authentication>true</use-authentication>
-      <id>1</id>
-      <auth-password>password</auth-password>
-    </portal>
-    <portal>
-      <name>Wise2</name>
-      <auth-username>user</auth-username>
-      <use-authentication>false</use-authentication>
-      <id>2</id>
-      <auth-password>password</auth-password>
-    </portal>
-  </portals>
+ <?xml version="1.0" encoding="UTF-8"?>
+ <portals>
+ <portal>
+ <name>Test</name>
+ <auth-username>user</auth-username>
+ <use-authentication>true</use-authentication>
+ <id>1</id>
+ <auth-password>password</auth-password>
+ </portal>
+ <portal>
+ <name>Wise2</name>
+ <auth-username>user</auth-username>
+ <use-authentication>false</use-authentication>
+ <id>2</id>
+ <auth-password>password</auth-password>
+ </portal>
+ </portals>
 {panel}
-
 {anchor:Info on a specific SDS portal}
+
 h4. Info on a specific SDS portal.
 
 {panel}
-  GET 
-  Accept: application/xml
-  http://rails.dev.concord.org/sds/portal/<sds_portal_id>
+ GET
+ Accept: application/xml
+[http://rails.dev.concord.org/sds/portal/]<sds_portal_id>
 
-  return headers:
-  
-    HTTP/1.1 200 OK
+ return headers:
 
-  return data:
+ HTTP/1.1 200 OK
 
-    xml representation of resource
+ return data:
+
+ xml representation of resource
 {panel}
-
 Example:
-
 {panel}
-  curl -i -X GET -H 'Accept: application/xml' http://rails.dev.concord.org/sds/portal/4
-  HTTP/1.1 200 OK 
-  Date: Tue, 08 Aug 2006 15:03:49 GMT
-  Content-Type: application/xml
-  Content-Length: 187
-  Location: http://rails.dev.concord.org/sds/portal/4
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/portal/4]
+ HTTP/1.1 200 OK
+ Date: Tue, 08 Aug 2006 15:03:49 GMT
+ Content-Type: application/xml
+ Content-Length: 187
+ Location: [http://rails.dev.concord.org/sds/portal/4]
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <portal>
-    <name>Wise2</name>
-    <auth-username>user</auth-username>
-    <use-authentication>true</use-authentication>
-    <id type="integer">4</id>
-    <auth-password>password</auth-password>
-  </portal>
+ <?xml version="1.0" encoding="UTF-8"?>
+ <portal>
+ <name>Wise2</name>
+ <auth-username>user</auth-username>
+ <use-authentication>true</use-authentication>
+ <id type="integer">4</id>
+ <auth-password>password</auth-password>
+ </portal>
 {panel}
-
 {anchor:Change a specific SDS portal}
+
 h4. Change a specific SDS portal
 
 This is done with a PUT
-
 {panel}
-  PUT 
-  Content-Type: application/xml
-  http://rails.dev.concord.org/sds/portal/<sds_portal_id>
+ PUT
+ Content-Type: application/xml
+[http://rails.dev.concord.org/sds/portal/]<sds_portal_id>
 
+ POST data:
 
-  POST data:
+ <portal>
+ <name>TestX</name>
+ <auth-username>user</auth-username>
+ <use-authentication>true</use-authentication>
+ <auth-password>password</auth-password>
+ </portal>
 
-  <portal>
-    <name>TestX</name>
-    <auth-username>user</auth-username>
-    <use-authentication>true</use-authentication>
-    <auth-password>password</auth-password>
-  </portal>
+ return headers:
 
-  return headers:
-  
-      HTTP/1.1 201 Created 
-      Location: http://rails.dev.concord.org/sds/portal/1
+ HTTP/1.1 201 Created
+ Location: [http://rails.dev.concord.org/sds/portal/1]
 
-  return data:
+ return data:
 {panel}
-
 Example:
-
 {panel}
-  curl -i -H 'Content-Type: application/xml' -X PUT -d '<portal><name>TestX</name><auth-username>user</auth-username><use-authentication>true</use-authentication><auth-password>password</auth-password></portal>' http://rails.dev.concord.org/sds/portal/1
-  HTTP/1.1 201 Created 
-  Date: Tue, 15 Aug 2006 20:59:09 GMT
-  Content-Type: application/xml
-  Location: http://rails.dev.concord.org/sds/portal/1
+ curl \-i \-H 'Content-Type: application/xml' \-X PUT \-d '<portal><name>TestX</name><auth-username>user</auth-username><use-authentication>true</use-authentication><auth-password>password</auth-password></portal>' [http://rails.dev.concord.org/sds/portal/1]
+ HTTP/1.1 201 Created
+ Date: Tue, 15 Aug 2006 20:59:09 GMT
+ Content-Type: application/xml
+ Location: [http://rails.dev.concord.org/sds/portal/1]
 {panel}
+\---\-{anchor:Create a new SDS curnit for a portal}
 
-----
-
-{anchor:Create a new SDS curnit for a portal}
 h3. Create a new SDS curnit for a portal.
 
 The url returned in the Location header is a direct link to the SDS curnit resource for this specific sds curnit.
-
 {panel}
-  POST 
-  Content-Type: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id>/curnit
+ POST
+ Content-Type: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/curnit
 
+ POST data:
 
-  POST data:
+ <curnit>
+ <name>Airbag3</name>
+ <url>[http://tels-develop.soe.berkeley.edu:8080/maven-jnlp//curnit-airbag.jar]</url>
+ </curnit>
 
-  <curnit>
-    <name>Airbag3</name>
-    <url>http://tels-develop.soe.berkeley.edu:8080/maven-jnlp//curnit-airbag.jar</url>
-  </curnit>
+ return headers:
 
-  return headers:
+ HTTP/1.1 201 Created
+ Location: [http://rails.dev.concord.org/sds/]<sds_portal_id>/curnit/<SDS curnit id>
 
-    HTTP/1.1 201 Created 
-    Location: http://rails.dev.concord.org/sds/<sds_portal_id>/curnit/<SDS curnit id>
+ return data:
 
-  return data:
-
-  none
+ none
 {panel}
-  
 Example: create a new curnit for portal #1
-  
 {panel}
-  curl -i -H 'Content-Type: application/xml' -X POST -d '<curnit><name>Airbag3</name><url>http://tels-develop.soe.berkeley.edu:8080/maven-jnlp//curnit-airbag.jar</url></curnit>' http://rails.dev.concord.org/sds/1/curnit
+ curl \-i \-H 'Content-Type: application/xml' \-X POST \-d '<curnit><name>Airbag3</name><url>[http://tels-develop.soe.berkeley.edu:8080/maven-jnlp//curnit-airbag.jar]</url></curnit>' [http://rails.dev.concord.org/sds/1/curnit]
 
-  HTTP/1.1 201 Created 
-  Date: Tue, 15 Aug 2006 22:39:36 GMT
-  Content-Type: application/xml
-  Content-Length: 0
-  Location: http://rails.dev.concord.org/sds/1/curnit/3
+ HTTP/1.1 201 Created
+ Date: Tue, 15 Aug 2006 22:39:36 GMT
+ Content-Type: application/xml
+ Content-Length: 0
+ Location: [http://rails.dev.concord.org/sds/1/curnit/3]
 {panel}
-
 {anchor:Info on all SDS curnits for a portal}
+
 h4. Info on all SDS curnits for a portal.
 
 {panel}
-  GET 
-  Accept: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id>/curnit
-  
-  return headers:
+ GET
+ Accept: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/curnit
 
-  return data:
+ return headers:
 
-  <curnits>
-    <curnit>
-      <name>airbag test</name>
-      <portal-id type="integer">1</portal-id>
-      <url>http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/curnit-airbag.jar</url>
-      <id type="integer">3</id>
-    </curnit>
-  </curnits>
+ return data:
+
+ <curnits>
+ <curnit>
+ <name>airbag test</name>
+ <portal-id type="integer">1</portal-id>
+ <url>[http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/curnit-airbag.jar]</url>
+ <id type="integer">3</id>
+ </curnit>
+ </curnits>
 {panel}
-  
 Example:
-  
 {panel}
-  curl -i -X GET -H 'Accept: application/xml' http://rails.dev.concord.org/sds/1/curnit  
-  HTTP/1.1 200 OK
-  Date: Fri, 11 Aug 2006 09:06:25 GMT
-  Server: lighttpd/1.4.11
-  Content-Type: application/xml
-  Cache-Control: no-cache
-  Set-Cookie: _session_id=1e3ca6f073691ceada1a3d1a16776de7; path=/
-  Connection: close
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/1/curnit]
+ HTTP/1.1 200 OK
+ Date: Fri, 11 Aug 2006 09:06:25 GMT
+ Server: lighttpd/1.4.11
+ Content-Type: application/xml
+ Cache-Control: no-cache
+ Set-Cookie: \_session_id=1e3ca6f073691ceada1a3d1a16776de7; path=/
+ Connection: close
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <curnits>
-    <curnit>
-      <name>Airbag</name>
-      <url>http://tels-develop.soe.berkeley.edu:8080/maven-jnlp//curnit-airbag.jar</url>
-      <id>1</id>
-    </curnit>
-    <curnit>
-      <name>airbag2</name>
-      <url>http://tels-develop.soe.berkeley.edu:8080/maven-jnlp//curnit-airbag.jar</url>
-      <id>2</id>
-    </curnit>
-    <curnit>
-  </curnits>
+ <?xml version="1.0" encoding="UTF-8"?>
+ <curnits>
+ <curnit>
+ <name>Airbag</name>
+ <url>[http://tels-develop.soe.berkeley.edu:8080/maven-jnlp//curnit-airbag.jar]</url>
+ <id>1</id>
+ </curnit>
+ <curnit>
+ <name>airbag2</name>
+ <url>[http://tels-develop.soe.berkeley.edu:8080/maven-jnlp//curnit-airbag.jar]</url>
+ <id>2</id>
+ </curnit>
+ <curnit>
+ </curnits>
 {panel}
-
 {anchor:Info on one SDS curnit for a portal}
+
 h4. Info on one SDS curnit for a portal.
 
 {panel}
-  GET 
-  Accept: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id>/curnit/<sds_curnit_id>
+ GET
+ Accept: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/curnit/<sds_curnit_id>
 
-  return headers:
+ return headers:
 
-    HTTP/1.1 200 OK
-    
-  return data:
+ HTTP/1.1 200 OK
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <curnit>
-    <name>Airbag3</name>
-    <url>http://tels-develop.soe.berkeley.edu:8080/maven-jnlp//curnit-airbag.jar</url>
-    <id>4</id>
-  </curnit>
+ return data:
+
+ <?xml version="1.0" encoding="UTF-8"?>
+ <curnit>
+ <name>Airbag3</name>
+ <url>[http://tels-develop.soe.berkeley.edu:8080/maven-jnlp//curnit-airbag.jar]</url>
+ <id>4</id>
+ </curnit>
 {panel}
-
 Example:
-
 {panel}
-  curl -i -X GET -H 'Accept: application/xml' http://rails.dev.concord.org/sds/1/curnit/4
-  HTTP/1.1 200 OK 
-  Date: Tue, 15 Aug 2006 22:48:16 GMT
-  Content-Type: application/xml
-  Content-Length: 179
-  Location: http://rails.dev.concord.org/sds/1/curnit/4
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/1/curnit/4]
+ HTTP/1.1 200 OK
+ Date: Tue, 15 Aug 2006 22:48:16 GMT
+ Content-Type: application/xml
+ Content-Length: 179
+ Location: [http://rails.dev.concord.org/sds/1/curnit/4]
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <curnit>
-    <name>Airbag3</name>
-    <url>http://tels-develop.soe.berkeley.edu:8080/maven-jnlp//curnit-airbag.jar</url>
-    <id>4</id>
-  </curnit>
+ <?xml version="1.0" encoding="UTF-8"?>
+ <curnit>
+ <name>Airbag3</name>
+ <url>[http://tels-develop.soe.berkeley.edu:8080/maven-jnlp//curnit-airbag.jar]</url>
+ <id>4</id>
+ </curnit>
 {panel}
 
-----
 
-{anchor:Create a new SDS jnlp for a portal}
+\---\-{anchor:Create a new SDS jnlp for a portal}
+
 h3. Create a new SDS jnlp for a portal.
 
 The url returned in the Location header is a direct link to the actual SAIL jnlp resource for this specific sds jnlp.
-
 {panel}
-  POST 
-  Content-Type: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id>/jnlp
+ POST
+ Content-Type: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/jnlp
 
+ POST data:
 
-  POST data:
+ <jnlp>
+ <name>pedagogica-emf</name>
+ <url>[http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/basic-emf.jnlp]</url>
+ <config_version_id>1</config_version_id>
+ </jnlp>
 
-    <jnlp>
-      <name>pedagogica-emf</name>
-      <url>http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/basic-emf.jnlp</url>
-    </jnlp>
+ return headers:
 
-  return headers:
+ HTTP/1.1 201 Created
+ Location: [http://rails.dev.concord.org/sds/]<sds_portal_id>/jnlp/<sds_jnlp_id>
 
-    HTTP/1.1 201 Created 
-    Location: http://rails.dev.concord.org/sds/<sds_portal_id>/jnlp/<sds_jnlp_id>
+ return data:
 
-  return data:
-
-  none
+ none
 {panel}
-
 Example:
-
 {panel}
-curl -i -H 'Content-Type: application/xml' -X POST -d '<jnlp><name>testing</name><url>http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/basic-emf.jnlp</url></jnlp>' http://rails.dev.concord.org/sds/1/jnlp
+curl \-i \-H 'Content-Type: application/xml' \-X POST \-d '<jnlp><name>testing</name><url>[http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/basic-emf.jnlp]</url><config_version_id>1</config_version_id></jnlp>' [http://rails.dev.concord.org/sds/1/jnlp]
 
-  HTTP/1.1 201 Created 
-  Date: Tue, 15 Aug 2006 22:39:36 GMT
-  Content-Type: application/xml
-  Content-Length: 0
-  Location: http://rails.dev.concord.org/sds/1/jnlp/3
+ HTTP/1.1 201 Created
+ Date: Tue, 15 Aug 2006 22:39:36 GMT
+ Content-Type: application/xml
+ Content-Length: 0
+ Location: [http://rails.dev.concord.org/sds/1/jnlp/3]
 {panel}
-
 {anchor:Info on all SDS jnlps for a portal}
+
 h4. Info on all SDS jnlps for a portal.
 
 {panel}
-  GET 
-  Accept: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id>/jnlp
+ GET
+ Accept: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/jnlp
 
-  return headers:
+ return headers:
 
-    HTTP/1.1 200 OK
-  
-  return data:
+ HTTP/1.1 200 OK
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <jnlps>
-    <jnlp>
-      <name>pedagogica-emf</name>
-      <url>http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/basic-emf.jnlp</url>
-      <id>6</id>
-    </jnlp>
-    <jnlp>
-      <name>basic-emf</name>
-      <url>http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/basic-emf.jnlp</url>
-      <id>7</id>
-    </jnlp>
-  </jnlps>
+ return data:
+
+ <?xml version="1.0" encoding="UTF-8"?>
+ <jnlps>
+ <jnlp>
+ <name>pedagogica-emf</name>
+ <url>[http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/basic-emf.jnlp]</url>
+ <id>6</id>
+ <config-version-id>1</config-version-id>
+ </jnlp>
+ <jnlp>
+ <name>basic-emf</name>
+ <url>[http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/basic-emf.jnlp]</url>
+ <id>7</id>
+ <config-version-id>1</config-version-id>
+ </jnlp>
+ </jnlps>
 {panel}
-
 Example:
-
 {panel}
-  curl -i -X GET -H 'Accept: application/xml' http://rails.dev.concord.org/sds/1/jnlp    
-  HTTP/1.1 200 OK 
-  Date: Tue, 15 Aug 2006 23:10:55 GMT
-  Content-Type: application/xml
-  Content-Length: 349
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/1/jnlp]
+ HTTP/1.1 200 OK
+ Date: Tue, 15 Aug 2006 23:10:55 GMT
+ Content-Type: application/xml
+ Content-Length: 349
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <jnlps>
-    <jnlp>
-      <name>pedagogica-emf</name>
-      <url>http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/basic-emf.jnlp</url>
-      <id>6</id>
-    </jnlp>
-    <jnlp>
-      <name>basic-emf</name>
-      <url>http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/basic-emf.jnlp</url>
-      <id>7</id>
-    </jnlp>
-  </jnlps>
+ <?xml version="1.0" encoding="UTF-8"?>
+ <jnlps>
+ <jnlp>
+ <name>pedagogica-emf</name>
+ <url>[http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/basic-emf.jnlp]</url>
+ <id>6</id>
+ <config_version_id>1</config_version_id>
+ </jnlp>
+ <jnlp>
+ <name>basic-emf</name>
+ <url>[http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/basic-emf.jnlp]</url>
+ <id>7</id>
+ <config-version-id>1</config-version-id>
+ </jnlp>
+ </jnlps>
 {panel}
-
 {anchor:Info on one SDS jnlp for a portal}
+
 h4. Info on one SDS jnlp for a portal.
 
 {panel}
-  GET 
-  Accept: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id/jnlp/<sds_jnlp_id>
+ GET
+ Accept: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id/jnlp/<sds_jnlp_id>
 
-  return headers:
+ return headers:
 
-  return data:
+ return data:
 
-  <jnlp id="<sds_jnlp_id>", name="all_emf", url="http:/tels.org/all_emf.jnlp"/>
+ <jnlp id="<sds_jnlp_id>", name="all_emf", url="http:/tels.org/all_emf.jnlp"/>
 {panel}
-
 Examples:
 
 Requesting a resource that exists:
-
 {panel}
-  curl -i -X GET -H 'Accept: application/xml' http://rails.dev.concord.org/sds/1/jnlp/6
-  HTTP/1.1 200 OK 
-  Date: Tue, 15 Aug 2006 23:12:49 GMT
-  Content-Type: application/xml
-  Content-Length: 178
-  Location: http://rails.dev.concord.org/sds/1/jnlp/6
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/1/jnlp/6]
+ HTTP/1.1 200 OK
+ Date: Tue, 15 Aug 2006 23:12:49 GMT
+ Content-Type: application/xml
+ Content-Length: 178
+ Location: [http://rails.dev.concord.org/sds/1/jnlp/6]
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <jnlp>
-    <name>pedagogica-emf</name>
-    <url>http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/basic-emf.jnlp</url>
-    <id>6</id>
-  </jnlp>
+ <?xml version="1.0" encoding="UTF-8"?>
+ <jnlp>
+ <name>pedagogica-emf</name>
+ <url>[http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/basic-emf.jnlp]</url>
+ <id>6</id>
+ <config-version-id>1</config-version-id>
+ </jnlp>
 {panel}
-
 Requesting a resource that doesn't exist:
+{panel}
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/1/jnlp/16]
+
+ HTTP/1.1 404 Not Found
+ Date: Tue, 15 Aug 2006 23:12:57 GMT
+ Content-Type: text/html; charset=UTF-8
+ Content-Length: 0
+{panel}
+\---\-{anchor:Info on all SDS config_versions for the sds}
+
+h3. Info on all SDS config_versions for the sds
+{panel}
+ GET
+ Accept: application/xml
+[http://rails.dev.concord.org/sds/]config_versions
+
+ return headers:
+
+ return data:
+
+ <config-versions>
+   <config-verison>
+     <name>#name#</name>
+     <id>#id#</id>
+     <version>#version#</version>
+     <template>#template#</template>
+     <created-at>#timestamp#</created-at>
+     <updated-at>#timestamp#</created-at>
+   </config-version>
+    #possibly more <config-version>#
+ </config-versions>
+{panel}
+Examples:
 
 {panel}
-  curl -i -X GET -H 'Accept: application/xml' http://rails.dev.concord.org/sds/1/jnlp/16
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/config_versions]
+ HTTP/1.1 200 OK
+ Date: Fri, 01 Feb 2008 15:43:05 GMT
+ Content-Type: application/xml
+ Content-Length: 7027
 
-  HTTP/1.1 404 Not Found 
-  Date: Tue, 15 Aug 2006 23:12:57 GMT
-  Content-Type: text/html; charset=UTF-8
-  Content-Length: 0
+<?xml version="1.0" encoding="UTF-8"?>
+<config-versions type="array">
+  <config-version>
+    <created-at type="datetime">2008-01-30T14:58:40Z</created-at>
+    <id type="integer">1</id>
+    <name>Original version</name>
+    <template>... cut for size ...</template>
+    <updated-at type="datetime">2008-01-31T18:52:40Z</updated-at>
+    <version type="float">1.0</version>
+  </config-version>
+  <config-version>
+     ... cut for size ...
+  </config-version>
+</config-versions>
 {panel}
 
-----
 
-{anchor:Create a new SDS user for a portal}
+\---\-{anchor:Info on one SDS config_version for the sds}
+
+h4. Info on one SDS config_version for the sds
+{panel}
+ GET
+ Accept: application/xml
+[http://rails.dev.concord.org/sds/]config_versions/<config_version_id>
+
+ return headers:
+
+ return data:
+
+   <config-verison>
+     <name>#name#</name>
+     <id>#id#</id>
+     <version>#version#</version>
+     <template>#template#</template>
+     <created-at>timestamp#</created-at>
+     <updated-at>#timestamp#</created-at>
+   </config-version>
+{panel}
+Examples:
+
+Requesting a resource that exists:
+{panel}
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/config_versions/1]
+ HTTP/1.1 200 OK
+ Date: Fri, 01 Feb 2008 15:52:02 GMT
+ Content-Type: application/xml
+ Content-Length: 3129
+ 
+ <?xml version="1.0" encoding="UTF-8"?>
+ <config-version>
+    <created-at type="datetime">2008-01-30T14:58:40Z</created-at>
+    <id type="integer">1</id>
+    <name>Original version</name>
+    <template>... cut for size ...</template>
+    <updated-at type="datetime">2008-01-31T18:52:40Z</updated-at>
+    <version type="float">1.0</version>
+  </config-version>
+{panel}
+Requesting a resource that doesn't exist:
+{panel}
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/config_versions/123]
+
+ HTTP/1.1 404 Not Found
+ Date: Fri, 01 Feb 2008 15:52:02 GMT
+ Content-Type: text/html; charset=UTF-8
+ Content-Length: 9
+
+ Not Found
+{panel}
+
+\---\-{anchor:Create a new SDS user for a portal}
+
 h3. Create a new SDS user for a portal.
 
 The url returned in the Location header is a direct link to the actual SAIL user resource for this specific sds user.
-
 {panel}
-    POST 
-    Content-Type: application/xml
-    http://rails.dev.concord.org/sds/<sds_portal_id>/user
+ POST
+ Content-Type: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/sail_user
 
+ POST data:
 
-  POST data:
+ <sail-user>
+ <first-name>Stephen</first-name>
+ <last-name>Smith</last-name>
+ </sail-user>
 
-    <user>
-      <first-name>Stephen</first-name>
-      <last-name>Smith</last-name>
-    </user>
+ return headers:
 
-  return headers:
-    
-    success:
+ success:
 
-      HTTP/1.1 201 Created 
-      Location: http://rails.dev.concord.org/sds/<sds_portal_id>/user/<sds_user_id>
+ HTTP/1.1 201 Created
+ Location: [http://rails.dev.concord.org/sds/]<sds_portal_id>/sail_user/<sds_user_id>
 
-    failure:
-    
-      HTTP/1.1 400 Bad Request 
+ failure:
 
-  return data:
-  
-    none
+ HTTP/1.1 400 Bad Request
+
+ return data:
+
+ none
 {panel}
-
 Example:
-
 {panel}
-  curl -i -H 'Content-Type: application/xml' -X POST -d '<user><first-name>Stephen</first-name><last-name>Smith</last-name></user>' http://rails.dev.concord.org/sds/1/user
-  
-  HTTP/1.1 201 Created 
-  Date: Wed, 16 Aug 2006 01:04:44 GMT
-  Content-Type: application/xml
-  Content-Length: 0
-  Location: http://rails.dev.concord.org/sds/1/user/4
-{panel}
+ curl \-i \-H 'Content-Type: application/xml' \-X POST \-d '<sail-user><first-name>Stephen</first-name><last-name>Smith</last-name></sail-user>' [http://rails.dev.concord.org/sds/1/sail_user]
 
+ HTTP/1.1 201 Created
+ Date: Wed, 16 Aug 2006 01:04:44 GMT
+ Content-Type: application/xml
+ Content-Length: 0
+ Location: [http://rails.dev.concord.org/sds/1/sail_user/4]
+{panel}
 {anchor:Info on all SDS users for a portal}
+
 h4. Info on all SDS users for a portal.
 
 {panel}
-  GET 
-  Accept: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id>/user
+ GET
+ Accept: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/sail_user
 
-  return headers:
+ return headers:
 
-  return data:
+ return data:
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <users>
-    <user>
-      <uuid>1846687e-2cc0-11db-8906-0016cb92217d</uuid>
-      <id>2</id>
-      <first-name>Stephen</first-name>
-      <last-name>Bannasch</last-name>
-    </user>
-    <user>
-      <uuid>c096c6c6-2cc1-11db-92b2-0016cb92217d</uuid>
-      <id>3</id>
-      <first-name>Stephen</first-name>
-      <last-name>Bannasch</last-name>
-    </user>
-  </users>
+ <?xml version="1.0" encoding="UTF-8"?>
+ <sail-users>
+ <sail-user>
+ <uuid>1846687e-2cc0-11db-8906-0016cb92217d</uuid>
+ <id>2</id>
+ <first-name>Stephen</first-name>
+ <last-name>Bannasch</last-name>
+ </sail-user>
+ <sail-user>
+ <uuid>c096c6c6-2cc1-11db-92b2-0016cb92217d</uuid>
+ <id>3</id>
+ <first-name>Stephen</first-name>
+ <last-name>Bannasch</last-name>
+ </sail-user>
+ </sail-users>
 {panel}
-
 Example:
-
 {panel}
-  curl -i -X GET -H 'Accept: application/xml' http://rails.dev.concord.org/sds/1/user   
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/1/sail_user]
 
-  HTTP/1.1 200 OK 
-  Date: Wed, 16 Aug 2006 00:57:22 GMT
-  Content-Type: application/xml
-  Content-Length: 470
+ HTTP/1.1 200 OK
+ Date: Wed, 16 Aug 2006 00:57:22 GMT
+ Content-Type: application/xml
+ Content-Length: 470
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <users>
-    <user>
-      <uuid>1846687e-2cc0-11db-8906-0016cb92217d</uuid>
-      <id>2</id>
-      <first-name>Stephen</first-name>
-      <last-name>Bannasch</last-name>
-    </user>
-    <user>
-      <uuid>c096c6c6-2cc1-11db-92b2-0016cb92217d</uuid>
-      <id>3</id>
-      <first-name>Stephen</first-name>
-      <last-name>Bannasch</last-name>
-    </user>
-  </users>
+ <?xml version="1.0" encoding="UTF-8"?>
+ <sail-users>
+ <sail-user>
+ <uuid>1846687e-2cc0-11db-8906-0016cb92217d</uuid>
+ <id>2</id>
+ <first-name>Stephen</first-name>
+ <last-name>Bannasch</last-name>
+ </sail-user>
+ <sail-user>
+ <uuid>c096c6c6-2cc1-11db-92b2-0016cb92217d</uuid>
+ <id>3</id>
+ <first-name>Stephen</first-name>
+ <last-name>Bannasch</last-name>
+ </sail-user>
+ </sail-users>
 {panel}
-
 {anchor:Info on one SDS user for a portal}
+
 h4. Info on one SDS user for a portal.
 
 You can specify a user resource with either the sds_user_id or the sds_user_uuid.
-
 {panel}
-  GET 
-  Accept: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id>/user/<sds_user_id>
+ GET
+ Accept: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/sail_user/<sds_user_id>
 OR
-  http://rails.dev.concord.org/sds/<sds_portal_id>/user/<sds_user_uuid>
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/sail_user/<sds_user_uuid>
 
-  return headers:
+ return headers:
 
-    HTTP/1.1 200 OK 
-    Date: Wed, 16 Aug 2006 00:58:54 GMT
-    Content-Type: application/xml
-    Content-Length: 225
-    Location: http://rails.dev.concord.org/sds/<sds_portal_id>/user/<sds_user_id>
-    
-  return data:
+ HTTP/1.1 200 OK
+ Date: Wed, 16 Aug 2006 00:58:54 GMT
+ Content-Type: application/xml
+ Content-Length: 225
+ Location: [http://rails.dev.concord.org/sds/]<sds_portal_id>/sail_user/<sds_user_id>
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <user>
-    <uuid>c096c6c6-2cc1-11db-92b2-0016cb92217d</uuid>
-    <id>3</id>
-    <first-name>Stephen</first-name>
-    <last-name>Bannasch</last-name>
-  </user>
+ return data:
+
+ <?xml version="1.0" encoding="UTF-8"?>
+ <sail-user>
+ <uuid>c096c6c6-2cc1-11db-92b2-0016cb92217d</uuid>
+ <id>3</id>
+ <first-name>Stephen</first-name>
+ <last-name>Bannasch</last-name>
+ </sail-user>
 {panel}
-
 Example:
-
 {panel}
-  curl -i -X GET -H 'Accept: application/xml' http://rails.dev.concord.org/sds/1/user/122
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/1/sail_user/122]
 
-  HTTP/1.1 200 OK
-  Date: Thu, 21 Dec 2006 16:16:43 GMT
-  Server: lighttpd/1.4.11
-  Content-Type: application/xml
-  Location: http://rails.dev.concord.org/sds/1/user/122
-  Cache-Control: no-cache
-  Content-Length: 213
-  
-  <?xml version="1.0" encoding="UTF-8"?>
-  <user>
-    <portal-id>1</portal-id>
-    <uuid>2ee80540-8479-11db-b8e9-0014c2c34555</uuid>
-    <id>122</id>
-    <first-name>Trudi</first-name>
-    <last-name>Tester</last-name>
-  </user>
-  
+ HTTP/1.1 200 OK
+ Date: Thu, 21 Dec 2006 16:16:43 GMT
+ Server: lighttpd/1.4.11
+ Content-Type: application/xml
+ Location: [http://rails.dev.concord.org/sds/1/user/122]
+ Cache-Control: no-cache
+ Content-Length: 213
+
+ <?xml version="1.0" encoding="UTF-8"?>
+ <sail-user>
+ <portal-id>1</portal-id>
+ <uuid>2ee80540-8479-11db-b8e9-0014c2c34555</uuid>
+ <id>122</id>
+ <first-name>Trudi</first-name>
+ <last-name>Tester</last-name>
+ </sail-user>
+
 OR
-  
-  curl -i -X GET -H 'Accept: application/xml' http://rails.dev.concord.org/sds/1/user/2ee80540-8479-11db-b8e9-0014c2c34555 
 
-  HTTP/1.1 200 OK
-  Date: Thu, 21 Dec 2006 16:17:00 GMT
-  Server: lighttpd/1.4.11
-  Content-Type: application/xml
-  Location: http://rails.dev.concord.org/sds/1/user/2ee80540-8479-11db-b8e9-0014c2c34555
-  Cache-Control: no-cache
-  Content-Length: 213
-  
-  <?xml version="1.0" encoding="UTF-8"?>
-  <user>
-    <portal-id>1</portal-id>
-    <uuid>2ee80540-8479-11db-b8e9-0014c2c34555</uuid>
-    <id>122</id>
-    <first-name>Trudi</first-name>
-    <last-name>Tester</last-name>
-  </user>
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/1/sail_user/2ee80540-8479-11db-b8e9-0014c2c34555]
+
+ HTTP/1.1 200 OK
+ Date: Thu, 21 Dec 2006 16:17:00 GMT
+ Server: lighttpd/1.4.11
+ Content-Type: application/xml
+ Location: [http://rails.dev.concord.org/sds/1/user/2ee80540-8479-11db-b8e9-0014c2c34555]
+ Cache-Control: no-cache
+ Content-Length: 213
+
+ <?xml version="1.0" encoding="UTF-8"?>
+ <sail-user>
+ <portal-id>1</portal-id>
+ <uuid>2ee80540-8479-11db-b8e9-0014c2c34555</uuid>
+ <id>122</id>
+ <first-name>Trudi</first-name>
+ <last-name>Tester</last-name>
+ </sail-user>
 {panel}
+\---\-{anchor:Create a new SDS offering for a portal}
 
-----
-
-{anchor:Create a new SDS offering for a portal}
 h3. Create a new SDS offering for a portal.
 
 The url returned in the Location header is a direct link to the actual SDS offering resource for this specific sds offering.
-
 {panel}
-  POST 
-  Content-Type: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id>/offering
+ POST
+ Content-Type: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/offering
 
+ POST data:
 
-  POST data:
+ <offering>
+ <name>Airbag Incomplete</name>
+ <curnit-id>1</curnit-id>
+ <jnlp-id>6</jnlp-id>
+ </offering>
 
-    <offering>
-      <name>Airbag Incomplete</name>
-      <curnit-id>1</curnit-id>
-      <jnlp-id>6</jnlp-id>
-    </offering>
+ return headers:
 
-  return headers:
+ HTTP/1.1 201 Created
+ Location: [http://rails.dev.concord.org/sds/]<sds_portal_id>/offering/<sds_offering_id>
 
-    HTTP/1.1 201 Created 
-    Location: http://rails.dev.concord.org/sds/<sds_portal_id>/offering/<sds_offering_id>
+ return data:
 
-  return data:
-
-    none
+ none
 {panel}
-
 Example:
-
 {panel}
-  curl -i -H 'Content-Type: application/xml' -X POST -d '<offering><name>Airbag Incomplete</name><curnit-id>1</curnit-id><jnlp-id>6</jnlp-id></offering>' http://rails.dev.concord.org/sds/1/offering
+ curl \-i \-H 'Content-Type: application/xml' \-X POST \-d '<offering><name>Airbag Incomplete</name><curnit-id>1</curnit-id><jnlp-id>6</jnlp-id></offering>' [http://rails.dev.concord.org/sds/1/offering]
 
-  HTTP/1.1 201 Created 
-  Date: Wed, 16 Aug 2006 02:33:28 GMT
-  Content-Type: application/xml
-  Content-Length: 0
-  Location: http://rails.dev.concord.org/sds/1/offering/3
+ HTTP/1.1 201 Created
+ Date: Wed, 16 Aug 2006 02:33:28 GMT
+ Content-Type: application/xml
+ Content-Length: 0
+ Location: [http://rails.dev.concord.org/sds/1/offering/3]
 {panel}
-
 {anchor:Info on all SDS offerings for a portal}
+
 h4. Info on all SDS offerings for a portal.
 
 {panel}
-  GET 
-  Accept: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id>/offering
+ GET
+ Accept: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/offering
 
-  return headers:
+ return headers:
 
-      HTTP/1.1 200 OK 
-      
-  return data:
+ HTTP/1.1 200 OK
 
-  <offerings>
-    <offering>
-      <name>Airbag Complete</name>
-      <curnit-id>1</curnit-id>
-      <id>1</id>
-      <jnlp-id>6</jnlp-id>
-    </offering>
-    <offering>
-      <name>Air Bag Test</name>
-      <curnit-id>2</curnit-id>
-      <id>2</id>
-      <jnlp-id>6</jnlp-id>
-    </offering>
-  </offerings>
+ return data:
+
+ <offerings>
+ <offering>
+ <name>Airbag Complete</name>
+ <curnit-id>1</curnit-id>
+ <id>1</id>
+ <jnlp-id>6</jnlp-id>
+ </offering>
+ <offering>
+ <name>Air Bag Test</name>
+ <curnit-id>2</curnit-id>
+ <id>2</id>
+ <jnlp-id>6</jnlp-id>
+ </offering>
+ </offerings>
 {panel}
-
 Example:
-
 {panel}
-  curl -i -X GET -H 'Accept: application/xml' http://rails.dev.concord.org/sds/1/offering
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/1/offering]
 
-  HTTP/1.1 200 OK 
-  Date: Wed, 16 Aug 2006 02:28:10 GMT
-  Content-Type: application/xml
-  Content-Length: 397
+ HTTP/1.1 200 OK
+ Date: Wed, 16 Aug 2006 02:28:10 GMT
+ Content-Type: application/xml
+ Content-Length: 397
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <offerings>
-    <offering>
-      <name>Airbag Complete</name>
-      <curnit-id>1</curnit-id>
-      <id>1</id>
-      <jnlp-id>6</jnlp-id>
-    </offering>
-    <offering>
-      <name>Air Bag Test</name>
-      <curnit-id>2</curnit-id>
-      <id>2</id>
-      <jnlp-id>6</jnlp-id>
-    </offering>
-  </offerings>
+ <?xml version="1.0" encoding="UTF-8"?>
+ <offerings>
+ <offering>
+ <name>Airbag Complete</name>
+ <curnit-id>1</curnit-id>
+ <id>1</id>
+ <jnlp-id>6</jnlp-id>
+ </offering>
+ <offering>
+ <name>Air Bag Test</name>
+ <curnit-id>2</curnit-id>
+ <id>2</id>
+ <jnlp-id>6</jnlp-id>
+ </offering>
+ </offerings>
 {panel}
-
 {anchor:Info on one SDS offering for a portal}
+
 h4. Info on one SDS offering for a portal.
 
 {panel}
-  GET 
-  Accept: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id>/offering/<sds_offering_id>
+ GET
+ Accept: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/offering/<sds_offering_id>
 
-  return headers:
+ return headers:
 
-  return data:
-
+ return data:
 {panel}
-
 Example:
+{panel}
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/1/offering/3]
+
+ HTTP/1.1 200 OK
+ Date: Wed, 16 Aug 2006 02:35:02 GMT
+ Content-Type: application/xml
+ Content-Length: 195
+ Location: [http://rails.dev.concord.org/sds/1/offering/3]
+
+ <?xml version="1.0" encoding="UTF-8"?>
+ <offering>
+ <name>Airbag Incomplete</name>
+ <curnit-id>1</curnit-id>
+ <id>3</id>
+ <jnlp-id>6</jnlp-id>
+ </offering>
+{panel}
+h4. Curnitmap of one SDS offering for a portal
 
 {panel}
-  curl -i -X GET -H 'Accept: application/xml' http://rails.dev.concord.org/sds/1/offering/3
+ GET
+ Accept: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/offering/<sds_offering_id>/curnitmap
 
-  HTTP/1.1 200 OK 
-  Date: Wed, 16 Aug 2006 02:35:02 GMT
-  Content-Type: application/xml
-  Content-Length: 195
-  Location: http://rails.dev.concord.org/sds/1/offering/3
+ return headers:
+ success:
+ HTTP/1.1 200 OK
+ failure:
+ HTTP/1.1 404 Not Found - General failure, don't expect this same request to ever work. Details will be included in the response body.
+ HTTP/1.1 408 Timeout - Failure because the curnitmap generation process timed out. Re-requesting this URL _may_ work, but is not guaranteed to work.
+ HTTP/1.1 5xx - Failure because something went wrong with the server. Notify the appropriate people.
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <offering>
-    <name>Airbag Incomplete</name>
-    <curnit-id>1</curnit-id>
-    <id>3</id>
-    <jnlp-id>6</jnlp-id>
-  </offering>
+ return data:
+ see example
 {panel}
+Example:
+{panel}
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/1/offering/4/curnitmap]
+ HTTP/1.1 200 OK
+ Date: Tue, 15 Aug 2006 22:48:16 GMT
+ Content-Type: application/xml
+ Content-Length: 179
+ Location: [http://rails.dev.concord.org/sds/1/offering/4/curnitmap]
 
-----
+<?xml version="1.0" encoding="UTF-8"?>
 
-{anchor:Create a new SDS workgroup for an offering}
+<pas_curnit_map>
+<project podUUID="cccccccc-0002-3878-0000-000000000000"
+title="Global Warming: Virtual Earth">
+<activity podUUID="dddddddd-6004-0000-0000-000000000000"
+title="Identifying the Problem" number="0">
+<step podUUID="dddddddd-6004-0001-0000-000000000000"
+title="1. Global Warming is happening" number="0" type="Display"
+classname="org.telscenter.pas.steps.DisplayPage" />
+<step podUUID="dddddddd-6004-0002-0000-000000000000"
+title="2. The Science behind Global Warming" number="1"
+type="Display" classname="org.telscenter.pas.steps.DisplayPage" />
+<step podUUID="dddddddd-6004-0003-0000-000000000000"
+title="3. Your contribution to Global Warming" number="2"
+type="Display" classname="org.telscenter.pas.steps.DisplayPage" />
+<step podUUID="dddddddd-6004-0004-0000-000000000000"
+title="4. Your Ecological Footprint" number="3" type="Evidence"
+classname="org.telscenter.pas.steps.Evidence" />
+<step podUUID="dddddddd-6004-0005-0000-000000000000"
+title="5. Your Ecological Footprint Data" number="4" type="Note"
+classname="org.telscenter.pas.steps.Note">
+<rim rimname="undefined6"
+prompt="<\!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "[http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;&#xA;&lt;html] xmlns="[http://www.w3.org/1999/xhtml&quot;&gt;&#xA;&lt;head&gt;&#xA;&lt;meta] name="generator" content="HTML Tidy for Java (vers. 26 Sep 2004), see www.w3.org" /> <title></title> </head> <body> Partner #2: How many football fields of land are required to support your lifestyle? </body> </html> " />
+<rim rimname="undefined4"
+prompt="<\!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "[http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;&#xA;&lt;html] xmlns="[http://www.w3.org/1999/xhtml&quot;&gt;&#xA;&lt;head&gt;&#xA;&lt;meta] name="generator" content="HTML Tidy for Java (vers. 26 Sep 2004), see www.w3.org" /> <title></title> </head> <body> Partner #1: How many football fields of land are required to support your lifestyle? </body> </html> " />
+...
+</step>
+...
+</activity>
+...
+</project>
+</pas_curnit_map>
+{panel}
+\---\-{anchor:Create a new SDS workgroup for an offering}
+
 h3. Create a new SDS workgroup for an offering.
 
 {panel}
-  POST 
-  Content-Type: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id>/workgroup
+ POST
+ Content-Type: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/workgroup
 
+ POST data:
 
-  POST data:
+ <workgroup>
+ <name>Pineapples</name>
+ <offering-id>1</offering-id>
+ </workgroup>
 
-  <workgroup>
-    <name>Pineapples</name>
-    <offering-id>1</offering-id>
-  </workgroup>
-    
-  return headers:
+ return headers:
 
-    HTTP/1.1 201 Created 
-    Location: http://rails.dev.concord.org/sds/<sds_portal_id>/workgroup/<workgroup_id>
+ HTTP/1.1 201 Created
+ Location: [http://rails.dev.concord.org/sds/]<sds_portal_id>/workgroup/<workgroup_id>
 
-  return data:
-  
-    none
+ return data:
+
+ none
 {panel}
-
 Example:
-
 {panel}
-  curl -i -H 'Content-Type: application/xml' -X POST -d '<workgroup><name>Pineapples</name><offering-id>1</offering-id></workgroup>' http://rails.dev.concord.org/sds/1/workgroup
+ curl \-i \-H 'Content-Type: application/xml' \-X POST \-d '<workgroup><name>Pineapples</name><offering-id>1</offering-id></workgroup>' [http://rails.dev.concord.org/sds/1/workgroup]
 
-  HTTP/1.1 201 Created 
-  Date: Wed, 16 Aug 2006 07:43:39 GMT
-  Content-Type: application/xml
-  Content-Length: 0
-  Location: http://rails.dev.concord.org/sds/1/workgroup/10
+ HTTP/1.1 201 Created
+ Date: Wed, 16 Aug 2006 07:43:39 GMT
+ Content-Type: application/xml
+ Content-Length: 0
+ Location: [http://rails.dev.concord.org/sds/1/workgroup/10]
 {panel}
-
 {anchor:Create the membership for a workgroup}
+
 h4. Create the membership for a workgroup
-  
+
 {panel}
-  POST 
-  Content-Type: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id>/workgroup/<sds_workgroup_id>/membership
+ POST
+ Content-Type: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/workgroup/<sds_workgroup_id>/membership
 
+ POST data:
 
-  POST data:
+ <workgroup-memberships>
+ <workgroup-membership>
+ <sail-user-id>7</sail-user-id>
+ </workgroup-membership>
+ <workgroup-membership>
+ <sail-user-id>4</sail-user-id>
+ </workgroup-membership>
+ </workgroup-memberships>
 
-  <workgroup-memberships>
-    <workgroup-membership>
-      <user-id>7</user-id>
-    </workgroup-membership>
-    <workgroup-membership>
-      <user-id>4</user-id>
-    </workgroup-membership>
-  </workgroup-memberships>
-  
-  return headers:
+ return headers:
 
-    HTTP/1.1 201 Created 
-    Location: http://rails.dev.concord.org/sds/<sds_portal_id>/workgroup/<sds_workgroup_id>
+ HTTP/1.1 201 Created
+ Location: [http://rails.dev.concord.org/sds/]<sds_portal_id>/workgroup/<sds_workgroup_id>
 
-  return data:
-  
-    none
+ return data:
+
+ none
 {panel}
-
 Example:
-
 {panel}
-  curl -i -H 'Content-Type: application/xml' -X POST -d '<workgroup-memberships><workgroup-membership><user-id>7</user-id></workgroup-membership><workgroup-membership><user-id>4</user-id></workgroup-membership></workgroup-memberships>' http://rails.dev.concord.org/sds/1/workgroup/8/membership
+ curl \-i \-H 'Content-Type: application/xml' \-X POST \-d '<workgroup-memberships><workgroup-membership><sail-user-id>7</sail-user-id></workgroup-membership><workgroup-membership><sail-user-id>4</sail-user-id></workgroup-membership></workgroup-memberships>' [http://rails.dev.concord.org/sds/1/workgroup/8/membership]
 
-  HTTP/1.1 201 Created 
-  Date: Wed, 16 Aug 2006 07:30:54 GMT
-  Content-Type: application/xml
-  Content-Length: 0
-  Location: http://rails.dev.concord.org/sds/1/workgroup/8/membership
+ HTTP/1.1 201 Created
+ Date: Wed, 16 Aug 2006 07:30:54 GMT
+ Content-Type: application/xml
+ Content-Length: 0
+ Location: [http://rails.dev.concord.org/sds/1/workgroup/8/membership]
 {panel}
-
 {anchor:List the members in a workgroup}
+
 h4. List the members in a workgroup
 
 {panel}
-  GET 
-  Accept: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id>workgroup/<sds_workgroup_id>
+ GET
+ Accept: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/workgroup/<sds_workgroup_id>/membership
 
-  return headers:
+ return headers:
 
-    HTTP/1.1 200 OK 
-    
-  return data:
-  
-    <?xml version="1.0" encoding="UTF-8"?>
-    <workgroup-memberships>
-      <workgroup-membership>
-        <user-id>7</user-id>
-      </workgroup-membership>
-      <workgroup-membership>
-        <user-id>4</user-id>
-      </workgroup-membership>
-    </workgroup-memberships>
+ HTTP/1.1 200 OK
+
+ return data:
+
+ <?xml version="1.0" encoding="UTF-8"?>
+ <workgroup-memberships>
+ <workgroup-membership>
+ <sail-user-id>7</sail-user-id>
+ </workgroup-membership>
+ <workgroup-membership>
+ <sail-user-id>4</sail-user-id>
+ </workgroup-membership>
+ </workgroup-memberships>
 {panel}
-
 Example:
-
 {panel}
-  curl -i -X GET -H 'Accept: application/xml' http://rails.dev.concord.org/sds/1/workgroup/8/membership
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/1/workgroup/8/membership]
 
-  HTTP/1.1 200 OK 
-  Date: Wed, 16 Aug 2006 07:31:14 GMT
-  Content-Type: application/xml
-  Content-Length: 240
-  
-  <?xml version="1.0" encoding="UTF-8"?>
-  <workgroup-memberships>
-    <workgroup-membership>
-      <user-id>7</user-id>
-    </workgroup-membership>
-    <workgroup-membership>
-      <user-id>4</user-id>
-    </workgroup-membership>
-  </workgroup-memberships>
+ HTTP/1.1 200 OK
+ Date: Wed, 16 Aug 2006 07:31:14 GMT
+ Content-Type: application/xml
+ Content-Length: 240
+
+ <?xml version="1.0" encoding="UTF-8"?>
+ <workgroup-memberships>
+ <workgroup-membership>
+ <sail-user-id>7</sail-user-id>
+ </workgroup-membership>
+ <workgroup-membership>
+ <sail-user-id>4</sail-user-id>
+ </workgroup-membership>
+ </workgroup-memberships>
 {panel}
-
 {anchor:Info on all SDS workgroups for a portal}
+
 h4. Info on all SDS workgroups for a portal.
 
 {panel}
-  GET 
-  Accept: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id>/workgroup
+ GET
+ Accept: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/workgroup
 
-  return headers:
+ return headers:
 
-    HTTP/1.1 200 OK 
+ HTTP/1.1 200 OK
 
-  return data:
+ return data:
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <workgroups>
-      <workgroup>
-        <name>Oranges</name>
-        <uuid>4bf7c82a-2ced-11db-92b2-0016cb92217d</uuid>
-        <id>8</id>
-        <version>1</version>
-        <offering-id>1</offering-id>
-      </workgroup>
-      <workgroup>
-        <name>Bannanas</name>
-        <uuid>5ea6e6f4-2ced-11db-92b2-0016cb92217d</uuid>
-        <id>9</id>
-        <version>1</version>
-        <offering-id>1</offering-id>
-      </workgroup>
-    </workgroups>
+ <?xml version="1.0" encoding="UTF-8"?>
+ <workgroups>
+ <workgroup>
+ <name>Oranges</name>
+ <uuid>4bf7c82a-2ced-11db-92b2-0016cb92217d</uuid>
+ <id>8</id>
+ <version>1</version>
+ <offering-id>1</offering-id>
+ </workgroup>
+ <workgroup>
+ <name>Bannanas</name>
+ <uuid>5ea6e6f4-2ced-11db-92b2-0016cb92217d</uuid>
+ <id>9</id>
+ <version>1</version>
+ <offering-id>1</offering-id>
+ </workgroup>
+ </workgroups>
 {panel}
-
 Example:
-
 {panel}
-  curl -i -X GET -H 'Accept: application/xml' http://rails.dev.concord.org/sds/1/workgroup 
-  HTTP/1.1 200 OK 
-  Date: Wed, 16 Aug 2006 06:06:55 GMT
-  Content-Type: application/xml
-  Content-Length: 507
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/1/workgroup]
+ HTTP/1.1 200 OK
+ Date: Wed, 16 Aug 2006 06:06:55 GMT
+ Content-Type: application/xml
+ Content-Length: 507
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <workgroups>
-    <workgroup>
-      <name>Oranges</name>
-      <uuid>4bf7c82a-2ced-11db-92b2-0016cb92217d</uuid>
-      <id>8</id>
-      <version>1</version>
-      <offering-id>1</offering-id>
-    </workgroup>
-    <workgroup>
-      <name>Bannanas</name>
-      <uuid>5ea6e6f4-2ced-11db-92b2-0016cb92217d</uuid>
-      <id>9</id>
-      <version>1</version>
-      <offering-id>1</offering-id>
-    </workgroup>
-  </workgroups>
+ <?xml version="1.0" encoding="UTF-8"?>
+ <workgroups>
+ <workgroup>
+ <name>Oranges</name>
+ <uuid>4bf7c82a-2ced-11db-92b2-0016cb92217d</uuid>
+ <id>8</id>
+ <version>1</version>
+ <offering-id>1</offering-id>
+ </workgroup>
+ <workgroup>
+ <name>Bannanas</name>
+ <uuid>5ea6e6f4-2ced-11db-92b2-0016cb92217d</uuid>
+ <id>9</id>
+ <version>1</version>
+ <offering-id>1</offering-id>
+ </workgroup>
+ </workgroups>
 {panel}
-
 {anchor:Info on one SDS workgroup for a portal}
+
 h4. Info on one SDS workgroup for a portal.
 
 {panel}
-  GET 
-  Accept: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id>/workgroup/<sds_workgroup_id>
+ GET
+ Accept: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/workgroup/<sds_workgroup_id>
 
-  return headers:
+ return headers:
 
-    HTTP/1.1 200 OK 
+ HTTP/1.1 200 OK
 
-  return data:
+ return data:
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <workgroup>
-      <name>Oranges</name>
-      <uuid>4bf7c82a-2ced-11db-92b2-0016cb92217d</uuid>
-      <id>8</id>
-      <version>1</version>
-      <offering-id>1</offering-id>
-    </workgroup>
+ <?xml version="1.0" encoding="UTF-8"?>
+ <workgroup>
+ <name>Oranges</name>
+ <uuid>4bf7c82a-2ced-11db-92b2-0016cb92217d</uuid>
+ <id>8</id>
+ <version>1</version>
+ <offering-id>1</offering-id>
+ </workgroup>
 {panel}
-
 Example:
+{panel}
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/1/workgroup/8]
+
+ HTTP/1.1 200 OK
+ Date: Wed, 16 Aug 2006 06:07:52 GMT
+ Content-Type: application/xml
+ Content-Length: 243
+ Location: [http://rails.dev.concord.org/sds/1/workgroup/8]
+
+ <?xml version="1.0" encoding="UTF-8"?>
+ <workgroup>
+ <name>Oranges</name>
+ <uuid>4bf7c82a-2ced-11db-92b2-0016cb92217d</uuid>
+ <id>8</id>
+ <version>1</version>
+ <offering-id>1</offering-id>
+ </workgroup>
+{panel}
+{anchor:Info on all SDS workgroups for an offering}
+
+h4. Info on all SDS workgroups for an offering.
 
 {panel}
-  curl -i -X GET -H 'Accept: application/xml' http://rails.dev.concord.org/sds/1/workgroup/8
+ GET
+ Accept: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/offering/<sds_offering_id>/workgroups
 
-  HTTP/1.1 200 OK 
-  Date: Wed, 16 Aug 2006 06:07:52 GMT
-  Content-Type: application/xml
-  Content-Length: 243
-  Location: http://rails.dev.concord.org/sds/1/workgroup/8
+ return headers:
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <workgroup>
-    <name>Oranges</name>
-    <uuid>4bf7c82a-2ced-11db-92b2-0016cb92217d</uuid>
-    <id>8</id>
-    <version>1</version>
-    <offering-id>1</offering-id>
-  </workgroup>
+ HTTP/1.1 200 OK
+
+ return data:
+
+ <?xml version="1.0" encoding="UTF-8"?>
+ <workgroups>
+ <workgroup>
+ <name>Oranges</name>
+ <uuid>4bf7c82a-2ced-11db-92b2-0016cb92217d</uuid>
+ <id>8</id>
+ <version>1</version>
+ <offering-id>1</offering-id>
+ </workgroup>
+ <workgroup>
+ <name>Bannanas</name>
+ <uuid>5ea6e6f4-2ced-11db-92b2-0016cb92217d</uuid>
+ <id>9</id>
+ <version>1</version>
+ <offering-id>1</offering-id>
+ </workgroup>
+ </workgroups>
 {panel}
+Example:
+{panel}
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/3/offering/171/workgroups]
+ HTTP/1.1 200 OK
+ Date: Wed, 16 Aug 2006 06:06:55 GMT
+ Content-Type: application/xml
+ Content-Length: 507
 
-----
+ <?xml version="1.0" encoding="UTF-8"?>
+ <workgroups>
+ <workgroup>
+ <name>Oranges</name>
+ <uuid>4bf7c82a-2ced-11db-92b2-0016cb92217d</uuid>
+ <id>8</id>
+ <version>1</version>
+ <offering-id>1</offering-id>
+ </workgroup>
+ <workgroup>
+ <name>Bannanas</name>
+ <uuid>5ea6e6f4-2ced-11db-92b2-0016cb92217d</uuid>
+ <id>9</id>
+ <version>1</version>
+ <offering-id>1</offering-id>
+ </workgroup>
+ </workgroups>
+{panel}
+\---\-{anchor:Producing a Java Webstart JNLP}
 
-{anchor:Producing a Java Webstart JNLP}
 h3. Producing a Java Webstart JNLP file
 
 Before the SDS will generate a valid jnlp for running a SAIl curnit an sds Offering must be made which consists of references to a curnit and a template jnlp used to run the curnit. In addition at least one sds workgroup associated with the Offering must be created. Once these resources are created you can construct a url to start the curnit by either specifying the workgroup or a user in an existing workgroup.
-
 # implicit workgroup
-http://rails.dev.concord.org/sds/<sds_portal_id>/offering/<sds_offering_id>/jnlp/<sds_workgroup_id>
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/offering/<sds_offering_id>/jnlp/<sds_workgroup_id>
 # explicit workgroup
-http://rails.dev.concord.org/sds/<sds_portal_id>/offering/<sds_offering_id>/jnlp/workgroup/<sds_workgroup_id>
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/offering/<sds_offering_id>/jnlp/workgroup/<sds_workgroup_id>
 # explicit user
-http://rails.dev.concord.org/sds/<sds_portal_id>/offering/<sds_offering_id>/jnlp/user/<sds_user_id>
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/offering/<sds_offering_id>/jnlp/user/<sds_user_id>
 
 A workgroup id or user id are needed to produce a jnlp however the argument in the application-desc which points to a config file adds a workgroup version number. This is needed in the case where the members of a workgroup change while a client session is in progress. In this case when the session information is saved it will be related to the workgroup version in existence when the session was started.
-
 {panel}
-  GET
-  Accept: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id>/offering/<sds_offering_id>/jnlp/<sds_workgroup_id>
+ GET
+ Accept: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/offering/<sds_offering_id>/jnlp/<sds_workgroup_id>
 
-  OR
-  
-  http://rails.dev.concord.org/sds/<sds_portal_id>/offering/<sds_offering_id>/jnlp/workgroup/<sds_workgroup_id>
-  http://rails.dev.concord.org/sds/<sds_portal_id>/offering/<sds_offering_id>/jnlp/user/<sds_user_id>
-  
-  return headers:
+ OR
 
-    HTTP/1.1 200 OK 
+ [http://rails.dev.concord.org/sds/]<sds_portal_id>/offering/<sds_offering_id>/jnlp/workgroup/<sds_workgroup_id>
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/offering/<sds_offering_id>/jnlp/user/<sds_user_id>
 
-  return data:
-  
-    <?xml version="1.0" encoding="UTF-8"?>
-    <jnlp href="http://rails.dev.concord.org/sds/1/offering/1/jnlp/8/3" spec="1.0+" codebase="http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/">
-      <information>
-        <title>Preview Pas Pedagogica</title>
-        <vendor>Concord Consortium</vendor>
-        <homepage href="http://rails.dev.concord.org/sds/1/offering/1"/>
-        <description>Preview Pas Pedagogica</description>
-        <icon href="sail_orangecirc_64.gif" height="64" width="64"/>
-        <offline-allowed/>
-      </information>
-      <security>
-        <all-permissions/>
-      </security>
-      <resources>
-        <j2se max-heap-size="128m" version="1.4.2+" initial-heap-size="32m"/>
-        <jar href="concurrent/concurrent.jar" version="1.3.4"/>
-        <jar href="com.webrenderer/webrenderer-win.jar" version="3.0"/>
-        <jar href="org.telscenter/pas-learner-runtime.jar" version="0.4.3-20060727.051158-20"/>
-        <jar href="com.webrenderer/webrenderer.jar" version="3.0"/>
-        <jar href="log4j/log4j.jar" version="1.2.8"/>
-        <jar href="ekit/ekit.jar" version="1.1"/>
-        <jar href="org.eclipse.emf/ecore.jar" version="2.2.0-SNAPSHOT"/>
-        <jar href="jgoodies/looks.jar" version="1.3.1"/>
-        <jar href="jgroups/jgroups-all.jar" version="2.2.8"/>
-        <jar href="org.eclipse.emf/common.jar" version="2.2.0-SNAPSHOT"/>
-        <jar href="commons-beanutils/commons-beanutils.jar" version="1.7.0"/>
-        <jar href="com.l2fprod.common/l2fprod-common-tasks.jar" version="6.2"/>
-        <jar href="com.webrenderer/webrenderer-osx.jar" version="3.0"/>
-        <jar href="net.sf.sail/sail-data-emf.jar" version="0.1.0-20060724.065806-5" main="true"/>
-        <jar href="jug/jug.jar" version="1.1.2"/>
-        <jar href="swing/swing.jar" version="1.7"/>
-        <jar href="jsr223/script.jar" version="1.0ea"/>
-        <jar href="jdom/jdom.jar" version="1.0"/>
-        <jar href="com.lowagie/itext.jar" version="1.3.1"/>
-        <jar href="jgoodies/binding.jar" version="1.0"/>
-        <jar href="aelfred/aelfred.jar" version="1.1.1"/>
-        <jar href="mysql/mysql-connector-java.jar" version="3.1.12"/>
-        <jar href="commons-io/commons-io.jar" version="1.1"/>
-        <jar href="com.l2fprod.common/l2fprod-common-sheet.jar" version="6.2"/>
-        <jar href="javax.activation/activation.jar" version="1.1"/>
-        <jar href="org.telscenter/pedraw.jar" version="1.3.0-20060717.010643-2"/>
-        <jar href="commons-logging/commons-logging.jar" version="1.0.3"/>
-        <jar href="vldocking/vldocking.jar" version="2.0.5"/>
-        <jar href="xito/dialog.jar" version="0.9"/>
-        <jar href="xstream/xstream.jar" version="1.1.2"/>
-        <jar href="tablelayout/TableLayout.jar" version="20020517"/>
-        <jar href="com.toedter/jcalendar.jar" version="1.2.2"/>
-        <jar href="net.sf.nachocalendar/nachocalendar.jar" version="0.21"/>
-        <jar href="commons-lang/commons-lang.jar" version="2.0"/>
-        <jar href="org.eclipse.emf/ecore-xmi.jar" version="2.2.0-SNAPSHOT"/>
-        <jar href="rhino/js.jar" version="1.6R2"/>
-        <jar href="javax.mail/mail.jar" version="1.4"/>
-        <jar href="com.l2fprod.common/l2fprod-common-shared.jar" version="6.2"/>
-        <jar href="net.sf.sail/sail-core.jar" version="0.4.5-20060723.044604-14"/>
-        <jar href="org.telscenter/sensemaker.jar" version="1.3.3"/>
-        <jar href="jmdns/jmdns.jar" version="1.0rc2"/>
-        <jar href="xpp3/xpp3.jar" version="1.1.3.4-RC8"/>
-      </resources>
-      <application-desc main-class="net.sf.sail.emf.launch.EMFLauncher3">
-        <argument>http://rails.dev.concord.org/sds/1/offering/1/config/8/3</argument>
-      </application-desc>
-    </jnlp>  
+ return headers:
+
+ HTTP/1.1 200 OK
+
+ return data:
+
+ <?xml version="1.0" encoding="UTF-8"?>
+ <jnlp href="http://rails.dev.concord.org/sds/1/offering/1/jnlp/8/3"   spec="1.0+" codebase="http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/">
+ <information>
+ <title>Preview Pas Pedagogica</title>
+ <vendor>Concord Consortium</vendor>
+ <homepage href="http://rails.dev.concord.org/sds/1/offering/1"  />
+ <description>Preview Pas Pedagogica</description>
+ <icon href="sail_orangecirc_64.gif"   height="64" width="64"/>
+ <offline-allowed/>
+ </information>
+ <security>
+ <all-permissions/>
+ </security>
+ <resources>
+ <j2se max-heap-size="128m" version="1.4.2+" initial-heap-size="32m"/>
+ <jar href="concurrent/concurrent.jar"   version="1.3.4"/>
+ <jar href="com.webrenderer/webrenderer-win.jar"   version="3.0"/>
+ <jar href="org.telscenter/pas-learner-runtime.jar"   version="0.4.3-20060727.051158-20"/>
+ <jar href="com.webrenderer/webrenderer.jar"   version="3.0"/>
+ <jar href="log4j/log4j.jar"   version="1.2.8"/>
+ <jar href="ekit/ekit.jar"   version="1.1"/>
+ <jar href="org.eclipse.emf/ecore.jar"   version="2.2.0-SNAPSHOT"/>
+ <jar href="jgoodies/looks.jar"   version="1.3.1"/>
+ <jar href="jgroups/jgroups-all.jar"   version="2.2.8"/>
+ <jar href="org.eclipse.emf/common.jar"   version="2.2.0-SNAPSHOT"/>
+ <jar href="commons-beanutils/commons-beanutils.jar"   version="1.7.0"/>
+ <jar href="com.l2fprod.common/l2fprod-common-tasks.jar"   version="6.2"/>
+ <jar href="com.webrenderer/webrenderer-osx.jar"   version="3.0"/>
+ <jar href="net.sf.sail/sail-data-emf.jar"   version="0.1.0-20060724.065806-5" main="true"/>
+ <jar href="jug/jug.jar"   version="1.1.2"/>
+ <jar href="swing/swing.jar"   version="1.7"/>
+ <jar href="jsr223/script.jar"   version="1.0ea"/>
+ <jar href="jdom/jdom.jar"   version="1.0"/>
+ <jar href="com.lowagie/itext.jar"   version="1.3.1"/>
+ <jar href="jgoodies/binding.jar"   version="1.0"/>
+ <jar href="aelfred/aelfred.jar"   version="1.1.1"/>
+ <jar href="mysql/mysql-connector-java.jar"   version="3.1.12"/>
+ <jar href="commons-io/commons-io.jar"   version="1.1"/>
+ <jar href="com.l2fprod.common/l2fprod-common-sheet.jar"   version="6.2"/>
+ <jar href="javax.activation/activation.jar"   version="1.1"/>
+ <jar href="org.telscenter/pedraw.jar"   version="1.3.0-20060717.010643-2"/>
+ <jar href="commons-logging/commons-logging.jar"   version="1.0.3"/>
+ <jar href="vldocking/vldocking.jar"   version="2.0.5"/>
+ <jar href="xito/dialog.jar"   version="0.9"/>
+ <jar href="xstream/xstream.jar"   version="1.1.2"/>
+ <jar href="tablelayout/TableLayout.jar"   version="20020517"/>
+ <jar href="com.toedter/jcalendar.jar"   version="1.2.2"/>
+ <jar href="net.sf.nachocalendar/nachocalendar.jar"   version="0.21"/>
+ <jar href="commons-lang/commons-lang.jar"   version="2.0"/>
+ <jar href="org.eclipse.emf/ecore-xmi.jar"   version="2.2.0-SNAPSHOT"/>
+ <jar href="rhino/js.jar"   version="1.6R2"/>
+ <jar href="javax.mail/mail.jar"   version="1.4"/>
+ <jar href="com.l2fprod.common/l2fprod-common-shared.jar"   version="6.2"/>
+ <jar href="net.sf.sail/sail-core.jar"   version="0.4.5-20060723.044604-14"/>
+ <jar href="org.telscenter/sensemaker.jar"   version="1.3.3"/>
+ <jar href="jmdns/jmdns.jar"   version="1.0rc2"/>
+ <jar href="xpp3/xpp3.jar"   version="1.1.3.4-RC8"/>
+ </resources>
+ <application-desc main-class="net.sf.sail.emf.launch.EMFLauncher3">
+ <argument>[http://rails.dev.concord.org/sds/1/offering/1/config/8/3]</argument>
+ </application-desc>
+ </jnlp>
 {panel}
-
 Example:
-
 {panel}
-  curl -i -X GET -H 'Accept: application/xml' http://rails.dev.concord.org/sds/1/offering/1/jnlp/8
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/1/offering/1/jnlp/8]
 
-  HTTP/1.1 200 OK 
-  Date: Wed, 16 Aug 2006 09:28:54 GMT
-  Content-Type: application/x-java-jnlp-file
-  Content-Disposition: attachment; filename=testjnlp.jnlp
-  Content-Length: 3221
+ HTTP/1.1 200 OK
+ Date: Wed, 16 Aug 2006 09:28:54 GMT
+ Content-Type: application/x-java-jnlp-file
+ Content-Disposition: attachment; filename=testjnlp.jnlp
+ Content-Length: 3221
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <jnlp href="http://rails.dev.concord.org/sds/1/offering/1/jnlp/8?version=3" spec="1.0+" codebase="http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/">
-    <information>
-      <title>Preview Pas Pedagogica</title>
-      <vendor>Concord Consortium</vendor>
-      <homepage href="http://rails.dev.concord.org/sds/1/offering/1"/>
-      <description>Preview Pas Pedagogica</description>
-      <icon href="sail_orangecirc_64.gif" height="64" width="64"/>
-  <offline-allowed/>
-    </information>
-  <security>    <all-permissions/>  </security><resources>    <j2se max-heap-size='128m' version='1.4.2+' initial-heap-size='32m'/>    <jar href='concurrent/concurrent.jar' version='1.3.4'/><jar href='com.webrenderer/webrenderer-win.jar' version='3.0'/><jar href='org.telscenter/pas-learner-runtime.jar' version='0.4.3-20060727.051158-20'/><jar href='com.webrenderer/webrenderer.jar' version='3.0'/><jar href='log4j/log4j.jar' version='1.2.8'/><jar href='ekit/ekit.jar' version='1.1'/><jar href='org.eclipse.emf/ecore.jar' version='2.2.0-SNAPSHOT'/><jar href='jgoodies/looks.jar' version='1.3.1'/><jar href='jgroups/jgroups-all.jar' version='2.2.8'/><jar href='org.eclipse.emf/common.jar' version='2.2.0-SNAPSHOT'/><jar href='commons-beanutils/commons-beanutils.jar' version='1.7.0'/><jar href='com.l2fprod.common/l2fprod-common-tasks.jar' version='6.2'/><jar href='com.webrenderer/webrenderer-osx.jar' version='3.0'/><jar href='net.sf.sail/sail-data-emf.jar' version='0.1.0-20060724.065806-5' main='true'/><jar href='jug/jug.jar' version='1.1.2'/><jar href='swing/swing.jar' version='1.7'/><jar href='jsr223/script.jar' version='1.0ea'/><jar href='jdom/jdom.jar' version='1.0'/><jar href='com.lowagie/itext.jar' version='1.3.1'/><jar href='jgoodies/binding.jar' version='1.0'/><jar href='aelfred/aelfred.jar' version='1.1.1'/><jar href='mysql/mysql-connector-java.jar' version='3.1.12'/><jar href='commons-io/commons-io.jar' version='1.1'/><jar href='com.l2fprod.common/l2fprod-common-sheet.jar' version='6.2'/><jar href='javax.activation/activation.jar' version='1.1'/><jar href='org.telscenter/pedraw.jar' version='1.3.0-20060717.010643-2'/><jar href='commons-logging/commons-logging.jar' version='1.0.3'/><jar href='vldocking/vldocking.jar' version='2.0.5'/><jar href='xito/dialog.jar' version='0.9'/><jar href='xstream/xstream.jar' version='1.1.2'/><jar href='tablelayout/TableLayout.jar' version='20020517'/><jar href='com.toedter/jcalendar.jar' version='1.2.2'/><jar href='net.sf.nachocalendar/nachocalendar.jar' version='0.21'/><jar href='commons-lang/commons-lang.jar' version='2.0'/><jar href='org.eclipse.emf/ecore-xmi.jar' version='2.2.0-SNAPSHOT'/><jar href='rhino/js.jar' version='1.6R2'/><jar href='javax.mail/mail.jar' version='1.4'/><jar href='com.l2fprod.common/l2fprod-common-shared.jar' version='6.2'/><jar href='net.sf.sail/sail-core.jar' version='0.4.5-20060723.044604-14'/><jar href='org.telscenter/sensemaker.jar' version='1.3.3'/><jar href='jmdns/jmdns.jar' version='1.0rc2'/><jar href='xpp3/xpp3.jar' version='1.1.3.4-RC8'/>  </resources><application-desc main-class='net.sf.sail.emf.launch.EMFLauncher3'>    <argument>http://rails.dev.concord.org/sds/1/offering/1/config/8/3</argument>  </application-desc></jnlp>
+ <?xml version="1.0" encoding="UTF-8"?>
+ <jnlp href="http://rails.dev.concord.org/sds/1/offering/1/jnlp/8?version=3"   spec="1.0+" codebase="http://tels-develop.soe.berkeley.edu:8080/maven-jnlp/">
+ <information>
+ <title>Preview Pas Pedagogica</title>
+ <vendor>Concord Consortium</vendor>
+ <homepage href="http://rails.dev.concord.org/sds/1/offering/1"  />
+ <description>Preview Pas Pedagogica</description>
+ <icon href="sail_orangecirc_64.gif"   height="64" width="64"/>
+ <offline-allowed/>
+ </information>
+ <security>    <all-permissions/>  </security><resources>    <j2se max-heap-size='128m' version='1.4.2+' initial-heap-size='32m'/>    <jar href='concurrent/concurrent.jar' version='1.3.4'/><jar href='com.webrenderer/webrenderer-win.jar' version='3.0'/><jar href='org.telscenter/pas-learner-runtime.jar' version='0.4.3-20060727.051158-20'/><jar href='com.webrenderer/webrenderer.jar' version='3.0'/><jar href='log4j/log4j.jar' version='1.2.8'/><jar href='ekit/ekit.jar' version='1.1'/><jar href='org.eclipse.emf/ecore.jar' version='2.2.0-SNAPSHOT'/><jar href='jgoodies/looks.jar' version='1.3.1'/><jar href='jgroups/jgroups-all.jar' version='2.2.8'/><jar href='org.eclipse.emf/common.jar' version='2.2.0-SNAPSHOT'/><jar href='commons-beanutils/commons-beanutils.jar' version='1.7.0'/><jar href='com.l2fprod.common/l2fprod-common-tasks.jar' version='6.2'/><jar href='com.webrenderer/webrenderer-osx.jar' version='3.0'/><jar href='net.sf.sail/sail-data-emf.jar' version='0.1.0-20060724.065806-5' main='true'/><jar href='jug/jug.jar' version='1.1.2'/><jar href='swing/swing.jar' version='1.7'/><jar href='jsr223/script.jar' version='1.0ea'/><jar href='jdom/jdom.jar' version='1.0'/><jar href='com.lowagie/itext.jar' version='1.3.1'/><jar href='jgoodies/binding.jar' version='1.0'/><jar href='aelfred/aelfred.jar' version='1.1.1'/><jar href='mysql/mysql-connector-java.jar' version='3.1.12'/><jar href='commons-io/commons-io.jar' version='1.1'/><jar href='com.l2fprod.common/l2fprod-common-sheet.jar' version='6.2'/><jar href='javax.activation/activation.jar' version='1.1'/><jar href='org.telscenter/pedraw.jar' version='1.3.0-20060717.010643-2'/><jar href='commons-logging/commons-logging.jar' version='1.0.3'/><jar href='vldocking/vldocking.jar' version='2.0.5'/><jar href='xito/dialog.jar' version='0.9'/><jar href='xstream/xstream.jar' version='1.1.2'/><jar href='tablelayout/TableLayout.jar' version='20020517'/><jar href='com.toedter/jcalendar.jar' version='1.2.2'/><jar href='net.sf.nachocalendar/nachocalendar.jar' version='0.21'/><jar href='commons-lang/commons-lang.jar' version='2.0'/><jar href='org.eclipse.emf/ecore-xmi.jar' version='2.2.0-SNAPSHOT'/><jar href='rhino/js.jar' version='1.6R2'/><jar href='javax.mail/mail.jar' version='1.4'/><jar href='com.l2fprod.common/l2fprod-common-shared.jar' version='6.2'/><jar href='net.sf.sail/sail-core.jar' version='0.4.5-20060723.044604-14'/><jar href='org.telscenter/sensemaker.jar' version='1.3.3'/><jar href='jmdns/jmdns.jar' version='1.0rc2'/><jar href='xpp3/xpp3.jar' version='1.1.3.4-RC8'/>  </resources><application-desc main-class='net.sf.sail.emf.launch.EMFLauncher3'>    <argument>[http://rails.dev.concord.org/sds/1/offering/1/config/8/3]</argument>  </application-desc></jnlp>
 {panel}
+\---\-{anchor:Adding additional portal-specific config parameters}
 
-----
-
-{anchor:Adding additional portal-specific config parameters}
 h4. Adding additional portal-specific config parameters
 
 Additional portal-specific data can be added to the sail learner session by appending it to the end of the jnlp url in standard HTTP GET key/value format. For example in this url:
 
-  http://rails.dev.concord.org/sds/1/offering/23/jnlp/17?projectName=My%20Test%20Project&projectID=23
+ [http://rails.dev.concord.org/sds/1/offering/23/jnlp/17?projectName=My%20Test%20Project&projectID=23]
 
 Two additional session parameters will be added when sail starts up:
 
-  projectName: "My Test Project"
-  projectID: 23
+ projectName: "My Test Project"
+ projectID: 23
 
 These properties are then available to the Bean of a Pod though the SessionService interface.
 
-See: 
+See:
 
-  http://www.telscenter.org/confluence/display/SAIL/Session+Launch+Properties
+ [http://www.telscenter.org/confluence/display/SAIL/Session+Launch+Properties]
 
 for more info on the Java implementation.
 
 Right now this functionality is being used to pass to sail information used by the PAS-WISE legacy step that supports display of web content and learner interactivity rendered in WISE such as the discussion step.
 
-----
+\---\-{anchor:Producing a config file for the Java client}
 
-{anchor:Producing a config file for the Java client}
 h3. Producing a config file for the Java client.
 
 Right now the workgroup is not being passed in the config file (it is specified in the various urls) and instead the members of the workgroup are passed in as a collection of participants.
-
 {panel}
-  GET
-  Accept: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id>/offering/<sds_offering_id>/config/<sds_workgroup_id>
+ GET
+ Accept: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/offering/<sds_offering_id>/config/<sds_workgroup_id>
 
-  return headers:
+ return headers:
 
-    HTTP/1.1 200 OK 
+ HTTP/1.1 200 OK
 
-  return data:
+ return data:
 
-    config file in xml format (see example below)
+ config file in xml format (see example below)
 {panel}
-
 Example:
-
 {panel}
-  curl -i -X GET -H 'Accept: application/xml' http://rails.dev.concord.org/sds/1/offering/1/config/8/3
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/1/offering/1/config/8/3]
 
-  HTTP/1.1 200 OK 
-  Date: Wed, 16 Aug 2006 09:35:20 GMT
-  Content-Type: application/xml
-  Content-Length: 2032
+ HTTP/1.1 200 OK
+ Date: Wed, 16 Aug 2006 09:35:20 GMT
+ Content-Type: application/xml
+ Content-Length: 2032
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <java class="java.beans.XMLDecoder" version="1.4.0">
-    <object class="net.sf.sail.core.service.impl.CurnitUrlProviderImpl">
-      <void property="url">
-        <string>http://tels-develop.soe.berkeley.edu:8080/maven-jnlp//curnit-airbag.jar</string>
-      </void>
-    </object>
-    <object class="net.sf.sail.emf.launch.PortfolioManagerService">
-      <void property="portfolioUrlProvider">
-        <object class="net.sf.sail.emf.launch.XmlUrlStringProviderImpl">
-          <void property="urlString">
-            <string>http://rails.dev.concord.org/sds/1/offering/1/session/8/3</string>
-          </void>
-        </object>
-      </void>
-      <void property="sessionPoster">
-        <object class="net.sf.sail.emf.launch.SessionPoster">
-          <void property="postUrl">
-            <string>http://rails.dev.concord.org/sds/1/offering/1/session/8/3</string>
-          </void>
-        </object>
-      </void>
-    </object>
-    <object class="net.sf.sail.core.service.impl.LauncherServiceImpl"/>
-    <object class="net.sf.sail.emf.launch.EMFSailDataStoreService2"/>
-    <object class="net.sf.sail.core.service.impl.UserServiceImpl">
-      <void property="participants">
-        <void method="add">
-          <object class="net.sf.sail.core.entity.User">
-            <object class="net.sf.sail.core.uuid.UserUuid">
-              <string>341c16a4-2cc3-11db-92b2-0016cb92217d</string>
-            </object>
-            <string>Stephen Smith</string>
-          </object>
-        </void>
-        <void method="add">
-          <object class="net.sf.sail.core.entity.User">
-            <object class="net.sf.sail.core.uuid.UserUuid">
-              <string>01a373c6-2cc7-11db-92b2-0016cb92217d</string>
-            </object>
-            <string>Stephen Smith</string>
-          </object>
-        </void>
-      </void>
-      <void property="userLookupService">
-        <object class="net.sf.sail.core.service.impl.UserLookupServiceImpl"/>
-      </void>
-    </object>
-    <object class="net.sf.sail.core.service.impl.SessionLoadMonitor"/>
-    <object class="net.sf.sail.core.service.impl.SessionManagerImpl"/>
-  </java>
+ <?xml version="1.0" encoding="UTF-8"?>
+ <java class="java.beans.XMLDecoder" version="1.4.0">
+ <object class="net.sf.sail.core.service.impl.CurnitUrlProviderImpl">
+ <void property="url">
+ <string>[http://tels-develop.soe.berkeley.edu:8080/maven-jnlp//curnit-airbag.jar]</string>
+ </void>
+ </object>
+ <object class="net.sf.sail.emf.launch.PortfolioManagerService">
+ <void property="portfolioUrlProvider">
+ <object class="net.sf.sail.emf.launch.XmlUrlStringProviderImpl">
+ <void property="urlString">
+ <string>[http://rails.dev.concord.org/sds/1/offering/1/session/8/3]</string>
+ </void>
+ </object>
+ </void>
+ <void property="sessionPoster">
+ <object class="net.sf.sail.emf.launch.SessionPoster">
+ <void property="postUrl">
+ <string>[http://rails.dev.concord.org/sds/1/offering/1/session/8/3]</string>
+ </void>
+ </object>
+ </void>
+ </object>
+ <object class="net.sf.sail.core.service.impl.LauncherServiceImpl"/>
+ <object class="net.sf.sail.emf.launch.EMFSailDataStoreService2"/>
+ <object class="net.sf.sail.core.service.impl.UserServiceImpl">
+ <void property="participants">
+ <void method="add">
+ <object class="net.sf.sail.core.entity.User">
+ <object class="net.sf.sail.core.uuid.UserUuid">
+ <string>341c16a4-2cc3-11db-92b2-0016cb92217d</string>
+ </object>
+ <string>Stephen Smith</string>
+ </object>
+ </void>
+ <void method="add">
+ <object class="net.sf.sail.core.entity.User">
+ <object class="net.sf.sail.core.uuid.UserUuid">
+ <string>01a373c6-2cc7-11db-92b2-0016cb92217d</string>
+ </object>
+ <string>Stephen Smith</string>
+ </object>
+ </void>
+ </void>
+ <void property="userLookupService">
+ <object class="net.sf.sail.core.service.impl.UserLookupServiceImpl"/>
+ </void>
+ </object>
+ <object class="net.sf.sail.core.service.impl.SessionLoadMonitor"/>
+ <object class="net.sf.sail.core.service.impl.SessionManagerImpl"/>
+ </java>
 {panel}
+\---\-{anchor:Saving new session bundle files for the Java client}
 
-----
-
-{anchor:Saving new session bundle files for the Java client}
 h3. Saving new session bundle files for the Java client.
 
 {panel}
-  POST 
-  Content-Type: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id>/offering/<sds_offering_id>/bundle/<sds_workgroup_id>/<sds_workgroup_version>
+ POST
+ Content-Type: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/offering/<sds_offering_id>/bundle/<sds_workgroup_id>/<sds_workgroup_version>
 
+ POST data:
 
-  POST data:
+ <sessionBundles xmlns:xmi="http://www.omg.org/XMI" xmlns:sailuserdata="sailuserdata"/>
 
-    <sessionBundles xmlns:xmi="http://www.omg.org/XMI" xmlns:sailuserdata="sailuserdata"/>
+ return headers:
 
-  return headers:
+ HTTP/1.1 201 Created
+ Location: [http://rails.dev.concord.org/sds/]<sds_portal_id>/workgroup/<sds_workgroup_id>
 
-    HTTP/1.1 201 Created 
-    Location: http://rails.dev.concord.org/sds/<sds_portal_id>/workgroup/<sds_workgroup_id>
+ return data:
 
-  return data:
-  
-    none
+ none
 {panel}
-
 Example:
-
 {panel}
+ curl \-i \-H 'Content-Type: application/xml' \-X POST \-d '<sessionBundles xmlns:xmi="http://www.omg.org/XMI" xmlns:sailuserdata="sailuserdata"></sessionBundles>' [http://localhost:3000/1/offering/2/bundle/3/1]
 
-  curl -i -H 'Content-Type: application/xml' -X POST -d '<sessionBundles xmlns:xmi="http://www.omg.org/XMI" xmlns:sailuserdata="sailuserdata"></sessionBundles>' http://localhost:3000/1/offering/2/bundle/3/1
-
-  HTTP/1.1 201 Created 
-  Cache-Control: no-cache
-  Connection: Keep-Alive
-  Date: Sat, 28 Oct 2006 22:10:25 GMT
-  Content-Type: application/xml
-  Server: WEBrick/1.3.1 (Ruby/1.8.4/2005-12-24)
-  Content-Length: 0
-  Location: http://localhost:3000/1/offering/2/bundle/3/1
-  Content-Md5: C0LhalzTHn3vcOe41KY1xA==
+ HTTP/1.1 201 Created
+ Cache-Control: no-cache
+ Connection: Keep-Alive
+ Date: Sat, 28 Oct 2006 22:10:25 GMT
+ Content-Type: application/xml
+ Server: WEBrick/1.3.1 (Ruby/1.8.4/2005-12-24)
+ Content-Length: 0
+ Location: [http://localhost:3000/1/offering/2/bundle/3/1]
+ Content-Md5: C0LhalzTHn3vcOe41KY1xA==
 {panel}
-
 {anchor:Producing a collection of session bundle files for the Java client}
+
 h4. Producing a collection of session bundle files for the Java client.
 
 {panel}
-  GET
-  Accept: application/xml
-  http://rails.dev.concord.org/sds/<sds_portal_id>/offering/<sds_offering_id>/bundle/<sds_workgroup_id>/<sds_workgroup_version>
+ GET
+ Accept: application/xml
+[http://rails.dev.concord.org/sds/]<sds_portal_id>/offering/<sds_offering_id>/bundle/<sds_workgroup_id>/<sds_workgroup_version>
 
-  return headers:
+ return headers:
 
-    HTTP/1.1 200 OK 
+ HTTP/1.1 200 OK
 
-  return data:
+ return data:
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <sailuserdata:EPortfolio xmlns:xmi="http://www.omg.org/XMI" xmlns:sailuserdata="sailuserdata" xmi:version="2.0">
-      <sessionBundles xmlns:xmi="http://www.omg.org/XMI" xmlns:sailuserdata="sailuserdata"/>
-      <sessionBundles xmlns:xmi="http://www.omg.org/XMI" xmlns:sailuserdata="sailuserdata"/>
-    </sailuserdata:EPortfolio>
+ <?xml version="1.0" encoding="UTF-8"?>
+ <sailuserdata:EPortfolio xmlns:xmi="http://www.omg.org/XMI" xmlns:sailuserdata="sailuserdata" xmi:version="2.0">
+ <sessionBundles xmlns:xmi="http://www.omg.org/XMI" xmlns:sailuserdata="sailuserdata"/>
+ <sessionBundles xmlns:xmi="http://www.omg.org/XMI" xmlns:sailuserdata="sailuserdata"/>
+ </sailuserdata:EPortfolio>
 {panel}
-
 Example:
-
 {panel}
-  curl -i -X GET -H 'Accept: application/xml' http://rails.dev.concord.org/sds/1/offering/1/bundle/8/7
+ curl \-i \-X GET \-H 'Accept: application/xml' [http://rails.dev.concord.org/sds/1/offering/1/bundle/8/7]
 
-  HTTP/1.1 200 OK 
-  Date: Wed, 16 Aug 2006 11:15:41 GMT
-  Content-Type: text/xml; charset=UTF-8
-  Content-Length: 383
+ HTTP/1.1 200 OK
+ Date: Wed, 16 Aug 2006 11:15:41 GMT
+ Content-Type: text/xml; charset=UTF-8
+ Content-Length: 383
 
-  <?xml version="1.0" encoding="UTF-8"?>
-  <sailuserdata:EPortfolio xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:sailuserdata="sailuserdata">
-  <sessionBundles xmlns:xmi="http://www.omg.org/XMI" xmlns:sailuserdata="sailuserdata"></sessionBundles><sessionBundles xmlns:xmi="http://www.omg.org/XMI" xmlns:sailuserdata="sailuserdata"></sessionBundles></sailuserdata:EPortfolio>
+ <?xml version="1.0" encoding="UTF-8"?>
+ <sailuserdata:EPortfolio xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:sailuserdata="sailuserdata">
+ <sessionBundles xmlns:xmi="http://www.omg.org/XMI" xmlns:sailuserdata="sailuserdata"></sessionBundles><sessionBundles xmlns:xmi="http://www.omg.org/XMI" xmlns:sailuserdata="sailuserdata"></sessionBundles></sailuserdata:EPortfolio>
 {panel}
