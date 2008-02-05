@@ -85,8 +85,6 @@ class LogBundlesController < ApplicationController
         
         @log_bundle.content = content
         @log_bundle.workgroup_id = @workgroup.id
-        @log_bundle.portal_id = @portal.id
-        @log_bundle.offering_id = @offering.id
         
         if @log_bundle.save
           render(:xml => "", :status => :created, :location => url_for(:action => "show", :lid => @log_bundle.id))
@@ -101,8 +99,6 @@ class LogBundlesController < ApplicationController
       @log_bundle = LogBundle.new(params)
       @log_bundle.content = content
       @log_bundle.workgroup_id = @workgroup.id
-      @log_bundle.portal_id = @portal.id
-      @log_bundle.offering_id = @offering.id
     
       if @log_bundle.save
         flash[:notice] = 'LogBundle was successfully created.'

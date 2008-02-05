@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 65) do
+ActiveRecord::Schema.define(:version => 66) do
 
   create_table "sds_bundle_contents", :force => true do |t|
     t.text "content"
@@ -95,8 +95,6 @@ ActiveRecord::Schema.define(:version => 65) do
   create_table "sds_log_bundles", :force => true do |t|
     t.integer  "bundle_id"
     t.integer  "workgroup_id"
-    t.integer  "portal_id"
-    t.integer  "offering_id"
     t.string   "sail_session_uuid", :limit => 36, :default => "", :null => false
     t.string   "sail_curnit_uuid",  :limit => 36, :default => "", :null => false
     t.text     "content"
