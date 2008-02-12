@@ -157,7 +157,7 @@ private
 
   def log_memory(cust)
     pid = Process.pid
-    str = `ps -o vsz #{pid}`
+    str = `ps -o vsz -p #{pid}`
     req = request.env["REQUEST_URI"]
     mem = str[/[0-9]+/]
     logger.info("#{cust} -- PID: #{pid} -- MEM: #{mem} -- REQ: #{req}")
