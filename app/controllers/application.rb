@@ -21,12 +21,12 @@ include AuthenticatedSystem
 
   filter_parameter_logging "password"
 
+  around_filter :log_memory_filter
+  
   before_filter :find_portal
-  before_filter :log_memory_start
   before_filter :setup_request_var
  
-  after_filter :calc_content_length 
-  after_filter :log_memory_end
+  after_filter :calc_content_length
 
   # Pick a unique cookie name to distinguish our session data from other rails apps
   session :session_key => '_sds_session_id'
@@ -149,11 +149,9 @@ private
     end
   end
   
-  def log_memory_start
+  def log_memory_filter
     log_memory("START")
-  end
-  
-  def log_memory_end
+    yield
     log_memory("END")
   end
 
