@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 66) do
+ActiveRecord::Schema.define() do
 
   create_table "sds_bundle_contents", :force => true do |t|
     t.text "content"
@@ -25,12 +25,14 @@ ActiveRecord::Schema.define(:version => 66) do
     t.datetime "sail_session_end_time"
     t.string   "sail_curnit_uuid"
     t.string   "sail_session_uuid"
+    t.boolean  "content_well_formed_xml"
     t.integer  "bundle_content_id"
     t.text     "processing_error"
   end
 
-  add_index "sds_bundles", ["workgroup_id"], :name => "index_sds_bundles_on_workgroup_id"
-  add_index "sds_bundles", ["workgroup_version"], :name => "index_sds_bundles_on_workgroup_version"
+  add_index "sds_bundles", ["workgroup_id"], :name => "sds_bundles_workgroup_id_index"
+  add_index "sds_bundles", ["workgroup_version"], :name => "sds_bundles_workgroup_version_index"
+  add_index "sds_bundles", ["sail_session_start_time"], :name => "sds_bundles_sail_session_start_time_index"
 
   create_table "sds_config_versions", :force => true do |t|
     t.string   "name"
@@ -53,7 +55,7 @@ ActiveRecord::Schema.define(:version => 66) do
   create_table "sds_curnits", :force => true do |t|
     t.integer  "portal_id"
     t.string   "name",              :limit => 60,  :default => "", :null => false
-    t.string   "url",               :limit => 256, :default => "", :null => false
+    t.string   "url",               :limit => 256
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "pas_map"
@@ -65,7 +67,7 @@ ActiveRecord::Schema.define(:version => 66) do
     t.string   "title"
   end
 
-  add_index "sds_curnits", ["portal_id"], :name => "index_sds_curnits_on_portal_id"
+  add_index "sds_curnits", ["portal_id"], :name => "sds_curnits_portal_id_index"
 
   create_table "sds_errorbundles", :force => true do |t|
     t.integer  "offering_id"
@@ -80,7 +82,7 @@ ActiveRecord::Schema.define(:version => 66) do
   create_table "sds_jnlps", :force => true do |t|
     t.integer  "portal_id"
     t.string   "name",              :limit => 60,  :default => "", :null => false
-    t.string   "url",               :limit => 256, :default => "", :null => false
+    t.string   "url",               :limit => 256
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "body"
@@ -90,7 +92,7 @@ ActiveRecord::Schema.define(:version => 66) do
     t.integer  "config_version_id"
   end
 
-  add_index "sds_jnlps", ["portal_id"], :name => "index_sds_jnlps_on_portal_id"
+  add_index "sds_jnlps", ["portal_id"], :name => "sds_jnlps_portal_id_index"
 
   create_table "sds_log_bundles", :force => true do |t|
     t.integer  "bundle_id"
@@ -113,9 +115,9 @@ ActiveRecord::Schema.define(:version => 66) do
     t.datetime "close_offering"
   end
 
-  add_index "sds_offerings", ["portal_id"], :name => "index_sds_offerings_on_portal_id"
-  add_index "sds_offerings", ["curnit_id"], :name => "index_sds_offerings_on_curnit_id"
-  add_index "sds_offerings", ["jnlp_id"], :name => "index_sds_offerings_on_jnlp_id"
+  add_index "sds_offerings", ["portal_id"], :name => "sds_offerings_portal_id_index"
+  add_index "sds_offerings", ["curnit_id"], :name => "sds_offerings_curnit_id_index"
+  add_index "sds_offerings", ["jnlp_id"], :name => "sds_offerings_jnlp_id_index"
 
   create_table "sds_offerings_attributes", :force => true do |t|
     t.integer "offering_id"
@@ -123,7 +125,7 @@ ActiveRecord::Schema.define(:version => 66) do
     t.text    "value"
   end
 
-  add_index "sds_offerings_attributes", ["offering_id"], :name => "index_sds_offerings_attributes_on_offering_id"
+  add_index "sds_offerings_attributes", ["offering_id"], :name => "sds_offerings_attributes_offering_id_index"
 
   create_table "sds_pas_computational_input_values", :force => true do |t|
     t.integer "model_activity_modelrun_id"
@@ -152,7 +154,7 @@ ActiveRecord::Schema.define(:version => 66) do
     t.string  "text"
   end
 
-  add_index "sds_pas_findings", ["model_activity_dataset_id"], :name => "index_sds_pas_findings_on_model_activity_dataset_id"
+  add_index "sds_pas_findings", ["model_activity_dataset_id"], :name => "sds_pas_findings_model_activity_dataset_id_index"
 
   create_table "sds_pas_model_activity_datasets", :force => true do |t|
     t.integer  "sock_id"
@@ -209,9 +211,9 @@ ActiveRecord::Schema.define(:version => 66) do
     t.string  "extension"
   end
 
-  add_index "sds_pods", ["curnit_id"], :name => "index_sds_pods_on_curnit_id"
-  add_index "sds_pods", ["uuid"], :name => "index_sds_pods_on_uuid"
-  add_index "sds_pods", ["rim_name"], :name => "index_sds_pods_on_rim_name"
+  add_index "sds_pods", ["curnit_id"], :name => "sds_pods_curnit_id_index"
+  add_index "sds_pods", ["uuid"], :name => "sds_pods_uuid_index"
+  add_index "sds_pods", ["rim_name"], :name => "sds_pods_rim_name_index"
 
   create_table "sds_portal_urls", :force => true do |t|
     t.integer "portal_id"
@@ -245,7 +247,7 @@ ActiveRecord::Schema.define(:version => 66) do
 
   create_table "sds_roles_users", :id => false, :force => true do |t|
     t.integer "role_id"
-    t.integer "sds_user_id"
+    t.integer "user_id"
   end
 
   create_table "sds_sail_users", :force => true do |t|
@@ -257,13 +259,17 @@ ActiveRecord::Schema.define(:version => 66) do
     t.datetime "updated_at"
   end
 
+  create_table "sds_schema_info", :id => false, :force => true do |t|
+    t.integer "version"
+  end
+
   create_table "sds_sessions", :force => true do |t|
     t.string   "session_id"
     t.text     "data"
     t.datetime "updated_at"
   end
 
-  add_index "sds_sessions", ["session_id"], :name => "index_sds_sessions_on_session_id"
+  add_index "sds_sessions", ["session_id"], :name => "sds_sessions_session_id_index"
 
   create_table "sds_socks", :force => true do |t|
     t.datetime "created_at"
@@ -274,8 +280,8 @@ ActiveRecord::Schema.define(:version => 66) do
     t.boolean  "duplicate"
   end
 
-  add_index "sds_socks", ["bundle_id"], :name => "index_sds_socks_on_bundle_id"
-  add_index "sds_socks", ["pod_id"], :name => "index_sds_socks_on_pod_id"
+  add_index "sds_socks", ["bundle_id"], :name => "sds_socks_bundle_id_index"
+  add_index "sds_socks", ["pod_id"], :name => "sds_socks_pod_id_index"
 
   create_table "sds_users", :force => true do |t|
     t.string   "login"
@@ -292,25 +298,25 @@ ActiveRecord::Schema.define(:version => 66) do
   end
 
   create_table "sds_workgroup_memberships", :force => true do |t|
-    t.integer "sail_user_id", :null => false
-    t.integer "workgroup_id", :null => false
-    t.integer "version",      :null => false
+    t.integer "sail_user_id"
+    t.integer "workgroup_id", :default => 0, :null => false
+    t.integer "version",      :default => 0, :null => false
   end
 
-  add_index "sds_workgroup_memberships", ["sail_user_id"], :name => "index_sds_workgroup_memberships_on_sail_user_id"
-  add_index "sds_workgroup_memberships", ["workgroup_id"], :name => "index_sds_workgroup_memberships_on_workgroup_id"
+  add_index "sds_workgroup_memberships", ["sail_user_id"], :name => "sds_workgroup_memberships_user_id_index"
+  add_index "sds_workgroup_memberships", ["workgroup_id"], :name => "sds_workgroup_memberships_workgroup_id_index"
 
   create_table "sds_workgroups", :force => true do |t|
     t.integer  "portal_id"
     t.integer  "offering_id"
     t.string   "name",        :limit => 60, :default => "", :null => false
     t.string   "uuid",        :limit => 36, :default => "", :null => false
-    t.integer  "version",                                   :null => false
+    t.integer  "version",                   :default => 0,  :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "sds_workgroups", ["offering_id"], :name => "index_sds_workgroups_on_offering_id"
-  add_index "sds_workgroups", ["portal_id"], :name => "index_sds_workgroups_on_portal_id"
+  add_index "sds_workgroups", ["offering_id"], :name => "sds_workgroups_offering_id_index"
+  add_index "sds_workgroups", ["portal_id"], :name => "sds_workgroups_portal_id_index"
 
 end

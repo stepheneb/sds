@@ -15,6 +15,8 @@
 #  filename      :string(255)   
 #
 
+require 'open-uri'
+
 class Jnlp < ActiveRecord::Base  
   set_table_name "sds_jnlps"
 
