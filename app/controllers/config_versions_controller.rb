@@ -8,11 +8,12 @@ class ConfigVersionsController < ApplicationController
   # GET /config_versions
   # GET /config_versions.xml
   def index
-    @config_versions = ConfigVersion.find(:all)
-
     respond_to do |format|
       format.html # index.html.erb
-      format.xml  { render :xml => @config_versions }
+      format.xml  {
+        config_versions = ConfigVersion.find(:all)
+        render :xml => config_versions
+      }
     end
   end
 

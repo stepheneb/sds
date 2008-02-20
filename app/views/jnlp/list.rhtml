@@ -6,7 +6,7 @@
     <td><b>Name</b></td>
     <td><b>Url</b></td>
   </tr>
-  <% for jnlp in @jnlps %>
+  <% Jnlp.find(:all, :conditions => ['portal_id = ?',@portal.id]).each {|jnlp| %>
     <tr>
       <td><%= jnlp.id.to_s %></td>
       <td><%= jnlp.name %><br />
@@ -16,5 +16,5 @@
         <em>(<%= pluralize(jnlp.offerings.count, "offering")%>, created: <%= jnlp.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em>
       </td>
     </tr>
-  <% end %>
+  <% } %>
 </table>

@@ -15,10 +15,13 @@ class PortalController < ApplicationController
         render(:text => "<validation-errors>\n#{errors}</validation-errors>\n", :status => 400) # Bad Request
       end
     else
-      @portals = Portal.find(:all)
+      
       respond_to do |wants|
         wants.html
-        wants.xml { render :xml => (@portals.empty? ? "<portals />" : @portals.to_xml(:except => ['created_at', 'updated_at'])) }
+        wants.xml { 
+          portals = Portal.find(:all)
+          render :xml => (portals.empty? ? "<portals />" : portals.to_xml(:except => ['created_at', 'updated_at']))
+        }
       end
     end
   end

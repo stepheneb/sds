@@ -5,23 +5,17 @@
     <td><b>Id</b></td>
     <td><b>Info</b></td>
   </tr>
-  <% if @log_bundles.length == 0 -%>
+  <% LogBundle.find(:all, :conditions => ["workgroup_id = ?", @workgroup.id]).each {|log_bundle| %>
     <tr>
-    	<td colspan='2'>No logs.</td>
-	</tr>
-  <% else -%>
-	  <% @log_bundles.each do |log_bundle| %>
-	    <tr>
-	      <td><%= log_bundle.id.to_s %></td>
-	      <td>
-	        <%= link_to 'Show', :action => 'show', :lid => log_bundle %>
-			<% if log_bundle.bundle %>
-	        <em>(session: <%= log_bundle.bundle.sail_session_start_time.strftime("%a %b %d %H:%M %Z %Y") %>)</em>
-			<% else %>
-			<em>(created: <%= log_bundle.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em>
-			<% end %>
-	      </td>
-	    </tr>
-	  <% end %>
-  <% end -%>
+      <td><%= log_bundle.id.to_s %></td>
+      <td>
+        <%= link_to 'Show', :action => 'show', :lid => log_bundle %>
+		<% if log_bundle.bundle %>
+        <em>(session: <%= log_bundle.bundle.sail_session_start_time.strftime("%a %b %d %H:%M %Z %Y") %>)</em>
+		<% else %>
+		<em>(created: <%= log_bundle.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em>
+		<% end %>
+      </td>
+    </tr>
+  <% } %>
 </table>

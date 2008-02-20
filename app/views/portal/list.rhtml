@@ -16,7 +16,7 @@
       <td><b><%= Portal.columns[i].human_name %></b></td>
     <% end %>
   </tr>
-  <% for portal in @portals %>
+  <% Portal.find(:all).each { |portal| %>
     <tr>
       <% 0..3.times do |i| %>
         <td><%=h portal.send(Portal.columns[i].name) %></td>
@@ -26,5 +26,5 @@
           <%= link_to 'Edit', :action => 'edit', :id => portal %>
         </td>
     </tr>
-  <% end %>
+  <% } %>
 </table>

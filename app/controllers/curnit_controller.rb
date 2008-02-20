@@ -30,10 +30,13 @@ class CurnitController < ApplicationController
         render(:text => "<validation-errors>\n<error>\n#{e.message}\n</error>\n</validation-errors>\n", :status => 400) # Bad Request
       end
     else
-      @curnits = @portal.curnits
+      
       respond_to do |wants|
         wants.html
-        wants.xml { render :xml => (@curnits.empty? ? "<curnits />" : @curnits.to_xml(:except => ['created_at', 'updated_at'])) }
+        wants.xml {
+          curnits = @portal.curnits
+          render :xml => (curnits.empty? ? "<curnits />" : curnits.to_xml(:except => ['created_at', 'updated_at']))
+        }
       end
     end
   end

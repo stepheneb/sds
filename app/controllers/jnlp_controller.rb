@@ -43,10 +43,13 @@ class JnlpController < ApplicationController
             render(:text => "<validation-errors>\n#{errors}</validation-errors>\n", :status => 400) # Bad Request
           end
         else
-          @jnlps = @portal.jnlps
+          
           respond_to do |wants|
             wants.html
-            wants.xml { render :xml => (@jnlps.empty? ? "<jnlps />" : @jnlps.to_xml(:except => ['created_at', 'updated_at'])) }
+            wants.xml {
+              jnlps = @portal.jnlps
+              render :xml => (jnlps.empty? ? "<jnlps />" : jnlps.to_xml(:except => ['created_at', 'updated_at']))
+            }
           end
         end
       rescue => e

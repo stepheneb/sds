@@ -41,10 +41,12 @@ class OfferingController < ApplicationController
           render(:text => "Application error: #{e}", :status => 500)
       end
     else
-      @offerings = @portal.offerings
       respond_to do |wants|
         wants.html
-        wants.xml { render :xml => (@offerings.empty? ? "<offerings />" : @offerings.to_xml(:except => ['created_at', 'updated_at'])) }
+        wants.xml {
+          offerings = @portal.offerings
+          render :xml => (offerings.empty? ? "<offerings />" : offerings.to_xml(:except => ['created_at', 'updated_at']))
+        }
       end
     end
   end

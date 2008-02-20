@@ -24,11 +24,12 @@ class LogBundlesController < ApplicationController
     if request.post?
       create
     else
-      @log_bundles = LogBundle.find(:all, :conditions => ["workgroup_id = ?", @workgroup.id])
-  
       respond_to do |format|
         format.html # index.html.erb
-        format.xml  { render :xml => @log_bundles }
+        format.xml  {
+          log_bundles = LogBundle.find(:all, :conditions => ["workgroup_id = ?", @workgroup.id])
+          render :xml => log_bundles
+        }
       end
     end
   end

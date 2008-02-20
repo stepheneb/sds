@@ -5,7 +5,7 @@
     <td><b>Id</b></td>
     <td><b>Name</b></td>
   </tr>
-  <% for offering in @offerings %>
+  <% Offering.find(:all, :conditions => ['portal_id = ?', @portal.id]).each {|offering| %>
     <tr>
       <td><%= offering.id.to_s %></td>
       <td><%= offering.name %></td>
@@ -15,5 +15,5 @@
         <em>(<%= pluralize(offering.workgroups.count, "workgroup")%>, created: <%= offering.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em>
       </td>
     </tr>
-  <% end %>
+  <% } %>
 </table>
