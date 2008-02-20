@@ -150,17 +150,22 @@ private
   end
   
   def log_memory_filter
-    log_memory("START")
+    start_mem = log_memory("START")
     yield
-    log_memory("END")
+    log_memory("END", start_mem)
   end
 
-  def log_memory(cust)
+  def log_memory(cust, smem = 0)
     pid = Process.pid
     str = `ps -o vsz -p #{pid}`
     req = request.env["REQUEST_URI"]
     mem = str[/[0-9]+/]
-    logger.info("#{cust} -- PID: #{pid} -- MEM: #{mem} -- REQ: #{req}")
+    if smem == 0
+      logger.info("#{cust} -- PID: #{pid} -- MEM: #{mem} -- REQ: #{req}")
+    else
+      logger.info("#{cust} -- PID: #{pid} -- MEM: #{mem} -- DELTA: #{mem.to_i - smem.to_i} -- REQ: #{req}")
+    end
+    return mem
   end
  
  # copied from rails/actionpack/lib/action_controller/request.rb
