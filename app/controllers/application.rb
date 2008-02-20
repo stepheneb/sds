@@ -161,9 +161,9 @@ private
     req = request.env["REQUEST_URI"]
     mem = str[/[0-9]+/]
     if smem == 0
-      logger.info("#{cust} -- PID: #{pid} -- MEM: #{mem} -- REQ: #{req}")
+      logger.info("#{cust} -- PID: #{pid} -- MEM: #{mem} -- METHOD: #{request.method.to_s} -- REQ: #{req}")
     else
-      logger.info("#{cust} -- PID: #{pid} -- MEM: #{mem} -- DELTA: #{mem.to_i - smem.to_i} -- REQ: #{req}")
+      logger.info("#{cust} -- PID: #{pid} -- MEM: #{mem} -- DELTA: #{mem.to_i - smem.to_i} -- METHOD: #{request.method.to_s} -- REQ: #{req}")
     end
     return mem
   end
