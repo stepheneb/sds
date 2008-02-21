@@ -1,6 +1,6 @@
 <%= link_to 'List', :action => 'list' %>
 
-<% form_for(@offering)do |f| %>
+<% form_for(:offering, @offering)do |f| %>
   <%= render :partial => 'form' %>
   <%= f.submit "Create" %>
 <% end %>
