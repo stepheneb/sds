@@ -127,7 +127,6 @@ class WorkgroupController < ApplicationController
   def show
     begin
       @members = @workgroup.sail_users.version(@workgroup.version) # array of SailUser objects
-      @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects
       if request.get?
         respond_to do |wants|
           wants.html

@@ -6,7 +6,7 @@
   <%= %{
     Workgroup: "#{@workgroup.name}", <em>(id: #{@workgroup.id})</em><br />
     Members: #{@workgroup.member_names}, <em>(ids: #{@members.collect {|m| m.id}.join(', ')})</em>. <br />
-    Valid Sessions: #{@workgroup.valid_bundles.count.to_s}, total size: #{number_to_human_size(@workgroup.bundles.inject(0) {|sum, b| sum + b.bundle_content.content.length })}<br />
+    Valid Sessions: #{@workgroup.valid_bundles.count.to_s}<br />
     Offering: "#{@workgroup.offering.name}", <em>(id: #{@workgroup.offering.id})</em><br />
     Curnit: "#{@workgroup.offering.curnit.name}" <em>(id: #{@workgroup.offering.curnit.id}), last updated: #{@workgroup.offering.curnit.jar_last_modified}</em>
     } %>
@@ -17,9 +17,10 @@
   <hr />
   <div style="background-color: #BBFFEE; padding: 10px; border: 1px solid gray; margin: 10px; font: 9px sans-serif;">
     <%= %{#{b.created_at.to_s}<br >Bundle: #{b.id}, size: #{number_to_human_size(b.bundle_content.content.length)}<br />Workgroup membership version: #{b.workgroup_version.to_s}.<br />}%>
-    <% b.socks.each do |s| %>
-      <%= %{<br />Pod: #{s.pod.id}: UUID: #{s.pod.uuid})<br />Rim name: #{s.pod.rim_name}<br />Sock: #{s.id}#{if s.duplicate then " <em>duplicate</em>" end}, ms offset: #{s.ms_offset}.<br />} %>
-			<% if s.pod.pas_type == 'note' %>
+    <% Sock.find(:all, :conditions => ['bundle_id = ?', b.id]).each do |s| %>
+	  <% pod = Pod.find(s.pod_id) -%>
+      <%= %{<br />Pod: #{pod.id}: UUID: #{pod.uuid})<br />Rim name: #{pod.rim_name}<br />Sock: #{s.id}#{if s.duplicate then " <em>duplicate</em>" end}, ms offset: #{s.ms_offset}.<br />} %>
+			<% if pod.pas_type == 'note' %>
 				
 			<% end %>
       <div style="background-color: #99FFCC; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px font: sans-serif;">
@@ -37,5 +38,5 @@
 <%= display_xml(@workgroup) %>
 
 XML output representation:
-<p><code><%= h(WorkgroupMembership.wg_array_to_xml(@membership_array)) %></code></p>
+<p><code><%= h(WorkgroupMembership.wg_array_to_xml(WorkgroupMembership.find_all_in_workgroup(@workgroup.id))) %></code></p>
 

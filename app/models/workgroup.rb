@@ -26,19 +26,19 @@ class Workgroup < ActiveRecord::Base
   
   has_many :bundles do
     def asc # this is the default behavior
-      @asc ||= find(:all, :order => "created_at ASC")
+      find(:all, :order => "created_at ASC")
     end
     def desc
-      @desc ||= find(:all, :order => "created_at DESC")
+      find(:all, :order => "created_at DESC")
     end
   end
 
   has_many :valid_bundles, :class_name => "Bundle", :conditions => 'process_status = 1' do
     def asc # this is the default behavior
-      @asc ||= find(:all, :order => "created_at ASC")
+      find(:all, :order => "created_at ASC")
     end
     def desc
-      @desc ||= find(:all, :order => "created_at DESC")
+      find(:all, :order => "created_at DESC")
     end
   end 
 
