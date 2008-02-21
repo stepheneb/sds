@@ -72,4 +72,15 @@ class Workgroup < ActiveRecord::Base
   def member_names
     self.members.collect {|m| m.name}.join(', ')
   end
+  
+  def master_curnitmap
+    cmap = {}
+    self.valid_bundles.each do |b|
+      curnitmap = b.curnitmap
+      if curnitmap != nil
+        cmap.merge!(curnitmap){|k,old,new| old }
+      end
+    end
+    return cmap
+  end
 end

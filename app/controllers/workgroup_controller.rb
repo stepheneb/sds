@@ -160,14 +160,6 @@ class WorkgroupController < ApplicationController
   def report
     @members = @workgroup.sail_users.version(@workgroup.version) # array of SailUser objects
     @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects
-    
-    @cmap = {}
-    @workgroup.valid_bundles.each do |b|
-      curnitmap = b.curnitmap
-      if curnitmap != nil
-        @cmap.merge!(curnitmap){|k,old,new| old }
-      end
-    end
   end
 
   def report_xls
