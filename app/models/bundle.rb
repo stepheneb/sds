@@ -28,15 +28,16 @@ class Bundle < ActiveRecord::Base
 
   has_many :socks do
     def find_notes
-      note = 'note'
-      @find_notes ||= find(:all).select {|s| s.pod.pas_type == note}
+      find(:all).select {|s| s.pod.pas_type == 'note'}
     end
     def find_model_activity_datasets
-      mad = 'model_activity_data'
-      @find_mads ||= find(:all).select {|s| s.pod.pas_type == mad}
+      find(:all).select {|s| s.pod.pas_type == 'model_activity_data'}
+    end
+    def find_curnit_maps
+      find(:all, :order => "ms_offset DESC").select {|s| s.pod.pas_type == 'curnit_map'}
     end
     def by_time_asc
-      @find_socks ||= find(:all, :order => "ms_offset ASC")
+      find(:all, :order => "ms_offset ASC")
     end
   end
 
@@ -271,12 +272,8 @@ class Bundle < ActiveRecord::Base
   # return a hash of uuids and their associated attributes
   # {uuid => {pod => p, title => "title", activity => #num, step => #num}}
   def curnitmap
-    map_sock = nil
-    self.socks.by_time_asc.each do |s|
-      if s.pod.pas_type == 'curnit_map'
-        map_sock = s
-      end
-    end
+    cmaps = self.socks.find_curnit_maps
+    map_sock = ((cmaps.length > 0) ? cmaps[0] : nil)
     
     if map_sock == nil
       return nil

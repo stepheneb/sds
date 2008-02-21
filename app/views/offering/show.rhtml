@@ -1,9 +1,10 @@
 <%= link_to 'List', :action => 'list'  %> | 
 <%= link_to 'Edit', :action => 'edit' %>
+<% workgroups = Workgroup.find(:all, :conditions => ['offering_id = ?', @offering.id]) %>
 
 <p>
   Offering: <%= @offering.name %>, <em>(id: <%= @offering.id %>)</em><br />
-  Workgroups: <%= @offering.workgroups.count.to_s %>, <em>(ids: <%=  @offering.workgroups.collect {|w| w.id }.join(', ') %>)</em>. <br />
+  Workgroups: <%= workgroups.size.to_s %>, <em>(ids: <%=  workgroups.collect {|w| w.id }.join(', ') %>)</em>. <br />
   Jnlp: <%= link_to @offering.jnlp.name, {:controller => 'jnlp', :action => 'show', :id => @offering.jnlp.id }, {:title => "Show the jnlp for this offering."} %>, <em>(id: <%= @offering.jnlp.id %>), last updated: <%= @offering.jnlp.last_modified %></em><br />
   Curnit: <%= link_to @offering.curnit.name, {:controller => 'curnit', :action => 'show', :id => @offering.curnit.id }, {:title => "Show the curnit for this offering."}  %> <em>(id: <%= @offering.curnit.id %>), last updated: <%= @offering.curnit.jar_last_modified %></em>
 </p>
@@ -18,7 +19,7 @@
     <td><b>Members</b></td>
     <td><b>Valid Sessions</b></td>
   </tr>
-  <% @offering.workgroups.each do |w| %>
+  <% workgroups.each do |w| %>
     <% odd_or_even = 1 - odd_or_even %>
     <tr  valign="middle" class="ListLine<%= odd_or_even %>">
       <td><%= w.id.to_s %></td>
@@ -46,7 +47,7 @@
   <td><b>Attribute</b></td>
   <td><b>Value</b></td>
 </tr>
-<% @offering.offerings_attributes.each do |at| -%>
+<% OfferingsAttribute.find(:all, :conditions => ['offering_id = ?', @offering.id]).each do |at| -%>
 <tr>
   <td><%= at.name %></td>
   <td><%= at.value %></td>

@@ -165,20 +165,17 @@ class WorkgroupController < ApplicationController
     @workgroup.valid_bundles.each do |b|
       curnitmap = b.curnitmap
       if curnitmap != nil
-        @cmap.merge!(b.curnitmap){|k,old,new| old }
+        @cmap.merge!(curnitmap){|k,old,new| old }
       end
     end
   end
 
   def report_xls
-    @members = @workgroup.sail_users.version(@workgroup.version) # array of SailUser objects
-    @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects
-
-#    debugger
-
-    @cmap = {}
+    members = @workgroup.sail_users.version(@workgroup.version) # array of SailUser objects
+    
+    cmap = {}
     @workgroup.valid_bundles.each do |b|
-      @cmap.merge!(b.curnitmap){|k,old,new| old }
+      cmap.merge!(b.curnitmap){|k,old,new| old }
     end
     
     # Create the first worksheet which summarizes the workgroup information
@@ -187,13 +184,13 @@ class WorkgroupController < ApplicationController
     f.write("")
     f.close
     
-    @workbook = Spreadsheet::Excel.new(file)
-    format = @workbook.add_format(:color=>"blue", :text_h_align=>1)
-    wrap_format = @workbook.add_format(:color=>"blue", :text_h_align=>1, :text_wrap=>1)
-    time_format = @workbook.add_format(:color=>"blue", :text_h_align=>1)
-    header_format = @workbook.add_format(:color=>"blue", :text_h_align=>1, :bold=>1, :bottom=>5, :text_wrap=>1 )
+    workbook = Spreadsheet::Excel.new(file)
+    format = workbook.add_format(:color=>"blue", :text_h_align=>1)
+    wrap_format = workbook.add_format(:color=>"blue", :text_h_align=>1, :text_wrap=>1)
+    time_format = workbook.add_format(:color=>"blue", :text_h_align=>1)
+    header_format = workbook.add_format(:color=>"blue", :text_h_align=>1, :bold=>1, :bottom=>5, :text_wrap=>1 )
     
-    worksheet = @workbook.add_worksheet("Info")
+    worksheet = workbook.add_worksheet("Info")
     worksheet.format_column(0, 16, format)
     worksheet.format_column(1, 24, format)
     worksheet.format_column(2..3, 8, format)
@@ -202,12 +199,12 @@ class WorkgroupController < ApplicationController
     
     row = 0
     worksheet.write(row, 0, ["Workgroup:",@workgroup.name, "id:", @workgroup.id])
-    worksheet.write(row += 1, 0, ["Members:", @workgroup.member_names.split(", "), "ids:", @members.collect {|m| m.id} ])
+    worksheet.write(row += 1, 0, ["Members:", @workgroup.member_names.split(", "), "ids:", members.collect {|m| m.id} ])
     worksheet.write(row += @workgroup.member_names.split(", ").size, 0, ["Valid Sessions:", @workgroup.valid_bundles.count.to_s ])
     worksheet.write(row += 1, 0, ["Offering:", @workgroup.offering.name, "id:", @workgroup.offering.id ])
     worksheet.write(row += 1, 0, ["Curnit:", @workgroup.offering.curnit.name, "id:", @workgroup.offering.curnit.id, "last updated:", @workgroup.offering.curnit.jar_last_modified.to_s ])
     
-    sequence_worksheet = @workbook.add_worksheet("Sequence")
+    sequence_worksheet = workbook.add_worksheet("Sequence")
     sequence_worksheet.format_column(0, 10, format)   # bundle id
     sequence_worksheet.format_column(1, 12, format)   # sock entry id
     sequence_worksheet.format_column(2, 12, format)   # elapsed time
@@ -219,7 +216,7 @@ class WorkgroupController < ApplicationController
 
     generate_sequence_data(sequence_worksheet)
     
-    notes_worksheet = @workbook.add_worksheet("Notes")
+    notes_worksheet = workbook.add_worksheet("Notes")
     notes_worksheet.format_column(0,   8, format) # pod id
     notes_worksheet.format_column(1,  36, format) # pod uuid
     notes_worksheet.format_column(2,  16, format) # rim name
@@ -237,15 +234,15 @@ class WorkgroupController < ApplicationController
     notes_worksheet.write(row, 0, ["Pod ID", "Pod UUID", "Rim Name", "Activity Number", "Step Number", "Step Title", "Note HTML Content", "Session Bundle ID", "Session Bundle Date", "Sock entry ID", "Sock Time", "Sock Content"])    
     podnotes = @workgroup.valid_bundles.collect {|b| b.socks.find_notes}.flatten.group_by {|s| s.pod}
 
-    logger.info("#{@cmap}")
+    logger.info("#{cmap}")
     podnotes.each do |pod, socks|
       act_num = ""
       step_num = ""
       step_title = ""
-      if (@cmap != nil && @cmap[pod.uuid] != nil)
-        act_num = @cmap[pod.uuid]['activity_number']
-        step_num = @cmap[pod.uuid]['step_number']
-        step_title = @cmap[pod.uuid]['title']
+      if (cmap != nil && cmap[pod.uuid] != nil)
+        act_num = cmap[pod.uuid]['activity_number']
+        step_num = cmap[pod.uuid]['step_number']
+        step_title = cmap[pod.uuid]['title']
       end
       note_preamble = [pod.id, pod.uuid, pod.rim_name, act_num, step_num, step_title, pod.html_body]
       socks.each do |s|
@@ -256,17 +253,13 @@ class WorkgroupController < ApplicationController
       end
     end
 
-    
-    
     # Create a worksheet for each mad sock
     @workgroup.bundles.each do |b|
-      b.socks.each do |s|
-        if s.pod.pas_type == "model_activity_data"
-          create_mad_worksheet(@workbook, s, [format, header_format, wrap_format])
-        end
+      b.socks.find_model_activity_datasets.each do |s|
+        create_mad_worksheet(workbook, s, [format, header_format, wrap_format])
       end
     end
-    @workbook.close
+    workbook.close
     send_data(File.open(file).read, :type => "application/vnd.ms.excel", :filename => "workgroup-#{@workgroup.id}.xls" )
   end
   
