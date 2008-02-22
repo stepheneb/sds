@@ -272,13 +272,18 @@ class OfferingController < ApplicationController
 	  f.close
 	  debug = []
 	  workgroups_in_this_offering = @offering.workgroups.collect{|w| w.id}.uniq
-	  pod_info = @offering.curnit.pods.collect { |p|
+    pods = Pod.find(:all, :conditions => ['curnit_id = ?', @offering.curnit_id])
+	  pod_info = pods.collect { |p|
 	  	if p.pas_type == 'note'
         # we only want pods which have socks from workgroups within this offering
         # by taking 2 unique arrays and combining them, we can use the uniq! command
         # to return the duplicates of the combined array. If there are no duplicates,
         # then there was no intersection between the 2 original arrays.  
-        workgroups_for_this_pod =  p.socks.collect{|s| s.bundle.workgroup.id}.uniq
+        socks = Sock.find(:all, :conditions => ['pod_id = ?', p.id])
+        workgroups_for_this_pod =  socks.collect{|s|
+          bundle = Bundle.find(s.bundle_id)
+          bundle.workgroup_id
+        }.uniq
         temp = (workgroups_in_this_offering + workgroups_for_this_pod).uniq!
         if temp != nil
 	  		  if p.html_body != nil
@@ -297,7 +302,7 @@ class OfferingController < ApplicationController
 	  pod_info = pod_info.compact
 	  debug += ["In the method"]
 	  workgroup_ids = @offering.workgroups.collect {|w| w.id }
-	  @offering_data = { }
+	  offering_data = { }
 	  workgroup_ids.each do |wid|
 	  	workgroup_data = { }
 	  	w = Workgroup.find(wid)
@@ -318,26 +323,26 @@ class OfferingController < ApplicationController
 					w_counter = 1
 					
 					# put the sock data in a new or existing dummy workgroup
-					while (@offering_data.has_key?("#{wid}|#{w_counter}") && @offering_data["#{wid}|#{w_counter}"].has_key?(s.pod_id))
+					while (offering_data.has_key?("#{wid}|#{w_counter}") && offering_data["#{wid}|#{w_counter}"].has_key?(s.pod_id))
 						w_counter += 1
 					end
-					if (@offering_data.has_key?("#{wid}|#{w_counter}"))
+					if (offering_data.has_key?("#{wid}|#{w_counter}"))
 						debug += ["The workgroup #{wid}|#{w_counter} exists, but doesn't have this pod data defined"]
-						@offering_data["#{wid}|#{w_counter}"]["#{s.pod_id}"] = data
+						offering_data["#{wid}|#{w_counter}"]["#{s.pod_id}"] = data
 					else
 						debug += ["The workgroup #{wid}|#{w_counter} doesn't exist yet"]
 						new_workgroup_data = { }
 						new_workgroup_data["#{s.pod_id}"] = data
-						@offering_data["#{wid}|#{w_counter}"] = new_workgroup_data
+						offering_data["#{wid}|#{w_counter}"] = new_workgroup_data
 					end
 				else
 					workgroup_data["#{s.pod_id}"] = data
 				end
 			end
 		end
-		@offering_data["#{wid}"] = workgroup_data
+		offering_data["#{wid}"] = workgroup_data
 	  end	
-	  debug +=  [ @offering_data ]
+	  debug +=  [ offering_data ]
 	  
 	  # @workbook = Spreadsheet::Excel.new(file)
 	  # data_format = @workbook.add_format(:color=>"blue", :text_h_align=>1)
@@ -375,7 +380,7 @@ class OfferingController < ApplicationController
 		content_row += [p[3]] + padding
 		header_row += pod_headers
 	  end
-	  offerings = @offering_data.keys.sort
+	  offerings = offering_data.keys.sort
 	  CSV.open(file, "w") do |row|
 	  	row << pid_row
 		row << puuid_row
@@ -393,9 +398,9 @@ class OfferingController < ApplicationController
 	  	end
 	  	row_data = [clean_wid]
 	  	pod_info.each do |p|
-	  		if @offering_data[wid] != nil && @offering_data[wid].has_key?(p[0])
+	  		if offering_data[wid] != nil && offering_data[wid].has_key?(p[0])
 	  			# append the data to the row
-				row_data += @offering_data[wid][p[0]]
+				row_data += offering_data[wid][p[0]]
 	  		else
 	  			# pad the row with empty cells
           if compact
