@@ -98,27 +98,15 @@ class Curnit < ActiveRecord::Base
     end
   end
   
-  # valid values for always_update attribute are wither
+  # valid values for always_update attribute are either
   # true, false, or not specified (which is a value of nil)
   # default will be true if not specified
   # returns: true when attribute valid
   # returns false otherwise
   def validate_always_update
     # debugger
-    case  self.always_update_before_type_cast
-    when "true" || "1"
-      true
-    when "1"
-      true
-    when "false"
-      true
-    when "0"
-      true
-    when nil
+    if self.always_update == nil
       self.always_update = true
-    else
-      errors.add_to_base("Invalid attribute value: \"#{self.always_update_before_type_cast}\": always_update attribute must be either 'true', '1', 'false', '0' or not set. Default: true")
-      false
     end
   end
   
