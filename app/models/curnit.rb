@@ -108,6 +108,7 @@ class Curnit < ActiveRecord::Base
     if self.always_update == nil
       self.always_update = true
     end
+    true
   end
   
   def check_for_jar_create
