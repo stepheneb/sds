@@ -67,7 +67,7 @@ class JnlpController < ApplicationController
             redirect_to :action => 'list'
           end
         rescue => e
-          flash[:notice] = "There was a problem saving the jnlp. <!-- #{e} -->"
+          flash[:notice] = "#{e}\n<!-- #{e.backtrace.join("\n")} -->"
         end
       end
     else
