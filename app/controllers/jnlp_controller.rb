@@ -69,6 +69,7 @@ class JnlpController < ApplicationController
         rescue => e
           flash[:notice] = "There was a problem saving the jnlp. <!-- #{e} -->"
         end
+      end
     else
       flash[:notice] = "Jnlp #{@jnlp.id} does not exist." 
       redirect_to :action => :list
