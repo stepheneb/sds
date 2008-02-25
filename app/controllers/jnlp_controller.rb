@@ -61,11 +61,14 @@ class JnlpController < ApplicationController
   def edit
     if @jnlp = @portal.jnlps.find_by_id(params[:id])
       if request.post?
-        if @jnlp.update_attributes(params[:jnlp])
-          flash[:notice] = "Jnlp #{@jnlp.id} was successfully updated."
-          redirect_to :action => 'list'
+        begin
+          if @jnlp.update_attributes(params[:jnlp])
+            flash[:notice] = "Jnlp #{@jnlp.id} was successfully updated."
+            redirect_to :action => 'list'
+          end
+        rescue => e
+          flash[:notice] = "There was a problem saving the jnlp. <!-- #{e} -->"
         end
-      end
     else
       flash[:notice] = "Jnlp #{@jnlp.id} does not exist." 
       redirect_to :action => :list
