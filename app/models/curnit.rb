@@ -44,10 +44,14 @@ class Curnit < ActiveRecord::Base
   end
 
 	def url
-    if Thread.current[:request] && read_attribute(:url)
-      u = URI.parse("#{Thread.current[:request].protocol}#{Thread.current[:request].host}:#{Thread.current[:request].port}/#{Thread.current[:request].path}")
-      u.merge(read_attribute(:url)).to_s
-    else
+    begin 
+      if Thread.current[:request] && read_attribute(:url)
+        u = URI.parse("#{Thread.current[:request].protocol}#{Thread.current[:request].host}:#{Thread.current[:request].port}/#{Thread.current[:request].path}")
+        u.merge(read_attribute(:url)).to_s
+      else
+        read_attribute(:url)
+      end
+    rescue
       read_attribute(:url)
     end
   end
