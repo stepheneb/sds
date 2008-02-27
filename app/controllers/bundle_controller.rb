@@ -32,7 +32,7 @@ class BundleController < ApplicationController
             content = request.raw_post
           end
           @bundle.update_attributes(:content => content)
-          response.headers['Content-md5'] = Base64.b64encode(Digest::MD5.digest(@bundle.bundle_content.content))
+          response.headers['Content-md5'] = Base64.encode64(Digest::MD5.digest(@bundle.bundle_content.content))
           response.headers['Location'] =  "#{url_for(:controller => :bundle, :id => @bundle.id)}"
   #        response.headers['Cache-Control'] = 'no-cache'
           response.headers['Cache-Control'] = 'public'

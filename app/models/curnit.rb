@@ -184,7 +184,7 @@ class Curnit < ActiveRecord::Base
           end
           # sys = system("cd #{self.path};jar xf #{self.filename}")
           self.jar_last_modified = urlfile.last_modified
-          self.jar_digest = Base64.b64encode(Digest::MD5.digest(urlfile.read)).strip
+          self.jar_digest = Base64.encode64(Digest::MD5.digest(urlfile.read)).strip
         end
       rescue SocketError, OpenURI::HTTPError, OpenSSL::SSL::SSLError => e
         if RAILS_ENV == 'production'
