@@ -99,7 +99,7 @@ ActionController::Routing::Routes.draw do |map|
 
 # workgroup
 
-  map.resources :workgroups, :controller => 'workgroup', :path_prefix => '/:pid'
+  map.resources :workgroups, :controller => 'workgroup', :path_prefix => '/:pid', :member => { :ot_learner_data => :get }
 
   map.connect ':pid/workgroup', :controller => 'workgroup', :action => 'list'
   map.connect ':pid/workgroup/list', :controller => 'workgroup', :action => 'list'

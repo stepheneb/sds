@@ -65,6 +65,31 @@ class Workgroup < ActiveRecord::Base
     WorkgroupMembership.delete_all(["workgroup_id = ?", self.id])
   end
   
+  def blank_ot_learner_data
+    xml = Builder::XmlMarkup.new(:indent=>2)
+    xml.otrunk("id" => UUID.timestamp_create().to_s) { 
+      xml.imports {
+        xml.import("class" => "org.concord.otrunk.OTStateRoot")
+        xml.import("class" => "org.concord.otrunk.user.OTUserObject")
+        xml.import("class" => "org.concord.otrunk.user.OTReferenceMap")
+      }
+       xml.objects {
+        xml.OTStateRoot("formatVersionString" => "1.0") {
+          xml.userMap {
+            userkey = self.uuid
+            xml.entry("key" => userkey) {
+              xml.OTReferenceMap {
+                xml.user {
+                 xml.OTUserObject("name" => "#{self.member_names}", "id" => userkey) 
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  end    
+  
   def members
     self.sail_users.version(self.version)
   end

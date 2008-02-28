@@ -13,6 +13,20 @@ class WorkgroupController < ApplicationController
 
   public
   
+  def ot_learner_data
+    @bundles = @workgroup.valid_bundles.asc
+    last_bundle_with_data = @bundles.reverse.detect { |b| b.socks.count > 0 }
+    if last_bundle_with_data
+      @ot_learner_data = last_bundle_with_data.bundle_content.ot_learner_data
+    else
+      @ot_learner_data = @workgroup.blank_ot_learner_data
+    end
+    respond_to do |format|
+      format.html # show.html.erb
+      format.xml  { render :xml => @ot_learner_data }
+    end
+  end
+  
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
       xml_parms = ConvertXml.xml_to_hash(request.raw_post)

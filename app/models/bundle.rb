@@ -61,6 +61,7 @@ class Bundle < ActiveRecord::Base
     self.save_to_file_system
     self.process_content
     self.process_status = 1
+    self.has_data = self.socks.count > 0
     self.save!
   end
   

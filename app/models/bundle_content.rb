@@ -16,12 +16,11 @@ class BundleContent < ActiveRecord::Base
     if sock
       ot = sock.text
       if ot =~ /anon_single_user/
-        workgroup_user_names = self.bundle.workgroup.workgroup_memberships.collect {|m| m.sail_user.name}.join(', ')
-        ot [/anon_single_user/] = workgroup_user_names
+        ot [/anon_single_user/] = self.bundle.workgroup.member_names
         ot
       end
     else
-      nil
+      self.bundle.workgroup.blank_ot_learner_data
     end
   end
 end

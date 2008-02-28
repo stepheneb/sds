@@ -27,6 +27,7 @@ ActiveRecord::Schema.define() do
     t.boolean  "content_well_formed_xml"
     t.integer  "bundle_content_id"
     t.text     "processing_error"
+    t.boolean  "has_data"
   end
 
   add_index "sds_bundles", ["workgroup_id"], :name => "sds_bundles_workgroup_id_index"
