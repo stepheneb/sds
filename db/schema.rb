@@ -18,7 +18,6 @@ ActiveRecord::Schema.define() do
   create_table "sds_bundles", :force => true do |t|
     t.integer  "workgroup_id"
     t.integer  "workgroup_version"
-    t.text     "content"
     t.datetime "created_at"
     t.integer  "process_status"
     t.datetime "sail_session_start_time"

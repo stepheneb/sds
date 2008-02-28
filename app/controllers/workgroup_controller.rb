@@ -132,7 +132,7 @@ class WorkgroupController < ApplicationController
           wants.html
           wants.xml  do
             response.headers['Location'] = url_for(:action => :show, :id => params[:id])
-            render :xml => @workgroup.to_xml(:except => ['created_at', 'updated_at'])
+            render :xml => @workgroup.to_xml(:except => ['created_at', 'updated_at'], :include => [:bundles])
           end
         end
       elsif request.put?

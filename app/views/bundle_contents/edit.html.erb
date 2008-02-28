@@ -1,0 +1,12 @@
+<h1>Editing bundle_content</h1>
+
+<%= error_messages_for :bundle_content %>
+
+<% form_for(@bundle_content) do |f| %>
+  <p>
+    <%= f.submit "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @bundle_content %> |
+<%= link_to 'Back', bundle_contents_path %>

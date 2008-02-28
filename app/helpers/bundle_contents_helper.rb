@@ -1,0 +1,2 @@
+module BundleContentsHelper
+end

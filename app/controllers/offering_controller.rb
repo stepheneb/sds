@@ -217,7 +217,7 @@ class OfferingController < ApplicationController
           end
         end
         @bundle = Bundle.create!(:workgroup_id => params[:wid],
-          :workgroup_version => params[:version], :content => content, :bc => content)
+          :workgroup_version => params[:version], :bc => content)
         response.headers['Content-md5'] = digest
 #        response.headers['Location'] = "#{url_for(:controller => 'bundle', :id => @bundle.id)}"
         response.headers['Cache-Control'] = 'public'

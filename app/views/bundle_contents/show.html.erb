@@ -1,0 +1,14 @@
+<h1>Show bundle_content</h1>
+
+<%= error_messages_for :bundle_content %>
+<p>
+  Id: <%= @bundle_content.id %>
+</p>
+
+<p>Content:</p> 
+<div style="background-color: #99FFCC; padding: 10px; border: 1px dotted gray; margin: 5px 5px; 10px 10px font: sans-serif;">
+  <pre><small><%= CGI.escapeHTML(@bundle_content.content) %></small></pre>
+</div>
+
+<%= link_to 'Edit', edit_bundle_content_path(@portal, @bundle_content) %> |
+<%= link_to 'Back', bundle_contents_path %>

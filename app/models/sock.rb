@@ -11,6 +11,7 @@
 #  pod_id     :integer(11)   
 #  duplicate  :boolean(1)    
 #
+require 'zlib'
 
 class Sock < ActiveRecord::Base
   set_table_name "sds_socks"

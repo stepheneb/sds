@@ -40,6 +40,8 @@ ActionController::Routing::Routes.draw do |map|
   
 # direct bundle manipulation
 
+  map.resources :bundle_contents, :path_prefix => '/:pid', :member => { :ot_learner_data => :get }
+  
   map.connect ':pid/bundle/:id', :controller => 'bundle', :action => 'bundle'
 
 # offering: java web start services
@@ -97,6 +99,8 @@ ActionController::Routing::Routes.draw do |map|
 
 # workgroup
 
+  map.resources :workgroups, :controller => 'workgroup', :path_prefix => '/:pid'
+
   map.connect ':pid/workgroup', :controller => 'workgroup', :action => 'list'
   map.connect ':pid/workgroup/list', :controller => 'workgroup', :action => 'list'
   map.connect ':pid/workgroup/create', :controller => 'workgroup', :action => 'create'
@@ -132,6 +136,7 @@ ActionController::Routing::Routes.draw do |map|
 
   map.connect ':pid/jnlp/', :controller => 'jnlp', :action => 'list'
   map.connect ':pid/jnlp/list', :controller => 'jnlp', :action => 'list'
+  map.connect ':pid/jnlp/index', :controller => 'jnlp', :action => 'list'
   map.connect ':pid/jnlp/create', :controller => 'jnlp', :action => 'create'
   map.connect ':pid/jnlp/edit/:id', :controller => 'jnlp', :action => 'edit'
 #  map.connect ':pid/jnlp/destroy/:id', :controller => 'jnlp', :action => 'destroy'

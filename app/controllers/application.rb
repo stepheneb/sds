@@ -13,9 +13,8 @@ include AuthenticatedSystem
 
   session :off, :if => proc { |request| (request.env['CONTENT_TYPE'] == "application/xml") || (request.env['HTTP_ACCEPT'] == "application/xml")}
   
-  require 'conversions'
+  # require 'conversions'
   require 'convert'
-  require 'to_xml'
   require 'net/http'
   require 'open-uri'
 
@@ -76,10 +75,10 @@ protected
   end
   
   def portal_resource_not_found(resource, id)
-    msg = "#{resource} #{id.to_s} does not exist in Portal: #{@portal.id.to_s}: #{@portal.name}."
+    msg = "#{resource}: #{id.to_s} does not exist in Portal: #{@portal.id.to_s}: #{@portal.name}."
     respond_to do |wants|
-      wants.html { flash[:notice] = msg ; redirect_to :action => 'list' }
-      wants.xml { render(:text => "<error>#{msg}<error/>", :status => 404) } # Not Found
+      wants.html { flash[:notice] = msg ; redirect_to :action => 'index' }
+      wants.xml { render(:text => "<error>#{msg}</error>", :status => 404) } # Not Found
     end
     false # returing false in a controller filter stops the chain of proccessing
   end

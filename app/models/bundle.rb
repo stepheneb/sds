@@ -161,7 +161,7 @@ class Bundle < ActiveRecord::Base
       nil || @@session_bundle = @@xml_parser.parse.root
     else
       begin
-        nil || @@session_bundle = REXML::Document.new(self.content).root
+        nil || @@session_bundle = REXML::Document.new(self.bundle_content.content).root
       rescue REXML::ParseException
         nil
       end        
