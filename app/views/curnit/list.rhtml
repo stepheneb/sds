@@ -7,16 +7,18 @@
     <td><b>Name</b></td>
     <td><b>Url</b></td>
   </tr>
-  <% Curnit.find(:all, :conditions => ['portal_id = ?', @portal.id]).each {|curnit| %>
+  <% Curnit.find(:all, :conditions => ['portal_id = ?', @portal.id], :order => 'id DESC').each {|curnit| %>
     <tr>
       <td width=200><%= link_to 'Show', :action => 'show', :id => curnit %> | <%= link_to 'Edit', :action => 'edit', :id => curnit %></td>
       <td><%= curnit.id.to_s %></td>
       <td><%= curnit.name %></td>
       <td><%= curnit.url %></td>
     </tr>
+	<tr>
       <td></td>
       <td colspan="3">
         <em>(<%= pluralize(curnit.offerings.count, "offering") %>, created: <%= curnit.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em>
-        </td>
+      </td>
+    </tr>
   <% } %>
 </table>

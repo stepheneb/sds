@@ -6,7 +6,7 @@
     <td><b>Name</b></td>
     <td><b>Url</b></td>
   </tr>
-  <% Jnlp.find(:all, :conditions => ['portal_id = ?',@portal.id]).each {|jnlp| %>
+  <% Jnlp.find(:all, :conditions => ['portal_id = ?',@portal.id], :order => 'id DESC').each {|jnlp| %>
     <tr>
       <td><%= jnlp.id.to_s %></td>
       <td><%= jnlp.name %><br />

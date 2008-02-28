@@ -10,7 +10,7 @@
     <td><b>Members</b></td>
     <td><b>Valid Sessions</b></td>
   </tr>
-  <% Workgroup.find(:all, :conditions => ['sds_workgroups.portal_id = ?', @portal.id], :include => :sail_users).each {|w| %>
+  <% Workgroup.find(:all, :conditions => ['sds_workgroups.portal_id = ?', @portal.id], :order => 'sds_workgroups.id DESC', :include => :sail_users).each {|w| %>
     <% odd_or_even = 1 - odd_or_even %>
     <tr  valign="middle" class="ListLine<%= odd_or_even %>">
       <td><%= w.id %></td>

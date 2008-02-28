@@ -5,7 +5,7 @@
     <td><b>Id</b></td>
     <td><b>Name</b></td>
   </tr>
-  <% Offering.find(:all, :conditions => ['portal_id = ?', @portal.id]).each {|offering| %>
+  <% Offering.find(:all, :conditions => ['portal_id = ?', @portal.id], :order => 'id DESC').each {|offering| %>
     <tr>
       <td><%= offering.id.to_s %></td>
       <td><%= offering.name %></td>
