@@ -87,7 +87,7 @@ protected
     msg = "#{resource} #{id.to_s}: external resource: #{url} not well-formed xml."
     respond_to do |wants|
       wants.html { flash[:notice] = msg ; redirect_to :action => 'list' }
-      wants.xml { render(:text => "<error>#{msg}<error/>", :status => 404) } # Not Found
+      wants.xml { render(:text => "<error>#{msg}</error>", :status => 404) } # Not Found
     end
     false
   end
@@ -96,7 +96,7 @@ protected
     msg = "#{resource} #{id.to_s}: external resource: #{url} not available."
     respond_to do |wants|
       wants.html { flash[:notice] = msg ; redirect_to :action => 'list' }
-      wants.xml { render(:text => "<error>#{msg}<error/>", :status => 404) } # Not Found
+      wants.xml { render(:text => "<error>#{msg}</error>", :status => 404) } # Not Found
     end
     false
   end
@@ -117,7 +117,7 @@ protected
        end
     respond_to do |wants|
       wants.html { flash[:notice] = msg ; redirect_to :action => 'list' }
-      wants.xml { render(:text => "<error>#{msg}<error/>", :status => 404) } # Not Found
+      wants.xml { render(:text => "<error>#{msg}</error>", :status => 404) } # Not Found
     end
     false
   end
