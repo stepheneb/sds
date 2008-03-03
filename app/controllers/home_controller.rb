@@ -5,6 +5,9 @@ class HomeController < ApplicationController
   skip_before_filter :find_portal
 
   def index
+    if params[:pid]
+      find_portal
+    end
     begin
       raise unless request.get?
       respond_to do |wants|

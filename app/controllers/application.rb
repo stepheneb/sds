@@ -61,7 +61,7 @@ protected
   end
 
   def find_portal
-    unless @portal = Portal.find_by_id(params[:id])
+    unless @portal = Portal.find_by_id(params[:pid])
       resource_not_found('Portal', params[:id], '')
     end
   end
