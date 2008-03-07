@@ -5,8 +5,8 @@ class CreateLogBundles < ActiveRecord::Migration
       t.column :workgroup_id, :integer
       t.column :portal_id, :integer
       t.column :offering_id, :integer
-      t.column :sail_session_uuid, :string, :limit => 36, :null => false
-      t.column :sail_curnit_uuid, :string, :limit => 36, :null => false
+      t.column :sail_session_uuid, :string, :limit => 36
+      t.column :sail_curnit_uuid, :string, :limit => 3
       t.column :content, :text, :limit => 16777215
       t.timestamps
     end

@@ -3,7 +3,7 @@ class CreateOfferingAttributes < ActiveRecord::Migration
     begin
 	    create_table 'sds_offerings_attributes' do |t|
 	      t.column :offering_id, :int, :size => 11
-	      t.column :name, :text, :null => false
+	      t.column :name, :text
 	      t.column :value, :text
 	    end
     rescue Exception => e

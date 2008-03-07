@@ -4,7 +4,7 @@ class CreateOfferings < ActiveRecord::Migration
       t.column :portal_id, :integer
       t.column :curnit_id, :integer
       t.column :jnlp_id, :integer
-      t.column :name, :string, :limit => 60, :null => false
+      t.column :name, :string, :limit => 60
       t.column :created_at, :timestamp
       t.column :updated_at, :timestamp
     end

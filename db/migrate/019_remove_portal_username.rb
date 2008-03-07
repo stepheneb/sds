@@ -4,6 +4,6 @@ class RemovePortalUsername < ActiveRecord::Migration
   end
 
   def self.down
-    add_column :sds_sail_users, :portal_username, :string, :null => false
+    add_column :sds_sail_users, :portal_username, :string
   end
 end

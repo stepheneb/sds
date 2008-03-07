@@ -1,7 +1,7 @@
 class CreatePortals < ActiveRecord::Migration
   def self.up
     create_table :sds_portals do |t|
-      t.column :name, :string, :null => false
+      t.column :name, :string
       t.column :use_authentication, :boolean
       t.column :auth_username, :string
       t.column :auth_password, :string
