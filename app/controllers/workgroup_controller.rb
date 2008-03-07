@@ -33,6 +33,7 @@ class WorkgroupController < ApplicationController
       @workgroup = Workgroup.new(xml_parms)
       @workgroup.offering = Offering.find(xml_parms['offering_id'])
       @workgroup.portal = @portal
+      @workgroup.version ||= 0
       if @workgroup.save
         response.headers['Location'] = url_for(:action => :show, :id => @workgroup.id)
         render(:xml => "", :status => 201) # Created
