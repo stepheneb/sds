@@ -11,6 +11,11 @@ USE_LIBXML = false
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
 
+if RUBY_PLATFORM =~ /java/
+   require 'rubygems'
+   RAILS_CONNECTION_ADAPTERS = %w(jdbc)
+end
+
 Rails::Initializer.run do |config|
   # Settings in config/environments/* take precedence over those specified here.
   # Application configuration should go into files in config/initializers
@@ -65,20 +70,25 @@ Rails::Initializer.run do |config|
   # see: http://api.rubyonrails.org/classes/ActionController/RequestForgeryProtection/ClassMethods.html#M000300
   config.action_controller.allow_forgery_protection = false
 
+  # This adds any Gems that may have been unpacked into vendor/gems to the load path
+  # see: http://errtheblog.com/posts/50-vendor-everything
+  config.load_paths += Dir["#{RAILS_ROOT}/vendor/gems/**"].map do |dir| 
+    File.directory?(lib = "#{dir}/lib") ? lib : dir
+  end
 end
 
-# If you are using a common prefix for all table names in the database
-# like: "sds_" then you will need to uncomment the next section and edit
-# accordingly.
-# CGI::Session::ActiveRecordStore::Session.table_name = 'sds_sessions'
-# 
-# module ActiveRecord
-#   class Migrator
-#     def Migrator.schema_info_table_name
-#       Base.table_name_prefix + "sds_schema_info" + Base.table_name_suffix
-#     end
-#   end
-# end
+# If you are not using a common prefix for all table names in the database
+# like: "sds_" then you will need to comment out the next two statements.
+
+CGI::Session::ActiveRecordStore::Session.table_name = 'sds_sessions'
+
+module ActiveRecord
+  class Migrator
+    def Migrator.schema_info_table_name
+      Base.table_name_prefix + "sds_schema_info" + Base.table_name_suffix
+    end
+  end
+end
 
 # Time Zone things for consistent timestamps in the db
 ActiveRecord::Base.default_timezone = :utc
@@ -86,6 +96,10 @@ ActiveRecord::Base.default_timezone = :utc
 require 'sds_init'
 require 'uuidtools'
 
-# Point your SDS to an appropriate curnitmap and pdf server. 
-# If your SDS is running locally, you'll need to install this as well.
+# If you are using the SDS with TELS SAIL-WISE curnits you will
+# need to point your SDS to an appropriate curnitmap and pdf server. 
+# If this SDS is running locally, you'll need to install this as well.
+# http://www.telscenter.org/confluence/display/SAIL/Setting+up+the+Curnitmap+and+PDF+server
+# svn co https://tels.svn.sourceforge.net/svnroot/tels/trunk/workgroup-pdf-wrapper
+# 
 # PDF_SITE_ROOT="http://localhost:3003"

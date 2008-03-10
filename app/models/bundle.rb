@@ -53,8 +53,10 @@ class Bundle < ActiveRecord::Base
   def valid
   end
   
-  def before_save
-    self.bundle_content ||= BundleContent.new(:content => self.bc)
+  def before_create
+    unless self.bc.empty?
+      self.bundle_content = BundleContent.new(:content => self.bc)
+    end
   end
   
   def after_create

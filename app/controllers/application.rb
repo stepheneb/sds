@@ -134,7 +134,7 @@ private
   end
 
   def check_authentication
-    if current_user == :false || current_user.email == "anonymous"
+    if self.current_user == :false || self.current_user.email == "anonymous"
       session[:intended_action] = [controller_name, action_name] 
       flash[:warning]  = "You need to be logged in first."
       redirect_to :controller => 'user', :action => 'login' 

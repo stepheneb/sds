@@ -1,0 +1,11 @@
+development:
+  adapter: jdbch2 
+  database: db/sds_h2_database
+
+test:
+  adapter: jdbch2 
+  database: db/sds_h2__test_database
+
+production:
+  adapter: jdbch2 
+  database: db/sds_h2_database

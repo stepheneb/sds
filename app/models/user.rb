@@ -46,7 +46,7 @@ class User < ActiveRecord::Base
   # Authenticates an user by their login name and unencrypted password.  Returns the user or nil.
   def self.authenticate(identifier, password)
     unless remote_authenticate(identifier, password)
-      local_authenticate(identifier, password)
+      self.local_authenticate(identifier, password)
     end
   end
 
@@ -80,6 +80,7 @@ class User < ActiveRecord::Base
         nil
       end
     rescue Mysql::Error
+    rescue NameError
       nil
     end
   end
@@ -89,8 +90,13 @@ class User < ActiveRecord::Base
   end
 
   def self.local_authenticate(identifier, password)
-    u = User.find_by_login(identifier) || User.find_by_email(identifier)
-    u && u.local_authenticated?(password) ? u : nil
+    if u = User.find_by_login(identifier) || User.find_by_email(identifier)
+      logger.warn("How did we get here? u: #{u}") 
+      # u.local_authenticated?(password) ? u : nil
+      nil
+    else
+      nil
+    end
   end
 
   def local_authenticated?(password)

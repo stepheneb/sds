@@ -16,12 +16,12 @@ class UserController < ApplicationController
     if request.post?
       begin
         self.current_user = User.authenticate(params[:login], params[:password])
-        if current_user
+        if self.current_user
           if params[:remember_me] == "1"
             self.current_user.remember_me
             cookies[:auth_token] = { :value => self.current_user.remember_token , :expires => self.current_user.remember_token_expires_at }
           end
-          redirect_to :controller => 'home', :action => 'index', :pid => 1
+          redirect_to :controller => 'home', :action => 'index'
         else
           flash[:notice]  = "Login unsuccessful, login or password incorrect."
           self.current_user = User.find_by_login('anonymous')
