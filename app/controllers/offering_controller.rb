@@ -4,6 +4,9 @@ class OfferingController < ApplicationController
   # require 'spreadsheet/excel'
   require 'csv'
   require 'open-uri'
+  
+  require 'spawn'
+  include Spawn
 
   before_filter :log_referrer
   before_filter :find_offering, :except => [ :list, :create ]
@@ -216,8 +219,19 @@ class OfferingController < ApplicationController
             raise "Bundle MD5 Mismatch"
           end
         end
-        @bundle = Bundle.create!(:workgroup_id => params[:wid],
-          :workgroup_version => params[:version], :bc => content)
+        pid = spawn do
+          begin
+            @bundle = Bundle.create!(:workgroup_id => params[:wid],
+              :workgroup_version => params[:version], :bc => content)
+            exit(0)
+          rescue
+            logger.error("#{e}\n#{e.backtrace.join("\n")}")
+          end
+        end
+        wait(pid)
+        if $?.exitstatus != 0
+          raise "Error saving bundle"
+        end
         response.headers['Content-md5'] = digest
 #        response.headers['Location'] = "#{url_for(:controller => 'bundle', :id => @bundle.id)}"
         response.headers['Cache-Control'] = 'public'
@@ -267,6 +281,7 @@ class OfferingController < ApplicationController
   def report_xls
     compact = params[:compact] ? true : false
 	  file = "#{RAILS_ROOT}/tmp/xls/#{@offering.id}.csv"
+    pid = spawn {
 	  f = File.new(file, "w")
 	  f.write("")
 	  f.close
@@ -418,8 +433,13 @@ class OfferingController < ApplicationController
 	  # end
 	  row << []
 	  end
-	  
+    exit(0)
+	  }
+    wait(pid)
 	  # @workbook.close
+    if $?.exitstatus != 0
+      raise "Error generating spreadsheet"
+    end
 	  send_data(File.open(file).read, :type => "application/vnd.ms.excel", :filename => "offering-report-#{@offering.id}.csv" )  	
   end
   

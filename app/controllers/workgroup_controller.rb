@@ -1,6 +1,9 @@
 class WorkgroupController < ApplicationController
   require 'pas_model_activity_lib'
   include PasModelActivityLib
+  
+  require 'spawn'
+  include Spawn
 
   layout "standard", :except => [ :atom ] 
   before_filter :find_workgroup, :except => [ :list, :create, :list_by_offering ]
@@ -9,7 +12,7 @@ class WorkgroupController < ApplicationController
   
   def find_workgroup
     @workgroup = find_portal_resource('Workgroup', params[:id])
-  end  
+  end
 
   public
   
@@ -186,6 +189,9 @@ class WorkgroupController < ApplicationController
     
     # Create the first worksheet which summarizes the workgroup information
     file = "#{RAILS_ROOT}/tmp/xls/workgroup-#{@workgroup.id}.xls"
+    
+    # spawn everything in a child process so that any memory used will be freed once done
+    child_pid = spawn {
     f = File.new(file, "w")
     f.write("")
     f.close
@@ -266,6 +272,12 @@ class WorkgroupController < ApplicationController
       end
     end
     workbook.close
+    exit(0)
+    }
+    wait(child_pid)
+    if ($?.exitstatus != 0)
+      raise "Error generating spreadsheet"
+    end
     send_data(File.open(file).read, :type => "application/vnd.ms.excel", :filename => "workgroup-#{@workgroup.id}.xls" )
   end
   

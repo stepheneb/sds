@@ -75,6 +75,14 @@ Rails::Initializer.run do |config|
   config.load_paths += Dir["#{RAILS_ROOT}/vendor/gems/**"].map do |dir| 
     File.directory?(lib = "#{dir}/lib") ? lib : dir
   end
+  
+  if RUBY_PLATFORM =~ /java/
+    # for the spawn plugin
+    # when using threads (default) set allow_concurrency to true
+    config.active_record.allow_concurrency=true
+    # to use forks instead of threads, set Spawn::method :fork
+    # Spawn::method :fork
+  end
 end
 
 # If you are not using a common prefix for all table names in the database
