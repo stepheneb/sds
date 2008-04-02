@@ -70,7 +70,17 @@ if USE_LIBXML
   resources = jnlp.find('//resources') 
 else
   resources = []
-  jnlp.elements.each("//resources") { |e| resources.unshift(e) } 
+  jnlp.elements.each("//resources") { |e|
+    resources.unshift(e)
+    if e.attributes["os"] == nil && @jnlp_properties
+      @jnlp_properties.each do |name, value|
+        resources[0] << pr = REXML::Element.new("property")
+        pr.attributes["name"] = name
+        pr.attributes["value"] = value
+      end
+    end
+  }
+  
 end
 
 xml.instruct! :xml, :version=>"1.0", :encoding=>"UTF-8"
