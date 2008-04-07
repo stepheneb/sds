@@ -256,6 +256,9 @@ class OfferingController < ApplicationController
           end
         end
         response.headers["Content-Type"] = "text/xml"
+        if @bundles.size > 0
+          response.headers["last-modified"] = @bundles[-1].created_at
+        end
         render :action => 'bundlelist', :layout => false
       rescue => e
         render(:text => e, :status => 404) # Not Found

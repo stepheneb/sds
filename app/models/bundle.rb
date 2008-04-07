@@ -20,6 +20,7 @@
 
 class Bundle < ActiveRecord::Base
   set_table_name "sds_bundles"
+
 #  acts_as_reportable
   belongs_to :workgroup
   belongs_to :bundle_content
@@ -265,11 +266,19 @@ class Bundle < ActiveRecord::Base
   end    
 
   def sail_session_start_time
-    read_attribute("sail_session_start_time").getlocal
+    begin
+      read_attribute("sail_session_start_time").getlocal
+    rescue
+      nil
+    end
   end
   
   def sail_session_end_time
-    read_attribute("sail_session_end_time").getlocal
+    begin
+      read_attribute("sail_session_end_time").getlocal
+    rescue
+      nil
+    end
   end
   
   # return a hash of uuids and their associated attributes
