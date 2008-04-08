@@ -202,6 +202,10 @@ namespace :sds do
       begin
         b.parse_content_xml
         b.process_sail_session_attributes
+        if b.sail_session_modified_time == nil
+          b.sail_session_modified_time = b.calc_modified_time
+        end
+        b.save!
         print 'p'
       rescue => e
         print 'x'

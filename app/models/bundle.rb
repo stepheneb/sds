@@ -153,6 +153,9 @@ class Bundle < ActiveRecord::Base
       content_well_formed_xml = true
       process_sail_session_attributes
       process_sock_parts(console_log)
+      if self.sail_session_modified_time == nil
+        self.sail_session_modified_time = calc_modified_time
+      end
     else
       content_well_formed_xml = false
     end
@@ -165,7 +168,7 @@ class Bundle < ActiveRecord::Base
       nil || @@session_bundle = @@xml_parser.parse.root
     else
       begin
-        nil || @@session_bundle = REXML::Document.new(self.bundle_content.content).root
+        nil || @@session_bundle = REXML::Document.new(self.bundle_content.content).root.elements["//sessionBundles"]
       rescue REXML::ParseException
         nil
       end        
@@ -176,13 +179,32 @@ class Bundle < ActiveRecord::Base
     if USE_LIBXML
       self.sail_curnit_uuid = @@session_bundle.sds_get_attribute_with_default('curnitUUID', 'x' * 36)
       self.sail_session_uuid = @@session_bundle.sds_get_attribute_with_default('sessionUUID', 0)
-      self.sail_session_start_time = @@session_bundle.sds_get_attribute_with_default('start', self.created_at) { |t| SdsTime.fix_java8601(t).getutc }
-      self.sail_session_end_time = @@session_bundle.sds_get_attribute_with_default('stop', self.created_at) { |t| SdsTime.fix_java8601(t).getutc }
+      self.sail_session_start_time = @@session_bundle.sds_get_attribute_with_default('start', nil) { |t| SdsTime.fix_java8601(t).getutc }
+      self.sail_session_end_time = @@session_bundle.sds_get_attribute_with_default('stop', nil) { |t| SdsTime.fix_java8601(t).getutc }
+      self.sail_session_modified_time = @@session_bundle.sds_get_attribute_with_default('modified', nil) { |t| SdsTime.fix_java8601(t).getutc }
     else
       self.sail_curnit_uuid = @@session_bundle.attributes['curnitUUID'] || 'x' * 36
       self.sail_session_uuid = @@session_bundle.attributes['sessionUUID'] || 0
-      self.sail_session_start_time = SdsTime.fix_java8601(@@session_bundle.attributes['start']) || self.created_at
-      self.sail_session_end_time = SdsTime.fix_java8601(@@session_bundle.attributes['stop']) || self.created_at
+      self.sail_session_start_time = SdsTime.fix_java8601(@@session_bundle.attributes['start']) || nil
+      self.sail_session_end_time = SdsTime.fix_java8601(@@session_bundle.attributes['stop']) || nil
+      self.sail_session_modified_time = SdsTime.fix_java8601(@@session_bundle.attributes['modified']) || nil
+    end
+  end
+  
+  def calc_modified_time
+    # take the sail_session_start_time and increment by the msOffset time of the newest sockentry in the bundle
+    starttime = self.sail_session_start_time
+    if ! starttime
+      return (self.sail_session_end_time ? self.sail_session_end_time : self.created_at)
+    elsif self.sail_session_end_time && self.sail_session_end_time != self.created_at
+      return self.sail_session_end_time
+    else
+      if self.socks.count > 0
+        modtime = starttime + (self.socks.sort{|a,b| b.ms_offset <=> a.ms_offset}.compact[0].ms_offset/1000)
+        return modtime.getgm
+      else
+        return (self.sail_session_end_time ? self.sail_session_end_time : self.created_at)
+      end
     end
   end
   
