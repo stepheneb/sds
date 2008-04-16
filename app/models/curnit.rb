@@ -132,8 +132,19 @@ class Curnit < ActiveRecord::Base
     !File.exists?(self.jar_path)
   end
   
+  # Generates a filename from the basename element of the path
+  # and also truncating anything in the path after ".jar"
+  #
+  # So this basename:
+  #
+  #   "converted-wise.berkeley.edu-30259.jar?version=2"
+  #
+  # becomes
+  #
+  #   "converted-wise.berkeley.edu-30259.jar"
+  #
   def filename
-    File.basename(self.url)
+    File.basename(self.url)[/.*.jar/]
   end
   
   # Returns full path to jar without the base filename of the jar
