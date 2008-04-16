@@ -176,8 +176,17 @@ class Curnit < ActiveRecord::Base
   # these regex's aren't used anymore ...
   # but they seemed too nice to just delete
 
+  def needs_to_be_updated
+    remote_modification = self.get_last_modified
+    if remote_modification == 'resource not available' 
+      return false
+    else
+      self.jar_last_modified.blank? || (self.jar_last_modified < self.get_last_modified) || ! File.exists?(self.path)
+    end
+  end
+  
   def update_jar
-    if self.jar_last_modified.blank? || (self.jar_last_modified < self.get_last_modified) || ! File.exists?(self.path)
+    if needs_to_be_updated
       begin
         url_string = self.url
         open(url_string) do |urlfile|
@@ -232,7 +241,7 @@ class Curnit < ActiveRecord::Base
         if head.class == Net::HTTPOK
           self.jar_last_modified=Time::httpdate(head['Last-Modified'])
         else
-          'jnlp not available'
+          'resource not available'
         end
       end
     rescue SocketError
