@@ -41,12 +41,7 @@ class Sock < ActiveRecord::Base
     end
     case self.pod.mime_type
     when /xml/
-      begin
-        hash = XmlSimple.new().xml_in(CGI.unescapeHTML(value), {'keeproot' => true})
-        XmlSimple.xml_out(hash, {'keeproot' => true})
-      rescue
-        value ? value : self.value
-      end
+      value ? value : self.value
     when /java_object/
       "java object: #{value.length.to_s} bytes"
     when /text/
@@ -63,7 +58,11 @@ class Sock < ActiveRecord::Base
   def unpack_gzip_b64_value
     begin
       if self.pod.bytearray?
-        Zlib::GzipReader.new(StringIO.new(Base64.decode64(self.value))).read
+        if File.exist?(self.path + self.filename_decoded)
+          File.read(self.path + self.filename_decoded)
+        else
+          Zlib::GzipReader.new(StringIO.new(self.value.unpack('m')[0])).read
+        end
       else
         ""
       end
