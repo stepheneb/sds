@@ -21,7 +21,7 @@ module OfferingHelper
   #    xml << nl + "<offline-allowed/>" 
     }
     if USE_LIBXML
-      xml << jnlp.find('./security').to_s
+      xml << jnlp.find('./security').first.to_s
     else
       xml << jnlp.elements["security"].to_s
     end
@@ -31,7 +31,7 @@ module OfferingHelper
     end
 
     if USE_LIBXML
-      xml << "\n#{jnlp.find('./application-desc')}"
+      xml << "\n#{jnlp.find('./application-desc').first}"
     else
       # work-around rexml escaping of the &
       output = jnlp.elements["application-desc"].to_s.gsub(/&amp;/, '&')

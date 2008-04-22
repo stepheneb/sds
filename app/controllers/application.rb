@@ -149,9 +149,12 @@ private
   end
   
   def log_memory_filter
+    GC.disable
     start_mem = log_memory("START")
     yield
     log_memory("END", start_mem)
+    GC.enable
+    GC.start
   end
 
   def log_memory(cust, smem = 0)
