@@ -32,10 +32,10 @@ class Sock < ActiveRecord::Base
     end
   end
 
-  def text
+  def text(ignore_file = false)
     value = case self.pod.encoding
     when 'gzip+b64'
-      self.unpack_gzip_b64_value
+      self.unpack_gzip_b64_value(ignore_file)
     when 'escaped'
       self.unescape_value
     end
@@ -55,10 +55,10 @@ class Sock < ActiveRecord::Base
     CGI.unescapeHTML(self.value)
   end
 
-  def unpack_gzip_b64_value
+  def unpack_gzip_b64_value(ignore_file = false)
     begin
       if self.pod.bytearray?
-        if File.exist?(self.path + self.filename_decoded)
+        if ((! ignore_file) && File.exist?(self.path + self.filename_decoded))
           File.read(self.path + self.filename_decoded)
         else
           Zlib::GzipReader.new(StringIO.new(self.value.unpack('m')[0])).read
@@ -94,7 +94,7 @@ class Sock < ActiveRecord::Base
       FileUtils.mkdir_p("#{self.path}raw") unless File.exists?("#{self.path}raw")
       File.open("#{self.path}#{filename_raw}", "w") { |f| f.write value }
       FileUtils.mkdir_p("#{self.path}decoded") unless File.exists?("#{self.path}deocded")
-      File.open("#{self.path}#{self.filename_decoded}", "w") { |f| f.write text }
+      File.open("#{self.path}#{self.filename_decoded}", "w") { |f| f.write text(true) }
     end
   end
 
