@@ -283,16 +283,16 @@ class OfferingController < ApplicationController
   
   def report_xls
     compact = params[:compact] ? true : false
-	  file = "#{RAILS_ROOT}/tmp/xls/#{@offering.id}.csv"
+    file = "#{RAILS_ROOT}/tmp/xls/#{@offering.id}.csv"
     pid = spawn {
-	  f = File.new(file, "w")
-	  f.write("")
-	  f.close
-	  debug = []
-	  workgroups_in_this_offering = @offering.workgroups.collect{|w| w.id}.uniq
+    f = File.new(file, "w")
+    f.write("")
+    f.close
+    debug = []
+    workgroups_in_this_offering = @offering.workgroups.collect{|w| w.id}.uniq
     pods = Pod.find(:all, :conditions => ['curnit_id = ?', @offering.curnit_id])
-	  pod_info = pods.collect { |p|
-	  	if p.pas_type == 'note'
+    pod_info = pods.collect { |p|
+      if p.pas_type == 'note'
         # we only want pods which have socks from workgroups within this offering
         # by taking 2 unique arrays and combining them, we can use the uniq! command
         # to return the duplicates of the combined array. If there are no duplicates,
@@ -304,206 +304,206 @@ class OfferingController < ApplicationController
         }.uniq
         temp = (workgroups_in_this_offering + workgroups_for_this_pod).uniq!
         if temp != nil
-	  		  if p.html_body != nil
-	  			  body = p.html_body.strip
-	  		  else
-	  			  body = nil
-	  		  end
-	  		  ["#{p.id}", "#{p.uuid}", "#{p.rim_name}", "#{body}"]
-	      else	
+          if p.html_body != nil
+            body = p.html_body.strip
+          else
+            body = nil
+          end
+          ["#{p.id}", "#{p.uuid}", "#{p.rim_name}", "#{body}"]
+        else  
           nil
         end
       else
-			  nil
+        nil
       end
-	  }
-	  pod_info = pod_info.compact
-	  debug += ["In the method"]
-	  workgroup_ids = @offering.workgroups.collect {|w| w.id }
-	  offering_data = { }
-	  workgroup_ids.each do |wid|
-	  	workgroup_data = { }
-	  	w = Workgroup.find(wid)
-		w.bundles.each do |b|
-			debug += ["working with bundle #{b.id}"]
-			b.socks.each do |s|
-				debug += ["working with sock #{s.id}"]
-				if s.pod.pas_type != 'note'
-					debug += ["sock is not a note, skipping"]
-					next
-			end
+    }
+    pod_info = pod_info.compact
+    debug += ["In the method"]
+    workgroup_ids = @offering.workgroups.collect {|w| w.id }
+    offering_data = { }
+    workgroup_ids.each do |wid|
+      workgroup_data = { }
+      w = Workgroup.find(wid)
+    w.bundles.each do |b|
+      debug += ["working with bundle #{b.id}"]
+      b.socks.each do |s|
+        debug += ["working with sock #{s.id}"]
+        if s.pod.pas_type != 'note'
+          debug += ["sock is not a note, skipping"]
+          next
+      end
       data = [s.bundle.id, s.bundle.sail_session_start_time.to_s, s.id, TimeTracker.seconds_to_s(s.ms_offset/1000), s.value]
       if compact
         metadata = "#{s.bundle.id}\r#{s.bundle.sail_session_start_time.to_s}\r#{s.id}\r#{TimeTracker.seconds_to_s(s.ms_offset/1000)}"
         data = [metadata, s.value]
-		  end
-				if workgroup_data.has_key?("#{s.pod_id}")
-					w_counter = 1
-					
-					# put the sock data in a new or existing dummy workgroup
-					while (offering_data.has_key?("#{wid}|#{w_counter}") && offering_data["#{wid}|#{w_counter}"].has_key?(s.pod_id))
-						w_counter += 1
-					end
-					if (offering_data.has_key?("#{wid}|#{w_counter}"))
-						debug += ["The workgroup #{wid}|#{w_counter} exists, but doesn't have this pod data defined"]
-						offering_data["#{wid}|#{w_counter}"]["#{s.pod_id}"] = data
-					else
-						debug += ["The workgroup #{wid}|#{w_counter} doesn't exist yet"]
-						new_workgroup_data = { }
-						new_workgroup_data["#{s.pod_id}"] = data
-						offering_data["#{wid}|#{w_counter}"] = new_workgroup_data
-					end
-				else
-					workgroup_data["#{s.pod_id}"] = data
-				end
-			end
-		end
-		offering_data["#{wid}"] = workgroup_data
-	  end	
-	  debug +=  [ offering_data ]
-	  
-	  # @workbook = Spreadsheet::Excel.new(file)
-	  # data_format = @workbook.add_format(:color=>"blue", :text_h_align=>1)
-	  # response.header_format = @workbook.add_format(:color=>"black", :bold=>1, :text_h_align=>1)
-	  # thick_bottom_border = @workbook.add_format(:bottom=>5)
-	  # thin_right_border = @workbook.add_format(:right=>1)
-	  # pod_info_merged_cells = @workbook.add_format()
-	  
-	  # notes_worksheet = @workbook.add_worksheet("Notes")
-	  # notes_worksheet.format_column(0, 8, format)
-	  
-	  row = 0
-	  col = 0
-	  # start with the headers for each pod
+      end
+        if workgroup_data.has_key?("#{s.pod_id}")
+          w_counter = 1
+          
+          # put the sock data in a new or existing dummy workgroup
+          while (offering_data.has_key?("#{wid}|#{w_counter}") && offering_data["#{wid}|#{w_counter}"].has_key?(s.pod_id))
+            w_counter += 1
+          end
+          if (offering_data.has_key?("#{wid}|#{w_counter}"))
+            debug += ["The workgroup #{wid}|#{w_counter} exists, but doesn't have this pod data defined"]
+            offering_data["#{wid}|#{w_counter}"]["#{s.pod_id}"] = data
+          else
+            debug += ["The workgroup #{wid}|#{w_counter} doesn't exist yet"]
+            new_workgroup_data = { }
+            new_workgroup_data["#{s.pod_id}"] = data
+            offering_data["#{wid}|#{w_counter}"] = new_workgroup_data
+          end
+        else
+          workgroup_data["#{s.pod_id}"] = data
+        end
+      end
+    end
+    offering_data["#{wid}"] = workgroup_data
+    end 
+    debug +=  [ offering_data ]
+    
+    # @workbook = Spreadsheet::Excel.new(file)
+    # data_format = @workbook.add_format(:color=>"blue", :text_h_align=>1)
+    # response.header_format = @workbook.add_format(:color=>"black", :bold=>1, :text_h_align=>1)
+    # thick_bottom_border = @workbook.add_format(:bottom=>5)
+    # thin_right_border = @workbook.add_format(:right=>1)
+    # pod_info_merged_cells = @workbook.add_format()
+    
+    # notes_worksheet = @workbook.add_worksheet("Notes")
+    # notes_worksheet.format_column(0, 8, format)
+    
+    row = 0
+    col = 0
+    # start with the headers for each pod
     pod_headers = ["Bundle ID", "Bundle Date", "Sock ID", "Sock Time", "Sock Content"]
     if compact
       pod_headers = ["Bundle ID\rBundle Date\rSock ID\rSock Time", "Content"]
     end
-	  # notes_worksheet.write(row, col, [["Pod ID", "Pod UUID", "Rim Name", "Note HTML Content", "Workgroup"]])
-	  pid_row = ["Pod ID"]
-	  puuid_row = ["Pod UUID"]
-	  rimname_row = ["Rim Name"]
-	  content_row = ["Note HTML Content"]
-	  header_row = ["Workgroup"]
-	  col = -4
+    # notes_worksheet.write(row, col, [["Pod ID", "Pod UUID", "Rim Name", "Note HTML Content", "Workgroup"]])
+    pid_row = ["Pod ID"]
+    puuid_row = ["Pod UUID"]
+    rimname_row = ["Rim Name"]
+    content_row = ["Note HTML Content"]
+    header_row = ["Workgroup"]
+    col = -4
     padding = [nil,nil,nil,nil]
     if compact
       padding = [nil]
     end
-	  pod_info.each do |p|
-	  	# notes_worksheet.write(row, col += 5, [p])
-	  	pid_row += [p[0]] + padding
-		puuid_row += [p[1]] + padding
-		rimname_row += [p[2]] + padding
-		content_row += [p[3]] + padding
-		header_row += pod_headers
-	  end
-	  offerings = offering_data.keys.sort
-	  CSV.open(file, "w") do |row|
-	  	row << pid_row
-		row << puuid_row
-		row << rimname_row
-		row << content_row
-	  	row << header_row
-	  # row = 4
-	  offerings.each do |wid|
-	  	# rename the dummy workgroups to match the real workgroup id
-	  	debug += ["Found key #{wid}"]
-	  	begin
-	  		clean_wid = wid.split("|")[0]
-	  	rescue
-	  		clean_wid = wid
-	  	end
-	  	row_data = [clean_wid]
-	  	pod_info.each do |p|
-	  		if offering_data[wid] != nil && offering_data[wid].has_key?(p[0])
-	  			# append the data to the row
-				row_data += offering_data[wid][p[0]]
-	  		else
-	  			# pad the row with empty cells
+    pod_info.each do |p|
+      # notes_worksheet.write(row, col += 5, [p])
+      pid_row += [p[0]] + padding
+    puuid_row += [p[1]] + padding
+    rimname_row += [p[2]] + padding
+    content_row += [p[3]] + padding
+    header_row += pod_headers
+    end
+    offerings = offering_data.keys.sort
+    CSV.open(file, "w") do |row|
+      row << pid_row
+    row << puuid_row
+    row << rimname_row
+    row << content_row
+      row << header_row
+    # row = 4
+    offerings.each do |wid|
+      # rename the dummy workgroups to match the real workgroup id
+      debug += ["Found key #{wid}"]
+      begin
+        clean_wid = wid.split("|")[0]
+      rescue
+        clean_wid = wid
+      end
+      row_data = [clean_wid]
+      pod_info.each do |p|
+        if offering_data[wid] != nil && offering_data[wid].has_key?(p[0])
+          # append the data to the row
+        row_data += offering_data[wid][p[0]]
+        else
+          # pad the row with empty cells
           if compact
             row_data += [nil, nil]
           else
-	  			  row_data += [nil,nil,nil,nil,nil]
+            row_data += [nil,nil,nil,nil,nil]
           end
-	  		end
-	  	end
-		row << row_data
-		# notes_worksheet.write(row += 1, 0, row_data)
-	  end
-	  # debug.each do |d|
-	  # 	row << [d]
-	  # end
-	  row << []
-	  end
+        end
+      end
+    row << row_data
+    # notes_worksheet.write(row += 1, 0, row_data)
+    end
+    # debug.each do |d|
+    #   row << [d]
+    # end
+    row << []
+    end
     exit(0)
-	  }
+    }
     wait(pid)
-	  # @workbook.close
+    # @workbook.close
     if $?.exitstatus != 0
       raise "Error generating spreadsheet"
     end
-	  send_data(File.open(file).read, :type => "application/vnd.ms.excel", :filename => "offering-report-#{@offering.id}.csv" )  	
+    send_data(File.open(file).read, :type => "application/vnd.ms.excel", :filename => "offering-report-#{@offering.id}.csv" )   
   end
   
   def curnitmap
-  	# find or create a curnitmap sailuser for this portal
-  	cm_user = SailUser.find(:first, :conditions => "first_name = 'curnitmap' AND portal_id = #{@portal.id}")
-	if cm_user.blank?
-		cm_user = SailUser.new()
-		cm_user.first_name = "curnitmap"
-		cm_user.last_name = "curnitmap"
-		cm_user.portal = @portal
-		begin
-			cm_user.save!
-		rescue => e
-			render(:text => "#{e}", :status => 404)
-			return
-		end
-	end
-  	# find or create curnitmap workgroup
-	notdone = true
-  	@offering.workgroups.each do |w|
-  		if notdone
-	  		w.members.each do |wm|
-	  			if notdone && wm == cm_user
-	  				@workgroup = w
-					notdone = false
-	  			end
-	  		end
-		end
-  	end
-	
-	if notdone
-		@workgroup = Workgroup.create!(:offering => @offering, :name => "curnitmap", :version => 0, :portal => @portal)
-		@workgroup.workgroup_memberships.create!(:sail_user_id => cm_user.id, :version => 0)
+    # find or create a curnitmap sailuser for this portal
+    cm_user = SailUser.find(:first, :conditions => "first_name = 'curnitmap' AND portal_id = #{@portal.id}")
+  if cm_user.blank?
+    cm_user = SailUser.new()
+    cm_user.first_name = "curnitmap"
+    cm_user.last_name = "curnitmap"
+    cm_user.portal = @portal
+    begin
+      cm_user.save!
+    rescue => e
+      render(:text => "#{e}", :status => 404)
+      return
     end
-	
-	pdf_host = (request.env['HTTP_X_FORWARDED_SERVER'] ? request.env['HTTP_X_FORWARDED_SERVER'] : request.env['HTTP_HOST']) 
-	pdf_relative_root = request.env['REQUEST_URI'].match(/(.*)\/[\d]+\/offering\/[\d]+[\/]?/)[1]
-	@sdsBaseUrl = "http://#{pdf_host}#{pdf_relative_root}"	
-	
-  	# request the curnitmap from the pdfserver
-	cmap_url = "#{PDF_SITE_ROOT}/#{@portal.id}"
-	cmap_url << "/offering/#{@offering.id}"
-	cmap_url << "/workgroup/#{@workgroup.id}"
-	cmap_url << "/curnitmap?sdsBaseUrl=#{@sdsBaseUrl}"
-	cmap_url << "&curnitURL=#{@offering.curnit.url}"
-	cmap_url = cmap_url.gsub(/([^:])\/+/, '\1/')
-	begin
-	open(cmap_url) do |cmap|
-		if cmap.status[0] != "200"
-			render(:text => "#{cmap.read}", :status => cmap.status[0])
-		else
-			# relay the response and file to the requestor
-			send_data(cmap.read, :type => "application/xml", :filename => "curnitmap-#{@offering.id}.xml" )
-		end
-	end
-	rescue OpenURI::HTTPError => error
-		render(:text => "#{error.message}: #{error.io.read}", :status => error.io.status[0])
-	rescue Timeout::Error => error
-		render(:text => "Timeout on curnitmap generation: #{error.message}", :status => 408)
-	end
+  end
+    # find or create curnitmap workgroup
+  notdone = true
+    @offering.workgroups.each do |w|
+      if notdone
+        w.members.each do |wm|
+          if notdone && wm == cm_user
+            @workgroup = w
+          notdone = false
+          end
+        end
+    end
+    end
+  
+  if notdone
+    @workgroup = Workgroup.create!(:offering => @offering, :name => "curnitmap", :version => 0, :portal => @portal)
+    @workgroup.workgroup_memberships.create!(:sail_user_id => cm_user.id, :version => 0)
+    end
+  
+  pdf_host = (request.env['HTTP_X_FORWARDED_SERVER'] ? request.env['HTTP_X_FORWARDED_SERVER'] : request.env['HTTP_HOST']) 
+  pdf_relative_root = request.env['REQUEST_URI'].match(/(.*)\/[\d]+\/offering\/[\d]+[\/]?/)[1]
+  @sdsBaseUrl = "http://#{pdf_host}#{pdf_relative_root}"  
+  
+    # request the curnitmap from the pdfserver
+  cmap_url = "#{PDF_SITE_ROOT}/#{@portal.id}"
+  cmap_url << "/offering/#{@offering.id}"
+  cmap_url << "/workgroup/#{@workgroup.id}"
+  cmap_url << "/curnitmap?sdsBaseUrl=#{@sdsBaseUrl}"
+  cmap_url << "&curnitURL=#{@offering.curnit.url}"
+  cmap_url = cmap_url.gsub(/([^:])\/+/, '\1/')
+  begin
+  open(cmap_url) do |cmap|
+    if cmap.status[0] != "200"
+      render(:text => "#{cmap.read}", :status => cmap.status[0])
+    else
+      # relay the response and file to the requestor
+      send_data(cmap.read, :type => "application/xml", :filename => "curnitmap-#{@offering.id}.xml" )
+    end
+  end
+  rescue OpenURI::HTTPError => error
+    render(:text => "#{error.message}: #{error.io.read}", :status => error.io.status[0])
+  rescue Timeout::Error => error
+    render(:text => "Timeout on curnitmap generation: #{error.message}", :status => 408)
+  end
   end
   
     
