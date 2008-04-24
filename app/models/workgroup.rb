@@ -26,21 +26,21 @@ class Workgroup < ActiveRecord::Base
   
   has_many :bundles do
     def asc # this is the default behavior
-      find(:all, :order => "sail_session_modified_time ASC")
+      find(:all, :order => "sail_session_modified_time ASC, created_at ASC")
     end
     def desc
-      find(:all, :order => "sail_session_modified_time DESC")
+      find(:all, :order => "sail_session_modified_time DESC, created_at ASC")
     end
   end
 
-  has_many :valid_bundles, :class_name => "Bundle", :conditions => 'process_status = 1' do
+  has_many :valid_bundles, :class_name => "Bundle", :conditions => 'process_status = 1 OR process_status = 3' do
     def asc # this is the default behavior
-      find(:all, :order => "sail_session_modified_time ASC")
+      find(:all, :order => "sail_session_modified_time ASC, created_at ASC")
     end
     def desc
-      find(:all, :order => "sail_session_modified_time DESC")
+      find(:all, :order => "sail_session_modified_time DESC, created_at ASC")
     end
-  end 
+  end
 
   validates_presence_of :offering, :name
   validates_associated :offering

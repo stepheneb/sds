@@ -219,19 +219,19 @@ class OfferingController < ApplicationController
             raise "Bundle MD5 Mismatch"
           end
         end
-        pid = spawn do
-          begin
+#        pid = spawn do
+#          begin
             @bundle = Bundle.create!(:workgroup_id => params[:wid],
               :workgroup_version => params[:version], :bc => content)
-            exit(0)
-          rescue
-            logger.error("#{e}\n#{e.backtrace.join("\n")}")
-          end
-        end
-        wait(pid)
-        if $?.exitstatus != 0
-          raise "Error saving bundle"
-        end
+#            exit(0)
+#          rescue
+#            logger.error("#{e}\n#{e.backtrace.join("\n")}")
+#          end
+#        end
+#        wait(pid)
+#        if $?.exitstatus != 0
+#          raise "Error saving bundle"
+#        end
         response.headers['Content-md5'] = digest
 #        response.headers['Location'] = "#{url_for(:controller => 'bundle', :id => @bundle.id)}"
         response.headers['Cache-Control'] = 'public'

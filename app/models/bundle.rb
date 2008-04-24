@@ -53,18 +53,28 @@ class Bundle < ActiveRecord::Base
   
   def valid
   end
-  
-  def before_create
+ 
+  before_create :create_bundle_contents
+  after_create :mark_bundle_processed
+#  after_create  :process_bundle_contents
+ 
+  def create_bundle_contents
     unless self.bc.empty?
       self.bundle_content = BundleContent.new(:content => self.bc)
     end
   end
   
-  def after_create
+  def process_bundle_contents
     self.save_to_file_system
     self.process_content
     self.process_status = 1
     self.has_data = self.socks.count > 0
+    self.save!
+  end
+
+  def mark_bundle_processed
+    self.sail_session_modified_time = Time.now.gmtime
+    self.process_status = 3
     self.save!
   end
   
@@ -154,7 +164,7 @@ class Bundle < ActiveRecord::Base
       process_sail_session_attributes
       process_sock_parts(console_log)
       if self.sail_session_modified_time == nil
-        self.sail_session_modified_time = calc_modified_time
+        self.sail_session_modified_time = calc_modified_time.gmtime
       end
     else
       content_well_formed_xml = false

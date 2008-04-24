@@ -6,6 +6,20 @@ namespace :sds do
     puts SdsCache.instance.path
   end
 
+  desc "Process any unprocessed bundles"
+  task :process_unprocessed_bundles => :environment do
+    puts "Processing any unprocessed bundles..."
+    Bundle.find(:all, :conditions => "process_status = 3").each do |b|
+      begin
+        b.process_bundle_contents
+        print '.'
+      rescue => e
+        print 'x'
+        puts e
+      end
+    end
+  end
+
   desc "Copy bundle.content to new model BundleContent.content (added in migration 45)."
   task :copy_bundle_content_to_related_model => :environment do
     puts "\nCopying bundle.content to related model ..."
