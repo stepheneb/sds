@@ -144,8 +144,8 @@ ActiveRecord::Schema.define() do
   create_table "sds_log_bundles", :force => true do |t|
     t.integer  "bundle_id"
     t.integer  "workgroup_id"
-    t.string   "sail_session_uuid", :limit => 36, :null => false
-    t.string   "sail_curnit_uuid",  :limit => 36, :null => false
+    t.string   "sail_session_uuid", :limit => 36, :default => "", :null => false
+    t.string   "sail_curnit_uuid",  :limit => 36, :default => "", :null => false
     t.text     "content"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -168,7 +168,7 @@ ActiveRecord::Schema.define() do
 
   create_table "sds_offerings_attributes", :force => true do |t|
     t.integer "offering_id"
-    t.text    "name",        :null => false
+    t.text    "name",        :default => "", :null => false
     t.text    "value"
   end
 
