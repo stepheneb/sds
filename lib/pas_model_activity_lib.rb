@@ -17,10 +17,14 @@ module PasModelActivityLib
     ws.format_column(3,      10, format)  # Time
     ws.format_column(4..20,  20, wrap_format)  # comp. inputs, rep. attrs
     
-    mad = get_mad(sock)
+    mads = get_mad(sock)
     
-    row_num = 0
-    ws.write(row_num, 0, ["Pod id:", sock.pod.id])
+    row_num = -1
+    
+    mads.each do |mad|
+    
+    
+    ws.write(row_num += 1, 0, ["Pod id:", sock.pod.id])
 	  ws.write(row_num += 1, 0, ["Pod uuid:", sock.pod.uuid])
     ws.write(row_num += 1, 0, ["Sock entry id:", sock.id])
     ws.write(row_num += 1, 0, ["Bundle id:", sock.bundle.id])
@@ -33,9 +37,9 @@ module PasModelActivityLib
     ws.write(row_num += 1, 0, ["Session end:", sock.bundle.sail_session_end_time.to_s])
     row_num += 1;  # skip a line
     if mad
-      if sock.model_activity_dataset.pas_findings.count > 0
+      if mad[:mad].pas_findings.count > 0
         ws.write(row_num += 1, 0, ['Finding','Evidence','Text'])
-        sock.model_activity_dataset.pas_findings.each do |f|
+        mad[:mad].pas_findings.each do |f|
           ws.write(row_num += 1, 0, ["#{f.sequence}", "#{f.evidence}", "#{f.text}"])
         end
         row_num += 1;  # skip a line
@@ -78,19 +82,23 @@ module PasModelActivityLib
     else
       ws.write(row_num += 1, 0, "There was an error rendering the model activity data for this sock entry.")
     end
+    end
   end
 
   def get_mad(sock)
   require 'date'
   
+    return_array = []
+
+    if sock.model_activity_datasets.count < 1 && (sock.pod.pas_type == "model_activity_data" || sock.pod.pas_type == "ot_learner_data")
+      sock.save
+    end
+    
+  sock.model_activity_datasets.each do |mad|
+    begin
     return_hash = { }
     headers = []
     runs = []
-    
-    begin
-    if ! sock.model_activity_dataset && sock.pod.pas_type == "model_activity_data"
-      sock.save
-    end
     
     ## Start with the headers
      headers << {
@@ -108,7 +116,7 @@ module PasModelActivityLib
      }
      
     
-    sock.model_activity_dataset.computational_input.each do |ci|
+    mad.computational_input.each do |ci|
       ci_hash = {
         "name"  => ci.name,
         "units" => ci.units,
@@ -119,13 +127,13 @@ module PasModelActivityLib
       headers << ci_hash
     end
     
-    sock.model_activity_dataset.representational_type.each do |rt|
+    mad.representational_type.each do |rt|
       # prepend with 'zzz' so that they're sorted to the end of the header columns
       headers << { "name" => rt.name }
     end
     
     ## then runs and their associated data
-    sock.model_activity_dataset.model_activity_modelrun.each do |mr|
+    mad.model_activity_modelrun.each do |mr|
       time_hash = { }
       civs = { }
       mr.computational_input_value.each do |civ|
@@ -163,12 +171,14 @@ module PasModelActivityLib
       runs.push(run)
     end
     
-    return_hash = {"headers" => headers, "runs" => runs}
-    return return_hash
+    return_hash = {"headers" => headers, "runs" => runs, :mad => mad}
+    return_array << return_hash
 		rescue => e
 		  logger.error("#{$!}\n#{e}")
-		  return nil
+		  return_array << nil
 		end
+    end
+    return return_array
   end
   
   def get_run_info(r)

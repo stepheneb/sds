@@ -32,7 +32,7 @@ class Bundle < ActiveRecord::Base
       find(:all).select {|s| s.pod.pas_type == 'note'}
     end
     def find_model_activity_datasets
-      find(:all).select {|s| s.pod.pas_type == 'model_activity_data'}
+      find(:all).select {|s| s.pod.pas_type == 'model_activity_data' || (s.pod.pas_type == "ot_learner_data" && s.text =~ /OTModelActivityData/)}
     end
     def find_curnit_maps
       find(:all, :order => "ms_offset DESC").select {|s| s.pod.pas_type == 'curnit_map'}

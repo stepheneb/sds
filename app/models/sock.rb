@@ -18,18 +18,46 @@ class Sock < ActiveRecord::Base
 #  acts_as_reportable
   belongs_to :bundle
   belongs_to :pod
-  has_one :model_activity_dataset
+#  has_one :model_activity_dataset
+  has_many :model_activity_datasets
   
 
   def after_save
     self.save_to_file_system
+    if self.pod.pas_type == "model_activity_data" || self.pod.pas_type == "ot_learner_data"
+      if self.model_activity_datasets.count > 0
+        self.model_activity_datasets.each {|mad| mad.save }
+      elsif self.has_model_activity_data?
+        xml = nil
+        if (self.pod.pas_type == "ot_learner_data")
+          xml = REXML::Document.new(self.unpack_gzip_b64_value)
+        else
+          xml = REXML::Document.new(self.value)
+        end
+        element_name = self.pod.pas_type == "model_activity_data" ? "modelactivitydata" : "OTModelActivityData"
+        xml.elements.each("//#{element_name}") do |mad_xml|
+          self.model_activity_datasets << ModelActivityDataset.create!(:content => mad_xml.to_s, :sock => self)
+        end
+      end
+#      if self.model_activity_dataset
+#        self.model_activity_dataset.save
+#      else
+#        xml = REXML::Document.new(self.value)
+#        element_name = self.pod.pas_type == "model_activity_data" ? "modelactivitydata" : "OTModelActivityData"
+#        self.create_model_activity_dataset :content => xml.elements["//#{element_name}"].to_s
+#      end
+    end
+  end
+  
+  def has_model_activity_data?
     if self.pod.pas_type == "model_activity_data"
-      if self.model_activity_dataset
-        self.model_activity_dataset.save
-      else
-        self.create_model_activity_dataset
+      return true
+    elsif self.pod.pas_type == "ot_learner_data"
+      if self.unpack_gzip_b64_value.match(/OTModelActivityData/)
+        return true
       end
     end
+    return false
   end
 
   def text(ignore_file = false)

@@ -1,8 +1,9 @@
- <% mad = get_mad_data(s) -%>
-        <%# debug mad %>
-        <% if mad -%>
-        <% if s.model_activity_dataset.pas_findings.count > 0 -%>
-		  <%= render(:partial => 'finding', :locals => {:findings => s.model_activity_dataset.pas_findings}) %>
+ <% mads = get_mad_data(s) -%>
+      <% mads.each do |mad| -%>
+	   <%# debug mad -%>
+	   <% if mad && mad[:mad] -%>
+        <% if mad[:mad].pas_findings.count > 0 -%>
+		  <%= render(:partial => 'finding', :locals => {:findings => mad[:mad].pas_findings}) %>
 		  <br/>
 		<% end -%>
         <table border=1>
@@ -19,10 +20,10 @@
             <tbody>
           <% @i = 0 -%>
           <% mad['runs'].each do |r| -%>
-          <% rowspan = r['by_time'].size %>
-          <% if rowspan == 0 %>
-          <% rowspan = 1 %>
-          <% end %>
+          <% rowspan = r['by_time'].size -%>
+          <% if rowspan == 0 -%>
+          <% rowspan = 1 -%>
+          <% end -%>
             <tr>
               <td rowspan=<%= rowspan %> valign="top">
               	<!-- run info -->
@@ -62,12 +63,13 @@
                 <% end -%>
               </tr>
             <%  end -%>
-            <% if first_time %>
+            <% if first_time -%>
               <td> <!-- no events --> </td></tr>
-            <% end %>
+            <% end -%>
           <% end -%>
           </tbody>
         </table>
     <% else -%>
        There was an error rendering the model activity data for this sock entry.
     <% end -%>
+	<% end -%>

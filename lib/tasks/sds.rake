@@ -117,7 +117,7 @@ namespace :sds do
     ModelActivityDataset.find(:all) do |mad|
       mad.destroy
     end
-    pods = Pod.find(:all, :conditions => "rim_name='model.activity.data'")
+    pods = Pod.find(:all, :conditions => "rim_name='model.activity.data' OR pas_type='ot_learner_data'")
     puts "Pods to process: #{pods.size}"
     count = 1
     print "#{sprintf("%5d", count)}: "
@@ -130,6 +130,7 @@ namespace :sds do
         rescue => e
           # puts "#{e}\n"
           j += 1
+          $stderr.puts s.id
           failures.push(s.id)
         end
       end
@@ -145,7 +146,7 @@ namespace :sds do
       count += 1
     end
     puts "Processed #{i} socks, #{j} failed."
-    # puts failures
+    puts failures
     tracker.stop
     puts
   end
@@ -320,6 +321,10 @@ xml.java("version" => "1.4.0", "class" => "java.beans.XMLDecoder") {
   xml.object("class" => "net.sf.sail.core.service.impl.LauncherServiceImpl") {
     xml.void("property" => "properties") {
       xml.object("class" => "java.util.Properties") {
+        xml.void("method" => "setProperty") {
+          xml.string("sds_time")
+          xml.string((Time.now.to_f * 1000).to_i)
+        }
         @offering_attributes.each do |k,v| 
           xml.void("method" => "setProperty") {
             xml.string(k)
@@ -404,6 +409,10 @@ xml.java("version" => "1.4.0", "class" => "java.beans.XMLDecoder") {
   xml.object("class" => "net.sf.sail.core.service.impl.LauncherServiceImpl") {
     xml.void("property" => "properties") {
       xml.object("class" => "java.util.Properties") {
+        xml.void("method" => "setProperty") {
+          xml.string("sds_time")
+          xml.string((Time.now.to_f * 1000).to_i)
+        }
         @offering_attributes.each do |k,v| 
           xml.void("method" => "setProperty") {
             xml.string(k)

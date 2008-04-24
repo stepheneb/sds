@@ -144,6 +144,7 @@ ActiveRecord::Schema.define() do
     t.string  "units"
     t.float   "range_max"
     t.float   "range_min"
+    t.text    "uuid"
   end
 
   add_index "sds_pas_computational_inputs", ["model_activity_dataset_id"], :name => "ci_model_activity_dataset_id_index"
@@ -163,6 +164,7 @@ ActiveRecord::Schema.define() do
     t.string   "name"
     t.float    "start_time"
     t.float    "end_time"
+    t.text     "content"
   end
 
   add_index "sds_pas_model_activity_datasets", ["sock_id"], :name => "sock_id_index"
@@ -187,6 +189,7 @@ ActiveRecord::Schema.define() do
   create_table "sds_pas_representational_types", :force => true do |t|
     t.integer "model_activity_dataset_id"
     t.string  "name"
+    t.text    "uuid"
   end
 
   add_index "sds_pas_representational_types", ["model_activity_dataset_id"], :name => "rt_model_activity_dataset_id_index"
