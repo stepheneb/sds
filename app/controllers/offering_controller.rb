@@ -223,6 +223,7 @@ class OfferingController < ApplicationController
 #          begin
             @bundle = Bundle.create!(:workgroup_id => params[:wid],
               :workgroup_version => params[:version], :bc => content)
+            jobs = Bj.submit "./script/runner 'Bundle.find(#{@bundle.id}).process_bundle_contents'"
 #            exit(0)
 #          rescue
 #            logger.error("#{e}\n#{e.backtrace.join("\n")}")

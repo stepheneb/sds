@@ -11,6 +11,52 @@
 
 ActiveRecord::Schema.define() do
 
+  create_table "bj_config", :primary_key => "bj_config_id", :force => true do |t|
+    t.text "hostname"
+    t.text "key"
+    t.text "value"
+    t.text "cast"
+  end
+
+  create_table "bj_job", :primary_key => "bj_job_id", :force => true do |t|
+    t.text     "command"
+    t.text     "state"
+    t.integer  "priority"
+    t.text     "tag"
+    t.integer  "is_restartable"
+    t.text     "submitter"
+    t.text     "runner"
+    t.integer  "pid"
+    t.datetime "submitted_at"
+    t.datetime "started_at"
+    t.datetime "finished_at"
+    t.text     "env"
+    t.text     "stdin"
+    t.text     "stdout"
+    t.text     "stderr"
+    t.integer  "exit_status"
+  end
+
+  create_table "bj_job_archive", :primary_key => "bj_job_archive_id", :force => true do |t|
+    t.text     "command"
+    t.text     "state"
+    t.integer  "priority"
+    t.text     "tag"
+    t.integer  "is_restartable"
+    t.text     "submitter"
+    t.text     "runner"
+    t.integer  "pid"
+    t.datetime "submitted_at"
+    t.datetime "started_at"
+    t.datetime "finished_at"
+    t.datetime "archived_at"
+    t.text     "env"
+    t.text     "stdin"
+    t.text     "stdout"
+    t.text     "stderr"
+    t.integer  "exit_status"
+  end
+
   create_table "sds_bundle_contents", :force => true do |t|
     t.text "content"
   end
@@ -98,8 +144,8 @@ ActiveRecord::Schema.define() do
   create_table "sds_log_bundles", :force => true do |t|
     t.integer  "bundle_id"
     t.integer  "workgroup_id"
-    t.string   "sail_session_uuid", :limit => 36
-    t.string   "sail_curnit_uuid",  :limit => 3
+    t.string   "sail_session_uuid", :limit => 36, :null => false
+    t.string   "sail_curnit_uuid",  :limit => 36, :null => false
     t.text     "content"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -122,7 +168,7 @@ ActiveRecord::Schema.define() do
 
   create_table "sds_offerings_attributes", :force => true do |t|
     t.integer "offering_id"
-    t.text    "name",        :default => "", :null => false
+    t.text    "name",        :null => false
     t.text    "value"
   end
 

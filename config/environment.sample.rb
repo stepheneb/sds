@@ -85,6 +85,11 @@ Rails::Initializer.run do |config|
   end
 end
 
+# runs background job daemon
+# gem install bj
+# see: http://codeforpeople.com/lib/ruby/bj/bj-1.0.1/README
+require 'bj'
+
 # If you are not using a common prefix for all table names in the database
 # like: "sds_" then you will need to comment out the next two statements.
 
