@@ -1,7 +1,7 @@
 <span class='create'><%= link_to 'New Curnit', :action => 'create', :pid => params[:pid] %></span>
 <p><%= will_paginate @curnits %></p>
 
-<% form_tag "/#{@portal.id}/curnit", :method => 'get' do %>
+<% form_tag "#{ActionController::AbstractRequest.relative_url_root}/#{@portal.id}/curnit", :method => 'get' do %>
   <% content_tag :label do %>
     Search term:
     <%= text_field_tag :search, params[:search] %>
