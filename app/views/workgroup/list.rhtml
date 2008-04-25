@@ -1,4 +1,12 @@
 <%= link_to 'New Workgroup', :action => 'create', :pid => params[:pid] %>
+<p><%= will_paginate @workgroups %></p>
+
+<% form_tag request.path, :method => 'get' do %>
+  <% content_tag :label do %>
+    Search term:
+    <%= text_field_tag :search, params[:search] %>
+  <% end %>
+<% end %>
 
 <p />
 <table cellpadding=3 cellspacing=1>
@@ -10,7 +18,7 @@
     <td><b>Members</b></td>
     <td><b>Valid Sessions</b></td>
   </tr>
-  <% Workgroup.find(:all, :conditions => ['sds_workgroups.portal_id = ?', @portal.id], :order => 'sds_workgroups.id DESC', :include => :sail_users).each {|w| %>
+  <% @workgroups.each {|w| %>
     <% odd_or_even = 1 - odd_or_even %>
     <tr  valign="middle" class="ListLine<%= odd_or_even %>">
       <td><%= w.id %></td>

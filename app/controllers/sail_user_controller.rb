@@ -45,7 +45,9 @@ class SailUserController < ApplicationController
       end
     else
       respond_to do |wants|
-        wants.html
+        wants.html{
+           @sail_users = SailUser.search(params[:search], params[:page], @portal)
+        }
         wants.xml { 
           sailusers = @portal.sail_users
           render :xml => (sailusers.empty? ? "<sail_users />" : sailusers.to_xml(:except => ['created_at', 'updated_at']))

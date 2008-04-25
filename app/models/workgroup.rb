@@ -21,6 +21,12 @@ class Workgroup < ActiveRecord::Base
   has_many :workgroup_memberships
   has_many :log_bundles
   
+  # see: http://github.com/mislav/will_paginate/wikis/simple-search
+  def self.search(search, page, portal)
+    paginate :per_page => 20, :page => page,
+             :conditions => ['name like ? and portal_id = ?',"%#{search}%",  portal.id], :order => 'name'
+  end
+  
   # see: http://weblog.jamisbuck.org/2007/1/18/activerecord-association-scoping-pitfalls
   # and http://weblog.jamisbuck.org/2006/10/18/skinny-controller-fat-model
   

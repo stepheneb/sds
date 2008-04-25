@@ -43,6 +43,12 @@ class Curnit < ActiveRecord::Base
     @podxml_cache = Hash.new
   end
 
+  # see: http://github.com/mislav/will_paginate/wikis/simple-search
+  def self.search(search, page, portal)
+    paginate :per_page => 20, :page => page,
+             :conditions => ['name like ? and portal_id = ?',"%#{search}%",  portal.id], :order => 'name'
+  end
+
 	def url
     begin 
       if Thread.current[:request] && read_attribute(:url)

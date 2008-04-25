@@ -1,4 +1,12 @@
 <span class='create'><%= link_to 'New Curnit', :action => 'create', :pid => params[:pid] %></span>
+<p><%= will_paginate @curnits %></p>
+
+<% form_tag request.path, :method => 'get' do %>
+  <% content_tag :label do %>
+    Search term:
+    <%= text_field_tag :search, params[:search] %>
+  <% end %>
+<% end %>
 
 <table cellpadding="3" cellspacing="3">
   <tr>
@@ -7,7 +15,7 @@
     <td><b>Name</b></td>
     <td><b>Url</b></td>
   </tr>
-  <% Curnit.find(:all, :conditions => ['portal_id = ?', @portal.id], :order => 'id DESC').each {|curnit| %>
+  <% @curnits.each {|curnit| %>
     <tr>
       <td width=200><%= link_to 'Show', :action => 'show', :id => curnit %> | <%= link_to 'Edit', :action => 'edit', :id => curnit %></td>
       <td><%= curnit.id.to_s %></td>

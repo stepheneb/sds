@@ -45,7 +45,9 @@ class OfferingController < ApplicationController
       end
     else
       respond_to do |wants|
-        wants.html
+        wants.html{
+           @offerings = Offering.search(params[:search], params[:page], @portal)
+        }
         wants.xml {
           offerings = @portal.offerings
           render :xml => (offerings.empty? ? "<offerings />" : offerings.to_xml(:except => ['created_at', 'updated_at']))

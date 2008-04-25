@@ -90,6 +90,9 @@ end
 # see: http://codeforpeople.com/lib/ruby/bj/bj-1.0.1/README
 require 'bj'
 
+# see: http://github.com/mislav/will_paginate/wikis/installation
+require 'will_paginate'
+
 # If you are not using a common prefix for all table names in the database
 # like: "sds_" then you will need to comment out the next two statements.
 

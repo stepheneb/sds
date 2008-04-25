@@ -39,6 +39,12 @@ class Jnlp < ActiveRecord::Base
     get_body
     get_last_modified
   end
+  
+  # see: http://github.com/mislav/will_paginate/wikis/simple-search
+  def self.search(search, page, portal)
+    paginate :per_page => 20, :page => page,
+             :conditions => ['name like ? and portal_id = ?',"%#{search}%",  portal.id], :order => 'name'
+  end
 
   def get_body
     if self.always_update || self.body.blank?      

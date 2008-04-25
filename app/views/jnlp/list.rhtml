@@ -1,4 +1,13 @@
 <%= link_to 'New Jnlp', :action => 'create', :pid => params[:pid] %>
+<p><%= will_paginate @jnlps %></p>
+
+<% form_tag request.path, :method => 'get' do %>
+  <% content_tag :label do %>
+    Search term:
+    <%= text_field_tag :search, params[:search] %>
+  <% end %>
+<% end %>
+
 
 <table cellpadding="3" cellspacing="3">
   <tr>
@@ -6,7 +15,7 @@
     <td><b>Name</b></td>
     <td><b>Url</b></td>
   </tr>
-  <% Jnlp.find(:all, :conditions => ['portal_id = ?',@portal.id], :order => 'id DESC').each {|jnlp| %>
+  <% @jnlps.each {|jnlp| %>
     <tr>
       <td><%= jnlp.id.to_s %></td>
       <td><%= jnlp.name %><br />

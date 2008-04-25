@@ -25,6 +25,12 @@ class SailUser < ActiveRecord::Base
   # workgroups = user.workgroups?
   has_many :workgroups, :through => :workgroup_memberships, :select => 'DISTINCT sds_workgroups.*'
 
+  # see: http://github.com/mislav/will_paginate/wikis/simple-search
+  def self.search(search, page, portal)
+    paginate :per_page => 20, :page => page,
+             :conditions => ['first_name like ? or last_name like ? and portal_id = ?',"%#{search}%", "%#{search}%",  portal.id], :order => 'last_name'
+  end
+
   def workgroup?
     self.workgroups.count != 0
   end

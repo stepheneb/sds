@@ -45,7 +45,9 @@ class JnlpController < ApplicationController
         else
           
           respond_to do |wants|
-            wants.html
+            wants.html {
+               @jnlps = Jnlp.search(params[:search], params[:page], @portal)
+            }
             wants.xml {
               jnlps = @portal.jnlps
               render :xml => (jnlps.empty? ? "<jnlps />" : jnlps.to_xml(:except => ['created_at', 'updated_at']))
