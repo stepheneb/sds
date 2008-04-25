@@ -30,6 +30,10 @@ class WorkgroupController < ApplicationController
     end
   end
   
+  def index
+    list
+  end
+  
   def list
     if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
       xml_parms = ConvertXml.xml_to_hash(request.raw_post)
