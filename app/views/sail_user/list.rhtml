@@ -3,8 +3,7 @@
 
 <% form_tag "#{ActionController::AbstractRequest.relative_url_root}/#{@portal.id}/sail_user", :method => 'get' do %>
   <% content_tag :label do %>
-    Search term:
-    <%= text_field_tag :search, params[:search] %>
+    Search for:<%= text_field_tag :search, params[:search] %> <span style="font-style: italic;">(total: <%= @sail_users.total_entries %>)</span>
   <% end %>
 <% end %>
 

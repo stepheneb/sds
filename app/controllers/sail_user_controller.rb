@@ -44,13 +44,11 @@ class SailUserController < ApplicationController
         render(:text => "<validation-errors>\n#{errors}</validation-errors>\n", :status => 400) # Bad Request
       end
     else
+      @sail_users = SailUser.search(params[:search], params[:page], @portal)
       respond_to do |wants|
-        wants.html{
-           @sail_users = SailUser.search(params[:search], params[:page], @portal)
-        }
+        wants.html
         wants.xml { 
-          sailusers = @portal.sail_users
-          render :xml => (sailusers.empty? ? "<sail_users />" : sailusers.to_xml(:except => ['created_at', 'updated_at']))
+          render :xml => (@sail_users.empty? ? "<sail_users />" : @sail_users.to_xml(:except => ['created_at', 'updated_at']))
         }
       end
     end
