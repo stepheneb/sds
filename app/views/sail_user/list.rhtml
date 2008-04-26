@@ -1,13 +1,12 @@
-<%= link_to 'New SailUser', :action => 'create', :pid => params[:pid] %>
+<p><%= page_entries_info @sail_users %></p>
 <p><%= will_paginate @sail_users %></p>
-
 <% form_tag "#{ActionController::AbstractRequest.relative_url_root}/#{@portal.id}/sail_user", :method => 'get' do %>
   <% content_tag :label do %>
-    Search for:<%= text_field_tag :search, params[:search] %> <span style="font-style: italic;">(total: <%= @sail_users.total_entries %>)</span>
+    Search for:<%= text_field_tag :search, params[:search] %>
   <% end %>
 <% end %>
-
-
+<span class='create'><%= link_to 'New SailUser', :action => 'create', :pid => params[:pid] %></span>
+<hr />
 <table cellpadding="3" cellspacing="3">
   <tr>
     <td><b>Id</b></td>
