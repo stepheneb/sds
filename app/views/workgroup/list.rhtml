@@ -2,7 +2,7 @@
 <p><%= will_paginate @workgroups %> </p>
 <% form_tag "#{ActionController::AbstractRequest.relative_url_root}/#{@portal.id}/workgroup", :method => 'get' do %>
   <% content_tag :label do %>
-    Search for:<%= text_field_tag :search, params[:search] %> 
+    Search for:<%= text_field_tag :search, params[:search], :size => 40 %> 
   <% end %>
 <% end %>
 <p><%= link_to 'New Workgroup', :action => 'create', :pid => params[:pid] %></p>
