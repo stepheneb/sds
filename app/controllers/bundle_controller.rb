@@ -27,13 +27,13 @@ class BundleController < ApplicationController
         begin 
           raise "bundle too large" if request.raw_post.length > BUNDLE_SIZE_LIMIT
           if request.env['HTTP_CONTENT_ENCODING'] == 'b64gzip'
-            content = Zlib::GzipReader.new(StringIO.new(Base64.decode(request.raw_post))).read
+            content = Zlib::GzipReader.new(StringIO.new(B64.decode(request.raw_post))).read
           else
             content = request.raw_post
           end
           @bundle.bc = content
           @bundle.save!
-          response.headers['Content-md5'] = Base64.folding_encode(Digest::MD5.digest(@bundle.bundle_content.content))
+          response.headers['Content-md5'] = B64.folding_encode(Digest::MD5.digest(@bundle.bundle_content.content))
           response.headers['Location'] =  "#{url_for(:controller => :bundle, :id => @bundle.id)}"
   #        response.headers['Cache-Control'] = 'no-cache'
           response.headers['Cache-Control'] = 'public'

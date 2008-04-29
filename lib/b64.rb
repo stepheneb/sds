@@ -1,4 +1,4 @@
-module Base64
+module B64
 
   def folding_encode(str, eol = "\n", limit = 60)
     [str].pack('m')

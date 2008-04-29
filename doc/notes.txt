@@ -312,7 +312,6 @@ sessionBundles
 
 ----
 require 'zlib'
-require 'base64'
 
 def b64gzip_pack(filename)
   output = StringIO.new 
@@ -322,12 +321,12 @@ def b64gzip_pack(filename)
   gz = Zlib::GzipWriter.new(output) 
   gz.write(File.read(filename)) 
   gz.close 
-  b = Base64.encode64(output.string)
+  b = B64.folding_encode(output.string)
   File.open(filename+'.gz.b64', 'w') {|f| f.write b}
 end
 
 def b64gzip_unpack(filename)
-  b = Base64.decode64(File.read(filename))
+  b = B64.decode(File.read(filename))
   outfile = filename.chomp('.gz.b64')
   File.open('outfile', 'w') {|f| f.write  Zlib::GzipReader.new(StringIO.new(b)).read}
 end

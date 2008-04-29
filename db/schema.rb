@@ -58,7 +58,9 @@ ActiveRecord::Schema.define() do
   end
 
   create_table "sds_bundle_contents", :force => true do |t|
-    t.text "content"
+    t.text     "content"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "sds_bundles", :force => true do |t|
@@ -75,6 +77,7 @@ ActiveRecord::Schema.define() do
     t.text     "processing_error"
     t.boolean  "has_data"
     t.datetime "sail_session_modified_time"
+    t.datetime "updated_at"
   end
 
   add_index "sds_bundles", ["workgroup_id"], :name => "sds_bundles_workgroup_id_index"
@@ -124,6 +127,7 @@ ActiveRecord::Schema.define() do
     t.binary   "data"
     t.datetime "created_at"
     t.string   "ip_address"
+    t.datetime "updated_at"
   end
 
   create_table "sds_jnlps", :force => true do |t|
@@ -144,8 +148,8 @@ ActiveRecord::Schema.define() do
   create_table "sds_log_bundles", :force => true do |t|
     t.integer  "bundle_id"
     t.integer  "workgroup_id"
-    t.string   "sail_session_uuid", :limit => 36, :default => "", :null => false
-    t.string   "sail_curnit_uuid",  :limit => 36, :default => "", :null => false
+    t.string   "sail_session_uuid", :limit => 36, :null => false
+    t.string   "sail_curnit_uuid",  :limit => 36, :null => false
     t.text     "content"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -168,7 +172,7 @@ ActiveRecord::Schema.define() do
 
   create_table "sds_offerings_attributes", :force => true do |t|
     t.integer "offering_id"
-    t.text    "name",        :default => "", :null => false
+    t.text    "name",        :null => false
     t.text    "value"
   end
 
@@ -250,15 +254,17 @@ ActiveRecord::Schema.define() do
   add_index "sds_pas_representational_values", ["representational_attribute_id"], :name => "representational_attribute_id_index"
 
   create_table "sds_pods", :force => true do |t|
-    t.integer "curnit_id"
-    t.string  "uuid",      :limit => 36
-    t.string  "rim_name"
-    t.string  "rim_shape"
-    t.text    "html_body"
-    t.string  "mime_type"
-    t.string  "encoding"
-    t.string  "pas_type"
-    t.string  "extension"
+    t.integer  "curnit_id"
+    t.string   "uuid",       :limit => 36
+    t.string   "rim_name"
+    t.string   "rim_shape"
+    t.text     "html_body"
+    t.string   "mime_type"
+    t.string   "encoding"
+    t.string   "pas_type"
+    t.string   "extension"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "sds_pods", ["curnit_id"], :name => "sds_pods_curnit_id_index"
@@ -287,8 +293,10 @@ ActiveRecord::Schema.define() do
   end
 
   create_table "sds_rims", :force => true do |t|
-    t.integer "pod_id"
-    t.string  "name"
+    t.integer  "pod_id"
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "sds_roles", :force => true do |t|
@@ -328,6 +336,7 @@ ActiveRecord::Schema.define() do
     t.integer  "bundle_id"
     t.integer  "pod_id"
     t.boolean  "duplicate"
+    t.datetime "updated_at"
   end
 
   add_index "sds_socks", ["bundle_id"], :name => "sds_socks_bundle_id_index"
