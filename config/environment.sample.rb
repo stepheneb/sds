@@ -111,6 +111,7 @@ ActiveRecord::Base.default_timezone = :utc
 
 require 'sds_init'
 require 'uuidtools'
+require 'b64'
 
 # If you are using the SDS with TELS SAIL-WISE curnits you will
 # need to point your SDS to an appropriate curnitmap and pdf server. 
