@@ -85,33 +85,19 @@ Rails::Initializer.run do |config|
   end
 end
 
-# runs background job daemon
-# gem install bj
-# see: http://codeforpeople.com/lib/ruby/bj/bj-1.0.1/README
-require 'bj'
+# If you are using a common prefix for all table names in the database
+# like: "sds_" then you will need to uncomment the next two sections 
+# and edit accordingly.
 
-# see: http://github.com/mislav/will_paginate/wikis/installation
-require 'will_paginate'
+# CGI::Session::ActiveRecordStore::Session.table_name = 'sds_sessions'
 
-# If you are not using a common prefix for all table names in the database
-# like: "sds_" then you will need to comment out the next two statements.
-
-CGI::Session::ActiveRecordStore::Session.table_name = 'sds_sessions'
-
-module ActiveRecord
-  class Migrator
-    def Migrator.schema_info_table_name
-      Base.table_name_prefix + "sds_schema_info" + Base.table_name_suffix
-    end
-  end
-end
-
-# Time Zone things for consistent timestamps in the db
-ActiveRecord::Base.default_timezone = :utc
-
-require 'sds_init'
-require 'uuidtools'
-require 'b64'
+# module ActiveRecord
+#   class Migrator
+#     def Migrator.schema_info_table_name
+#       Base.table_name_prefix + "sds_schema_info" + Base.table_name_suffix
+#     end
+#   end
+# end
 
 # If you are using the SDS with TELS SAIL-WISE curnits you will
 # need to point your SDS to an appropriate curnitmap and pdf server. 
