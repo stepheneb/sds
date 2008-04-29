@@ -3,6 +3,8 @@
 <% form_tag "#{ActionController::AbstractRequest.relative_url_root}/#{@portal.id}/jnlp", :method => 'get' do %>
   <% content_tag :label do %>
     Search for:<%= text_field_tag :search, params[:search], :size => 40 %>
+    <span style="font-weight: normal; font-style: italic; font-size: 90%">
+      (leave search field blank to find everything)</span>
   <% end %>
 <% end %>
 <span class='create'><%= link_to 'New Jnlp', :action => 'create', :pid => params[:pid] %></span>

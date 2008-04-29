@@ -89,7 +89,7 @@ class Sock < ActiveRecord::Base
         if ((! ignore_file) && File.exist?(self.path + self.filename_decoded))
           File.read(self.path + self.filename_decoded)
         else
-          Zlib::GzipReader.new(StringIO.new(self.value.unpack('m')[0])).read
+          Zlib::GzipReader.new(StringIO.new(Base64.decode(self.value.unpack))).read
         end
       else
         ""

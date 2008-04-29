@@ -46,7 +46,7 @@ class Curnit < ActiveRecord::Base
   # see: http://github.com/mislav/will_paginate/wikis/simple-search
   def self.search(search, page, portal)
     paginate :per_page => 20, :page => page,
-             :conditions => ['name like ? and portal_id = ?',"%#{search}%",  portal.id], :order => 'name'
+             :conditions => ['name like ? and portal_id = ?',"%#{search}%", portal.id], :order => 'created_at DESC'
   end
 
 	def url
@@ -210,7 +210,7 @@ class Curnit < ActiveRecord::Base
           end
           # sys = system("cd #{self.path};jar xf #{self.filename}")
           self.jar_last_modified = urlfile.last_modified
-          self.jar_digest = Base64.encode64(Digest::MD5.digest(urlfile.read)).strip
+          self.jar_digest = Base64.folding_encode(Digest::MD5.digest(urlfile.read)).strip
         end
       rescue SocketError, OpenURI::HTTPError, OpenSSL::SSL::SSLError => e
         if RAILS_ENV == 'production'

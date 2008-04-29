@@ -27,7 +27,7 @@ class SailUser < ActiveRecord::Base
 
   # see: http://github.com/mislav/will_paginate/wikis/simple-search
   def self.search(search, page, portal)
-    paginate(:per_page => 20, :page => page, :conditions => ['(first_name like ? or last_name like ?) and portal_id = ?', "%#{search}%","%#{search}%",  portal.id], :order => 'last_name')
+    paginate(:per_page => 20, :page => page, :conditions => ['(first_name like ? or last_name like ?) and portal_id = ?', "%#{search}%","%#{search}%",  portal.id], :order => 'created_at DESC')
   end
 
   def workgroup?

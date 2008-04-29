@@ -30,6 +30,12 @@ class Portal < ActiveRecord::Base
   has_many :workgroups, :order => "created_at DESC"
   has_many :portal_urls
   
+  # see: http://github.com/mislav/will_paginate/wikis/simple-search
+  def self.search(search, page)
+    paginate :per_page => 20, :page => page,
+             :conditions => ['name like ?',"%#{search}%"], :order => 'created_at ASC'
+  end
+  
   def image_url
     if Thread.current[:request] && read_attribute(:image_url)
       u = URI.parse("#{Thread.current[:request].protocol}#{Thread.current[:request].host}:#{Thread.current[:request].port}/#{Thread.current[:request].path}")

@@ -15,7 +15,7 @@ class PortalController < ApplicationController
         render(:text => "<validation-errors>\n#{errors}</validation-errors>\n", :status => 400) # Bad Request
       end
     else
-      
+      @portals = Portal.search(params[:search], params[:page])
       respond_to do |wants|
         wants.html
         wants.xml { 

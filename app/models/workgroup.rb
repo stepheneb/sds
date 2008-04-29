@@ -24,7 +24,7 @@ class Workgroup < ActiveRecord::Base
   # see: http://github.com/mislav/will_paginate/wikis/simple-search
   def self.search(search, page, portal)
     paginate :per_page => 20, :page => page,
-             :conditions => ['name like ? and portal_id = ?',"%#{search}%",  portal.id], :order => 'name'
+             :conditions => ['name like ? and portal_id = ?',"%#{search}%", portal.id], :order => 'created_at DESC'
   end
   
   # see: http://weblog.jamisbuck.org/2007/1/18/activerecord-association-scoping-pitfalls
