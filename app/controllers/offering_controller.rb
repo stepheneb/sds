@@ -211,7 +211,7 @@ class OfferingController < ApplicationController
       begin 
         raise "bundle too large" if request.raw_post.length > BUNDLE_SIZE_LIMIT
         if request.env['HTTP_CONTENT_ENCODING'] == 'b64gzip'
-          content = Zlib::GzipReader.new(StringIO.new(B64.decode(request.raw_post))).read
+          content = Zlib::GzipReader.new(StringIO.new(B64::B64.decode(request.raw_post))).read
         else
           content = request.raw_post
         end
