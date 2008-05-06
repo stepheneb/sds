@@ -252,7 +252,10 @@ class OfferingController < ApplicationController
         else
           @bundles = @workgroup.valid_bundles.asc
           if @portal.last_bundle_only
-            last_bundle_with_data = @bundles.reverse.detect { |b| b.socks.count > 0 }
+            # Bundles are no longer processed immediately, therefore socks aren't guaranteed to exist
+            # even if the bundle has sockEntries. Scan the contents instead for sockEntries.
+            # last_bundle_with_data = @bundles.reverse.detect { |b| b.socks.count > 0 }
+            last_bundle_with_data = @bundles.reverse.detect { |b| b.bundle_content.content =~ /sockEntries/ }
             if last_bundle_with_data
               @bundles = [last_bundle_with_data]
             end
