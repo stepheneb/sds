@@ -5,7 +5,7 @@ class LogBundle < ActiveRecord::Base
   belongs_to :workgroup
   belongs_to :bundle
   
-  before_create :process_content
+  before_save :process_content
   before_save :associate_bundle
   
   if USE_LIBXML 
