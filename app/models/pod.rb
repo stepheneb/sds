@@ -17,11 +17,18 @@
 
 class Pod < ActiveRecord::Base
   set_table_name "sds_pods"
-#  acts_as_reportable
-  has_and_belongs_to_many :sds_curnits, options = {:join_table => "sds_curnits_sds_pods"}
+  # has_and_belongs_to_many :curnits, options = {:join_table => "sds_curnits_sds_pods"}
 
   belongs_to :curnit
   has_many :socks
+  has_many :bundles, :through => :socks
+
+  has_many :offerings,
+    :finder_sql => 'SELECT DISTINCT sds_offerings.* FROM sds_offerings
+    INNER JOIN sds_workgroups ON sds_workgroups.offering_id = sds_offerings.id 
+    INNER JOIN sds_bundles ON sds_bundles.workgroup_id = sds_workgroups.id
+    INNER JOIN sds_socks ON sds_socks.bundle_id = sds_bundles.id    
+    WHERE sds_socks.pod_id = #{id}'
 
   require "rexml/document"
   require 'hpricot'

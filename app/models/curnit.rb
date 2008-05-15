@@ -29,7 +29,7 @@ class Curnit < ActiveRecord::Base
   belongs_to :portal
   has_many :offerings, :order => "created_at DESC"
   has_many :pods
-  has_one :curnit_map
+  # has_one :curnit_map
   
   before_save { |c| c.url.strip! }
   before_update :check_for_jar # run this when saving an existing object

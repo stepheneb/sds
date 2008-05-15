@@ -47,6 +47,14 @@ class Workgroup < ActiveRecord::Base
       find(:all, :order => "sail_session_modified_time DESC, created_at ASC")
     end
   end
+  
+  has_many :socks, :through => :valid_bundles
+
+  has_many :pods,
+    :finder_sql => 'SELECT DISTINCT sds_pods.* FROM sds_pods
+    INNER JOIN sds_socks ON sds_pods.id = sds_socks.pod_id    
+    INNER JOIN sds_bundles ON sds_socks.bundle_id = sds_bundles.id 
+    WHERE sds_bundles.workgroup_id = #{id}'
 
   validates_presence_of :offering, :name
   validates_associated :offering
@@ -69,6 +77,16 @@ class Workgroup < ActiveRecord::Base
   
   def delete_workgroup_memberships
     WorkgroupMembership.delete_all(["workgroup_id = ?", self.id])
+  end
+  
+  def last_bundle_with_sock_data
+    # valid_bundles.reverse.detect { |b| b.socks }
+    #
+    # Bundles are no longer processed immediately, therefore socks aren't guaranteed to exist
+    # even if the bundle has sockEntries. Scan the contents instead for sockEntries.
+    # last_bundle_with_data = @bundles.reverse.detect { |b| b.socks.count > 0 }
+    #
+    valid_bundles.reverse.detect { |b| b.bundle_content.content =~ /sockEntries/ }
   end
   
   def blank_ot_learner_data

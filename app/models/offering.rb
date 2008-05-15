@@ -24,6 +24,21 @@ class Offering < ActiveRecord::Base
   belongs_to :curnit
   belongs_to :jnlp
   has_many :workgroups
+  has_many :bundles, :through => :workgroups
+
+  has_many :socks,
+    :finder_sql => 'SELECT sds_socks.* FROM sds_socks 
+    INNER JOIN sds_bundles ON sds_socks.bundle_id = sds_bundles.id 
+    INNER JOIN sds_workgroups ON sds_bundles.workgroup_id = sds_workgroups.id 
+    WHERE sds_workgroups.offering_id = #{id}'
+
+  has_many :pods,
+    :finder_sql => 'SELECT DISTINCT sds_pods.* FROM sds_pods
+    INNER JOIN sds_socks ON sds_pods.id = sds_socks.pod_id    
+    INNER JOIN sds_bundles ON sds_socks.bundle_id = sds_bundles.id 
+    INNER JOIN sds_workgroups ON sds_bundles.workgroup_id = sds_workgroups.id 
+    WHERE sds_workgroups.offering_id = #{id}'
+  
   has_many :errorbundles
   has_many :offerings_attributes
   
@@ -42,5 +57,4 @@ class Offering < ActiveRecord::Base
              :conditions => ['name like ? and portal_id = ?',"%#{search}%",  portal.id], :order => 'created_at DESC'
   end
   
-    
 end
