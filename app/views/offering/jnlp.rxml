@@ -44,16 +44,29 @@ when app_desc_main_class
 end
 
 # if there is an sds_launcher set the application-desc/argument to the config_url
+# **
+# ** Warning ... ugly hack ahead ... should be refactored ...
+# **
+# ** Because this is is being put in an xml file which should be well formed
+# ** replace andy occurances of & in the config_url with the entity $amp;
+# ** later in OfferingController#config the parsing of the query parameters is
+# ** is currently based on the '&' as a delimeter -- so a futher hack is 
+# ** needed there to strip the char string 'amp;' from the bginning of the parameter
+# ** strings before assiging them to aninstnace variable to be used in the 
+# ** Offering config view.
+#
 if USE_LIBXML
   case sds_launcher
   when app_desc.first['main-class']
     app_desc_arg.content = config_url.gsub(/&/, '&amp;')
+    # app_desc_arg.content = config_url
   end
 else
 # I haven't figured out why this code isn't working
   case sds_launcher
   when app_desc_main_class, res_prop_value
-    app_desc_arg.text = config_url
+    app_desc_arg.text = config_url.gsub(/&/, '&amp;')
+    # app_desc_arg.text = config_url
   end
 end
 

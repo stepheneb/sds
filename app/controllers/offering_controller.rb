@@ -163,6 +163,9 @@ class OfferingController < ApplicationController
       if request.query_parameters['jnlp_properties']
         @jnlp_properties = parse_query_parameters(URI.unescape(request.query_parameters['jnlp_properties']))
         request.query_string.gsub!(/[?&]jnlp_properties=[^&]*/, '')
+        # if @jnlp_properties.has_key?('otrunk.view.author') && !@jnlp_properties.has_key?('otrunk.view.mode')
+        #   @jnlp_properties.merge!({'otrunk.view.mode' => 'authoring'})
+        # end
       end
       render :action => 'jnlp', :layout => false
     end
@@ -199,7 +202,9 @@ class OfferingController < ApplicationController
       end
       @url_params=request.query_parameters()
       @url_params.each do |k,v|
-        @offering_attributes[k] = v
+        # remove the last three chars of an &amp; enity if at start of key
+        # see: hack warning comment in Offering config view (should be refactored)
+        @offering_attributes[k[/(^amp;)*(.*)/, 2]] = v 
       end
 
       render :action => 'config', :layout => false
