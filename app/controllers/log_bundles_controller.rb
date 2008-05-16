@@ -93,6 +93,7 @@ class LogBundlesController < ApplicationController
           render(:xml => @log_bundle.errors, :status => 400)
         end
       rescue Exception => e
+        logger.warn("Exception: #{e}\n\n#{e.backtrace.join("\n")}")
         render(:xml => "#{e}", :status => 404)
         # render(:text => "#{e}", :status => 400) # Bad Request
       end
