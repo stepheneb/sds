@@ -42,7 +42,6 @@ Rails::Initializer.run do |config|
   # If you change this key, all old sessions will become invalid!
   # Make sure the secret is at least 30 characters and all random, 
   # no regular words or you'll be exposed to dictionary attacks.
-  config.action_controller.session_store = :active_record_store
 
   # config.action_controller.session = {
   #   :session_key => '_sds2_session',
@@ -52,7 +51,8 @@ Rails::Initializer.run do |config|
   # Use the database for sessions instead of the cookie-based default,
   # which shouldn't be used to store highly confidential information
   # (create the session table with 'rake db:sessions:create')
-  # config.action_controller.session_store = :active_record_store
+  # NOTE: Be sure to update the session table name below to match your configuration
+  config.action_controller.session_store = :active_record_store
 
   # Use SQL instead of Active Record's schema dumper when creating the test database.
   # This is necessary if your schema can't be completely dumped by the schema dumper,
@@ -86,18 +86,18 @@ Rails::Initializer.run do |config|
 end
 
 # If you are using a common prefix for all table names in the database
-# like: "sds_" then you will need to uncomment the next two sections 
-# and edit accordingly.
+# like: "sds_" then you will need to edit the next two sections 
+# accordingly. If you're not, comment them out.
 
-# CGI::Session::ActiveRecordStore::Session.table_name = 'sds_sessions'
+CGI::Session::ActiveRecordStore::Session.table_name = 'sds_sessions'
 
-# module ActiveRecord
-#   class Migrator
-#     def Migrator.schema_info_table_name
-#       Base.table_name_prefix + "sds_schema_info" + Base.table_name_suffix
-#     end
-#   end
-# end
+module ActiveRecord
+  class Migrator
+    def Migrator.schema_info_table_name
+      Base.table_name_prefix + "sds_schema_info" + Base.table_name_suffix
+    end
+  end
+end
 
 # If you are using the SDS with TELS SAIL-WISE curnits you will
 # need to point your SDS to an appropriate curnitmap and pdf server. 
