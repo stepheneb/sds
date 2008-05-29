@@ -120,6 +120,23 @@ class WorkgroupController < ApplicationController
       redirect_to :action => :list
     end
   end
+  
+  def update
+    begin
+        @workgroup.version += 1
+        if @workgroup.update_attributes(params[:workgroup])
+          users = params[:users]
+          users.each do |u|
+            @workgroup.workgroup_memberships.create!(:sail_user_id => u, :version => @workgroup.version)
+          end
+          flash[:notice] = "Workgroup #{@workgroup.id} was successfully updated."
+          redirect_to :action => 'list'
+        end
+    rescue
+      flash[:notice] = "Workgroup #{@workgroup.id} does not exist."
+      redirect_to :action => :list
+    end
+  end
 
   def create
     if request.post?
