@@ -157,7 +157,11 @@ class OfferingController < ApplicationController
       # this is a bit of a hack because the real query_parameters are not a hash
       # so I delete the jnlp_filename parameter if it exists in request.query_string
       request.query_string.gsub!(/[?&]jnlp_filename=[^&]*/, '')
-      response.headers["Content-Disposition"] = "attachment; filename=#{jnlp_filename}"
+      # the content-disposition header provides a way to set the file name.  In web apps it is 
+      # typically used with a type of attachment.  With a type of attachment browsers open a save as dialog.
+      # In this case we don't want a save as dialog, just a way to set the file name, because on macs jnlp
+      # files are not stored in a temporary folder.  
+      response.headers["Content-Disposition"] = "inline; filename=#{jnlp_filename}"
       # jnlp_properties value is a string of key-value pairs in a url query-string format
       # in which the reserved characters 
       if request.query_parameters['jnlp_properties']
