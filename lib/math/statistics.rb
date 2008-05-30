@@ -169,7 +169,7 @@ module Math
       @stat_block = blk
     end
 
-    def sum(zero = 0.0)
+    def stat_sum(zero = 0.0)
       sum = zero
       if block_given?
 	each{|i| sum += yield(i)}
@@ -182,16 +182,16 @@ module Math
     end
 
     def average(&blk)
-      sum(&blk)/size
+      stat_sum(&blk)/size
     end
 
     def variance(&blk)
       sum2 = if block_given?
-	       sum{|i| j=yield(i); j*j}
+	       stat_sum{|i| j=yield(i); j*j}
 	     elsif default_block
-	       sum{|i| j=default_block[*i]; j*j}
+	       stat_sum{|i| j=default_block[*i]; j*j}
 	     else
-	       sum{|i| i**2}
+	       stat_sum{|i| i**2}
 	     end
       sum2/size - average(&blk)**2
     end
