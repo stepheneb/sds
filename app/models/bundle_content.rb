@@ -17,8 +17,8 @@ class BundleContent < ActiveRecord::Base
       ot = sock.text
       if ot =~ /anon_single_user/
         ot [/anon_single_user/] = self.bundle.workgroup.member_names
-        ot
       end
+      ot
     else
       self.bundle.workgroup.blank_ot_learner_data
     end
