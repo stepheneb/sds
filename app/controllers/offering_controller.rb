@@ -211,6 +211,24 @@ class OfferingController < ApplicationController
         @offering_attributes[k[/(^amp;)*(.*)/, 2]] = v 
       end
 
+      @bundle_get_url = url_for(
+                                  :controller => "offering", 
+                                  :action => "bundle", 
+                                  :id => @offering.id, 
+                                  :wid => @workgroup.id,
+                                  :version => @version,
+                                  :nobundles => @nobundles,
+                                  :only_path => false)
+
+      @bundle_post_url = url_for(
+                                    :controller => "offering", 
+                                    :action => "bundle", 
+                                    :id => @offering.id, 
+                                    :wid => @workgroup.id,
+                                    :version => @version,
+                                    :nobundles => nil,
+                                    :only_path => false)
+
       render :action => 'config', :layout => false
     rescue => e
       render(:text => e, :status => 404) # Not Found
