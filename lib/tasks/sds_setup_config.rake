@@ -54,7 +54,7 @@ namespace :sds_config do
          xml.object("class" => "net.sf.sail.emf.launch.EMFSailDataStoreService2")'
 
     configJackrabbitRMI = '
-         xml.object("class" => "org.concord.otrunk.jackrabbit.JackrabbitRMIUserSessionProvider"){
+         xml.object("class" => "org.concord.otrunk.jackrabbit.JackrabbitSPIRMIUserSessionProvider"){
            xml.void("property" => "repositoryUrl"){
              xml.string("http://localhost:8080/jackrabbit-1.5/rmi")
            }
@@ -200,8 +200,9 @@ namespace :sds_config do
 
   desc "Setup Jackrabbit config versions"
   task :setup_jackrabbit_config_versions => :environment do
-    cv = ConfigVersion.create!(:name => "Jackrabbit OTrunk View System With console logging", :version => 1.1, 
-         :template => 
+    cv = ConfigVersion.find_or_create_by_name(:name => "Jackrabbit OTrunk View System With console logging")
+    cv.version = 1.1
+    cv.template = 
             (configHeader + 
             configConsoleLogging +
             configOTrunkViewSystemCurnit +
@@ -209,7 +210,8 @@ namespace :sds_config do
             configJackrabbitRMI +
             configUserServiceWithWorkgroupId +
             configStandardServices +
-            configFooter))
+            configFooter)
+    cv.save!
     puts "Created '" + cv.name + "'"
   end
 
