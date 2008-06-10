@@ -314,7 +314,8 @@ class WorkgroupController < ApplicationController
     @sdsBaseUrl = "http://#{pdf_host}#{pdf_relative_root}"
     uri = URI.parse("#{PDF_SITE_ROOT}/#{@workgroup.portal.id}/offering/#{@workgroup.offering.id}/workgroup/#{@workgroup.id}/html?sdsBaseUrl=#{@sdsBaseUrl}" + ((request.query_string && ! request.query_string.empty? ) ? "&" + request.query_string : ""))
     response = Net::HTTP.get_response(uri)
-    if response.code != 302   # we expect a redirect to the page in the cache
+    logger.info("Response code was: #{response.code}")
+    if response.code != "302"   # we expect a redirect to the page in the cache
       render(:text => response.body, :status => response.code)
     else
       redirect_to(response["location"])
