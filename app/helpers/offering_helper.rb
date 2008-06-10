@@ -33,8 +33,7 @@ module OfferingHelper
     if USE_LIBXML
       xml << "\n#{jnlp.find('./application-desc').first}"
     else
-      # work-around rexml escaping of the &
-      output = jnlp.elements["application-desc"].to_s.gsub(/&amp;/, '&')
+      output = jnlp.elements["application-desc"].to_s
       xml << "\n#{output}"
     end
   end
