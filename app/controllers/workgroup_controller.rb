@@ -1,4 +1,6 @@
 class WorkgroupController < ApplicationController
+  require 'net/http'
+  require 'uri'
   require 'pas_model_activity_lib'
   include PasModelActivityLib
   
@@ -302,6 +304,21 @@ class WorkgroupController < ApplicationController
       raise "Error generating spreadsheet"
     end
     send_data(File.open(file).read, :type => "application/vnd.ms.excel", :filename => "workgroup-#{@workgroup.id}.xls" )
+  end
+  
+  def report_html
+    # this is an externally generated html report
+    # it uses the pdf/curnitmap generator to create it
+    pdf_host = (request.env['HTTP_X_FORWARDED_SERVER'] ? request.env['HTTP_X_FORWARDED_SERVER'] : request.env['HTTP_HOST']) 
+    pdf_relative_root = request.env['REQUEST_URI'].match(/(.*)\/[\d]+\/workgroup\/report\/[\d]+[\/]?/)[1]
+    @sdsBaseUrl = "http://#{pdf_host}#{pdf_relative_root}"
+    uri = URI.parse("#{PDF_SITE_ROOT}/#{@workgroup.portal.id}/offering/#{@workgroup.offering.id}/workgroup/#{@workgroup.id}/html?sdsBaseUrl=#{@sdsBaseUrl}" + ((request.query_string && ! request.query_string.empty? ) ? "&" + request.query_string : ""))
+    response = Net::HTTP.get_response(uri)
+    if response.code != 302   # we expect a redirect to the page in the cache
+      render(:text => response.body, :status => response.code)
+    else
+      redirect_to(response["location"])
+    end
   end
   
   def atom
