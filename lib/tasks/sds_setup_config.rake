@@ -157,32 +157,24 @@ namespace :sds_config do
     puts
   end
 
-  def legacy_find_or_create( key, original_name)
-    cv = ConfigVersion.find_by_key(key)      
-    if cv == nil
-      cv = ConfigVersion.find_by_name(original_name)
-
-      # check if someone reused this name with a different key
-      if not cv.key.blank?
-        cv = nil
+  def legacy_find_or_create(key, original_name)
+    unless cv = ConfigVersion.find_by_key(key)
+      if cv = ConfigVersion.find_by_name(original_name)
+        # check if someone reused this name with a different key
+        # if so create a new ConfigVersion with this key
+        if cv.key && !cv.key.blank?
+          cv = ConfigVersion.create(:key => key)
+        else
+          cv.key = key
+        end
       end
     end
-
-    # we couldn't find the original config version anywhere
-    if cv == nil
-      cv = ConfigVersion.create()
-    end
-    
-    # make sure the key is set
-    # we do not set the name because it might be changed
-    cv.key = key
-    
     cv
   end
 
   desc "Set up the default ConfigVersions"
   task :setup_default_config_versions => :environment do
-    orig = legacy_find_or_create('persist:sds content:curnit', "Original style");
+    orig = legacy_find_or_create('persist:sds content:curnit', "Original style")
     orig.attributes = {
       :name => "Original style",
       :description => "This configures the user data to be stored in the sds using sail-data-emf library.  
