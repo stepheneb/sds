@@ -157,12 +157,36 @@ namespace :sds_config do
     puts
   end
 
+  def legacy_find_or_create( key, original_name)
+    cv = ConfigVersion.find_by_key(key)      
+    if cv == nil
+      cv = ConfigVersion.find_by_name(original_name)
+
+      # check if someone reused this name with a different key
+      if not cv.key.blank?
+        cv = nil
+      end
+    end
+
+    # we couldn't find the original config version anywhere
+    if cv == nil
+      cv = ConfigVersion.create()
+    end
+    
+    # make sure the key is set
+    # we do not set the name because it might be changed
+    cv.key = key
+    
+    return cv
+  end
+
   desc "Set up the default ConfigVersions"
   task :setup_default_config_versions => :environment do
-    orig = ConfigVersion.find_or_initialize_by_key(:key => 'config1')
+    orig = legacy_find_or_create('persist:sds content:curnit', "Original style");
     orig.attributes = {
       :name => "Original style",
-      :description => "The original SDS config format.",
+      :description => "This configures the user data to be stored in the sds using sail-data-emf library.  
+       It does not save and send the console log back.",
       :version => 1.0, 
       :template => 
         (configHeader + 
@@ -176,10 +200,11 @@ namespace :sds_config do
     orig.save!
     puts "Created/updated: id: #{orig.id}, key: #{orig.key}, name: #{orig.name}"
 
-    cv = ConfigVersion.find_or_initialize_by_key(:key => 'config2')
+    cv = legacy_find_or_create('persist:sds content:curnit logging', "With console logging");
     cv.attributes = { 
       :name => "With console logging",
-      :description => "The original SDS config format plus logging the Java console back to the SDS.",
+      :description => "This configures the user data to be stored in the sds using sail-data-emf library.  
+       It saves and sends the console log back.",
       :version => 1.1, 
       :template => 
         (configHeader + 
@@ -197,7 +222,7 @@ namespace :sds_config do
 
   desc "Setup OTrunk config versions"
   task :setup_otrunk_config_versions => :environment do
-    cv = ConfigVersion.find_or_initialize_by_key(:key => 'config3')
+    cv = ConfigVersion.find_or_initialize_by_key(:key => 'persist:sds content:otml-view logging')
     cv.attributes = {
     :name => "OTrunk View System With console logging",
     :description => "",
@@ -215,7 +240,7 @@ namespace :sds_config do
     cv.save!
     puts "Created/updated: id: #{cv.id}, key: #{cv.key}, name: #{cv.name}"
 
-    cv = ConfigVersion.find_or_initialize_by_key(:key => 'config4')
+    cv = ConfigVersion.find_or_initialize_by_key(:key => 'persist:sds content:otml-controller logging')
     cv.attributes = {
       :name => "OTrunk Contoller System With console logging",
       :description => "",
@@ -236,7 +261,7 @@ namespace :sds_config do
 
   desc "Setup Jackrabbit config versions"
   task :setup_jackrabbit_config_versions => :environment do
-    cv = ConfigVersion.find_or_initialize_by_key(:key => 'config5')
+    cv = ConfigVersion.find_or_initialize_by_key(:key => 'persist:jackrabbit-spi-rmi content:otml-view logging')
     cv.attributes = {
       :name => "Jackrabbit OTrunk View System With console logging",
       :description => "",
