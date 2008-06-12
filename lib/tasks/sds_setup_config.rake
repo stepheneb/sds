@@ -177,7 +177,7 @@ namespace :sds_config do
     # we do not set the name because it might be changed
     cv.key = key
     
-    return cv
+    cv
   end
 
   desc "Set up the default ConfigVersions"
@@ -279,7 +279,7 @@ namespace :sds_config do
     puts "Created/updated: id: #{cv.id}, key: #{cv.key}, name: #{cv.name}"
   end
 
-  desc "Set up the all ConfigVersions"
+  desc "Set up all the ConfigVersions"
   task :setup_all_config_versions => 
     [:environment, :setup_default_config_versions, :setup_otrunk_config_versions, :setup_jackrabbit_config_versions] do end
 end 
