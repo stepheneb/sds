@@ -1,8 +1,11 @@
-class ConfigVersion < ActiveRecord::Base
+, nearclass ConfigVersion < ActiveRecord::Base
   set_table_name "sds_config_versions"
   
   has_many :jnlp
   
+  validates_presence_of :key
+  validates_uniqueness_of :key
+
   before_save :verify_valid_template
   
   def verify_valid_template

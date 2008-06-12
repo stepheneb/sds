@@ -1,8 +1,14 @@
-<p><label for="config_version_name">Name</label><br/>
+Nex<p><label for="config_version_name">Name</label><br/>
 <%= text_field 'config_version', 'name', :size => 80 %></p>
 
 <p><label for="config_version_version">Version</label><br/>
 <%= text_field 'config_version', 'version', :size => 5 %></p>
+
+<p><label for="config_version_key">Key</label><br/>
+<%= text_field 'config_version', 'key', :size => 80 %></p>
+
+<p><label for="config_version_description">Description</label><br/>
+<%= text_area 'config_version', 'description', :rows => 3, :cols => 80 %></p>
 
 <p><label for="config_version_template">Template</label><br/>
 <%= text_area 'config_version', 'template', :rows => 10, :cols => 80 %></p>
