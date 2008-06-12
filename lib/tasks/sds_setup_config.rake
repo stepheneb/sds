@@ -127,6 +127,36 @@ namespace :sds_config do
   configOTrunkControllerSystemCurnit = '
     xml.object("class" => "org.telscenter.sailotrunk.OtmlUrlCurnitProvider")'
 
+  desc "Set all Jnlps to use the original default ConfigVersion template."
+  task :setup_all_jnlps_to_use_original_config_version => [:environment, :setup_default_config_versions] do
+    puts "\nContinuing this task will set all existing jnlps to use the original SDS style.\n"
+    print "Would you like to proceed? [y/N]: "
+    response = STDIN.gets
+    response = response.chomp 
+    puts ""
+    case response
+    when "y", "Y", "yes", "Yes"
+      # continue
+    when "n", "N", "no", "No", ""
+      puts "Aborting."
+      return
+    else
+      puts "Invalid response. Aborting."
+      return
+    end
+    orig = ConfigVersion.find_by_key('config1')
+    Jnlp.find(:all).each do |j|
+      begin
+        j.config_version = orig
+        j.save!
+        print "."
+      rescue => e
+        puts "\nFailed to save jnlp #{j.id}: #{e}\n"
+      end
+    end
+    puts
+  end
+
   desc "Set up the default ConfigVersions"
   task :setup_default_config_versions => :environment do
     orig = ConfigVersion.find_or_initialize_by_key(:key => 'config1')
@@ -144,7 +174,7 @@ namespace :sds_config do
         configStandardServices +
         configFooter) }
     orig.save!
-    puts "Created '" + orig.name + "'"
+    puts "Created/updated: id: #{orig.id}, key: #{orig.key}, name: #{orig.name}"
 
     cv = ConfigVersion.find_or_initialize_by_key(:key => 'config2')
     cv.attributes = { 
@@ -162,19 +192,7 @@ namespace :sds_config do
         configStandardServices +
         configFooter) }
     cv.save!
-    puts "Created '" + cv.name + "'"
-
-    puts "Setting all jnlps to use the original style"
-    Jnlp.find(:all).each do |j|
-      begin
-        j.config_version = orig
-        j.save!
-        print "."
-      rescue => e
-        puts "\nFailed to save jnlp #{j.id}: #{e}\n"
-      end
-    end
-    puts
+    puts "Created/updated: id: #{cv.id}, key: #{cv.key}, name: #{cv.name}"
   end
 
   desc "Setup OTrunk config versions"
@@ -195,7 +213,7 @@ namespace :sds_config do
       configStandardServices +
       configFooter) }
     cv.save!
-    puts "Created '" + cv.name + "'"
+    puts "Created/updated: id: #{cv.id}, key: #{cv.key}, name: #{cv.name}"
 
     cv = ConfigVersion.find_or_initialize_by_key(:key => 'config4')
     cv.attributes = {
@@ -213,7 +231,7 @@ namespace :sds_config do
         configStandardServices +
         configFooter) }
     cv.save!
-    puts "Created '" + cv.name + "'"
+    puts "Created/updated: id: #{cv.id}, key: #{cv.key}, name: #{cv.name}"
   end            
 
   desc "Setup Jackrabbit config versions"
@@ -233,7 +251,7 @@ namespace :sds_config do
         configStandardServices +
         configFooter) }
     cv.save!
-    puts "Created '" + cv.name + "'"
+    puts "Created/updated: id: #{cv.id}, key: #{cv.key}, name: #{cv.name}"
   end
 
   desc "Set up the all ConfigVersions"
