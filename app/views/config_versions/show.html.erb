@@ -4,6 +4,9 @@
 <table cellpadding="1" cellspacing="1">
   <tr><td>Id: </td><td><%= @config_version.id.to_s %></td></tr>
   <tr><td>Name: </td><td><%= @config_version.name %></td></tr>
+  <tr><td>Version: </td><td><%= @config_version.version %></td></tr>
+  <tr><td>Key: </td><td><%= @config_version.key %></td></tr>
+  <tr><td>Description: </td><td><%= @config_version.description %></td></tr>
   <tr><td>Updated at: </td><td><%= @config_version.updated_at.to_s %></td></tr>
   <tr><td>Created at: </td><td><%= @config_version.created_at.to_s %></td></tr>
   <tr><td>Used by: </td><td><%= @config_version.jnlp.count.to_s %> jnlp files</td></tr>

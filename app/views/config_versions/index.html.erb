@@ -12,6 +12,7 @@
 <% ConfigVersion.find(:all).each {|config_version| %>
   <tr>
   	<td><%= config_version.id %></td>
+	<td><%= config_version.key %></td>
   	<td><%= config_version.name %></td>
 	<td><%= config_version.version %></td>
     <td><%= link_to 'Show', config_version %> <%# | <%= link_to 'Edit', edit_config_version_path(config_version) %></td>
