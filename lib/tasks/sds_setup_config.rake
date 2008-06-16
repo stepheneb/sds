@@ -217,7 +217,9 @@ namespace :sds_config do
     cv = ConfigVersion.find_or_initialize_by_key(:key => 'persist:sds content:otml-view logging')
     cv.attributes = {
     :name => "OTrunk View System With console logging",
-    :description => "",
+    :description => "This configures the user data to be stored in the sds using the sail-data-emf library.
+      It loads content from an otml file and uses the OTViewer to display it.
+      It saves and sends the console log back.",
     :version => 1.1, 
     :template => 
       (configHeader + 
@@ -235,7 +237,9 @@ namespace :sds_config do
     cv = ConfigVersion.find_or_initialize_by_key(:key => 'persist:sds content:otml-controller logging')
     cv.attributes = {
       :name => "OTrunk Contoller System With console logging",
-      :description => "",
+      :description => "This configures the user data to be stored in the sds using the sail-data-emf library.
+      It loads content from an otml file and uses the controller system to load the root object which is treated as the root bean in a sail curnit.
+      It saves and sends the console log back.",
       :version => 1.1, 
       :template =>
         (configHeader + 
@@ -256,7 +260,9 @@ namespace :sds_config do
     cv = ConfigVersion.find_or_initialize_by_key(:key => 'persist:jackrabbit-spi-rmi content:otml-view logging')
     cv.attributes = {
       :name => "Jackrabbit OTrunk View System With console logging",
-      :description => "",
+      :description => "This configures the user data to be stored in a jackrabbit repository.
+      It loads content from an otml file and uses the OTViewer to display it.
+      It saves and sends the console log back.",
       :version => 1.1,
       :template => 
         (configHeader + 
