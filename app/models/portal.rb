@@ -30,11 +30,15 @@ class Portal < ActiveRecord::Base
   has_many :workgroups, :order => "created_at DESC"
   has_many :portal_urls
 
-  has_many :bundles,
-    :finder_sql => 'SELECT sds_bundles.* FROM sds_bundles 
+  has_many :bundles, :finder_sql => 'SELECT sds_bundles.* FROM sds_bundles 
     INNER JOIN sds_workgroups ON sds_bundles.workgroup_id = sds_workgroups.id 
     INNER JOIN sds_offerings ON sds_workgroups.offering_id = sds_offerings.id 
-    WHERE sds_offerings.portal_id = #{id}'
+    WHERE sds_offerings.portal_id = #{id}' do
+    def created_after(date)
+      find_all {|b| b.created_at > date}
+      # find(:all, :conditions => ['created_at > ?', date])
+    end
+  end
   
   # see: http://github.com/mislav/will_paginate/wikis/simple-search
   def self.search(search, page)
