@@ -14,9 +14,10 @@ end
 sds_launcher = "net.sf.sail.emf.launch.EMFLauncher2"
 
 if USE_LIBXML
-  app_desc = jnlp.find('./application-desc')
-  app_desc_main_class = app_desc.first['main-class']
-  app_desc_arg = app_desc.first.find('argument').first
+  app_desc = jnlp.find('./application-desc').first
+  app_desc_main_class = app_desc['main-class']
+  app_desc << XML::Node.new('argument') unless app_desc.find('argument').first
+  app_desc_arg = app_desc.find('argument').first
 #  res_prop_value = jnlp.find('./resources/property/@value').first.value
 else
   app_desc = jnlp.elements["application-desc"]
@@ -25,14 +26,14 @@ else
 #  if res_prop  # some jnlps don't have properties defined
 #    res_prop_value = res_prop.attributes["value"]
 #  end
-  app_desc_arg = jnlp.elements["application-desc/argument"]
+  app_desc_arg = jnlp.elements["application-desc/argument"] || jnlp.elements["application-desc"].add_element('argument')
 end
 
 # if there is a file-based launcher convert to an sds launcher
 case "net.sf.sail.emf.launch.EMFLauncher3"
 when app_desc_main_class
   if USE_LIBXML
-    app_desc.first['main-class'] = sds_launcher
+    app_desc['main-class'] = sds_launcher
   else
     app_desc.attributes["main-class"] = app_desc_main_class = sds_launcher
   end
@@ -57,16 +58,13 @@ end
 #
 if USE_LIBXML
   case sds_launcher
-  when app_desc.first['main-class']
+  when app_desc['main-class']
     app_desc_arg.content = config_url.gsub(/&/, '&amp;')
-    # app_desc_arg.content = config_url
   end
 else
-# I haven't figured out why this code isn't working
   case sds_launcher
   when app_desc_main_class, res_prop_value
     app_desc_arg.text = config_url.gsub(/&/, '&amp;')
-    # app_desc_arg.text = config_url
   end
 end
 
