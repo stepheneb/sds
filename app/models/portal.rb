@@ -29,6 +29,12 @@ class Portal < ActiveRecord::Base
   has_many :sail_users, :order => "created_at DESC"
   has_many :workgroups, :order => "created_at DESC"
   has_many :portal_urls
+
+  has_many :bundles,
+    :finder_sql => 'SELECT sds_bundles.* FROM sds_bundles 
+    INNER JOIN sds_workgroups ON sds_bundles.workgroup_id = sds_workgroups.id 
+    INNER JOIN sds_offerings ON sds_workgroups.offering_id = sds_offerings.id 
+    WHERE sds_offerings.portal_id = #{id}'
   
   # see: http://github.com/mislav/will_paginate/wikis/simple-search
   def self.search(search, page)
