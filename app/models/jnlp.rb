@@ -35,7 +35,7 @@ class Jnlp < ActiveRecord::Base
   end
 
   def process_jnlp
-    self.url.strip
+    self.url.strip!
     get_body
     get_last_modified
   end
