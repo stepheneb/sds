@@ -167,6 +167,8 @@ namespace :sds_config do
         else
           cv.key = key
         end
+      else
+        cv = ConfigVersion.create(:key => key)
       end
     end
     cv
