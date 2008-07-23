@@ -504,11 +504,13 @@ class OfferingController < ApplicationController
     @sdsBaseUrl = "http://#{pdf_host}#{pdf_relative_root}"  
 
     # request the curnitmap from the pdfserver
+    my_query_string = (request.query_string && (! request.query_string.empty? )) ? ("&" + request.query_string) : ""
     cmap_url = "#{PDF_SITE_ROOT}/#{@portal.id}"
     cmap_url << "/offering/#{@offering.id}"
     cmap_url << "/workgroup/#{@workgroup.id}"
     cmap_url << "/curnitmap?sdsBaseUrl=#{@sdsBaseUrl}"
     cmap_url << "&curnitURL=#{@offering.curnit.url}"
+    cmap_url << "#{my_query_string}"
     cmap_url = cmap_url.gsub(/([^:])\/+/, '\1/')
     begin
       open(cmap_url) do |cmap|
