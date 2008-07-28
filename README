@@ -42,3 +42,9 @@ See the Sail Data Services wiki page:
   http://www.telscenter.org/confluence/display/SAIL/SAIL+Data+Services 
 
 for more information.
+
+There is also a useful page here:
+
+  http://confluence.concord.org/display/CSP/OTrunk+SDS+URL+Generation
+
+describing in detail ways to interact with the SDS to start up a Java web start program.
