@@ -1,36 +1,44 @@
 == SAIL Data Service
 
-SAIL is the Scalable Architecture for Interactive Learning, http://www.telscenter.org/confluence/display/SAIL. 
+SAIL is the Scalable Architecture for Interactive Learning:
 
-The SAIL Data Service implements web services which allow portals to deploy SAIL-based Java learning environments.
+  http://www.telscenter.org/confluence/display/SAIL. 
 
-The SDS supports dynamically creating jnlp files for starting SAIL-based Java webstart applications delivered to 
-workgroups of students. The data the workgroup has previously created are delivered and any new data the workgroup
-creates during their session using the application are saved back to the SDS.
+The SAIL Data Service implements web services which allow portals to deploy SAIL-based 
+Java learning environments.
 
-The SDS is designed to be used in combination with an existing portal. The portal works with the SDS to 
-make SAIL activities available for it's users. The users normally never see the SDS.
+The SDS supports dynamically creating jnlp files for starting SAIL-based Java webstart
+applications delivered to workgroups of students. The data the workgroup has previously created
+are delivered and any new data the workgroup creates during their session using the application
+are saved back to the SDS.
 
-Projects are made available to cohorts of users/learners through 'Offerings'. One Project can be 
+The SDS is designed to be used in combination with an existing portal. The portal works with the
+SDS to make SAIL activities available for it's users. The users normally never see the SDS.
+
+Projects are made available to cohorts of users/learners through 'Offerings'. One Project can be
 made available through many Offerings -- each Offering is for a different cohort of users.
 
-The SDS needs two things in order to create an Offering a Curnit (a SAIL curriculum unit) and an 
-existing Jnlp for the SDS to use as a template. The template Jnlp lists all the Java resources needed 
-to run the Curnit. In the TELS project this is a jnlp that is created by the programmers running a script 
-after they have checked in and built new revisions of the Java application.
+The SDS needs two things in order to create an Offering a Curnit (a SAIL curriculum unit) and an
+existing Jnlp for the SDS to use as a template. The template Jnlp lists all the Java resources
+needed to run the Curnit. In the TELS project this is a jnlp that is created by the programmers
+running a script after they have checked in and built new revisions of the Java application.
 
-After a curnit and jnlp are associated in an Offering, SAIL users are registered in the SDS by the portal. 
-This is normally not done directly on the SDS (though it can be when testing), instead an existing portal 
-registers its users on the SDS by calling REST-based web services in the SDS.
+After a curnit and jnlp are associated in an Offering, SAIL users are registered in the SDS by
+the portal. This is normally not done directly on the SDS (though it can be when testing),
+instead an existing portal registers its users on the SDS by calling REST-based web services in
+the SDS.
 
-After SailUsers and an Offering are created, Workgroups for that Offering are created consisting of one 
-or more SDS SailUsers. At this point a Jnlp url becomes available for starting an SDS Offering for that 
-Workgroup.
+After SailUsers and an Offering are created, Workgroups for that Offering are created consisting
+of one or more SDS SailUsers. At this point a Jnlp url becomes available for starting an SDS
+Offering for that Workgroup.
 
-The normal course at this point is for the portal to make the Jnlp url available to authenticated members 
-of the workgroup. Any data created by the users during their session with the Offering will be saved to 
-the SDS and made available the next time they run the same Offering. These data are also available for 
-reporting to teachers and researchers.</p>
+The normal course at this point is for the portal to make the Jnlp url available to
+authenticated members of the workgroup. Any data created by the users during their session with
+the Offering will be saved to the SDS and made available the next time they run the same
+Offering. These data are also available for reporting to teachers and researchers.</p>
 
-See the Sail Data Services wiki page: http://www.telscenter.org/confluence/display/SAIL/SAIL+Data+Services 
+See the Sail Data Services wiki page:
+
+  http://www.telscenter.org/confluence/display/SAIL/SAIL+Data+Services 
+
 for more information.
