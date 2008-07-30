@@ -209,7 +209,9 @@ class WorkgroupController < ApplicationController
     
     cmap = {}
     @workgroup.valid_bundles.each do |b|
-      cmap.merge!(b.curnitmap){|k,old,new| old }
+      if b.curnitmap
+        cmap.merge!(b.curnitmap){|k,old,new| old }
+      end
     end
     
     # Create the first worksheet which summarizes the workgroup information
