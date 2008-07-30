@@ -3,6 +3,8 @@
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
 
+  include ExceptionNotifiable if EXCEPTION_NOTIFIER_CONFIGS_EXISTS
+  
   # See ActionController::RequestForgeryProtection for details
   # Uncomment the :secret if you're not using the cookie session store
   # protect_from_forgery :secret => 'ace4fa914693f0739e588729756205e7'
@@ -10,8 +12,6 @@ class ApplicationController < ActionController::Base
   include AuthenticatedSystem
   # before_filter :login_from_cookie
   # before_filter :check_user
-
-  include ExceptionNotifiable
 
   session :off, :if => proc { |request| (request.env['CONTENT_TYPE'] == "application/xml") || (request.env['HTTP_ACCEPT'] == "application/xml")}
   

@@ -11,9 +11,9 @@ end
 if EXCEPTION_NOTIFIER_CONFIGS_EXISTS
   ExceptionNotifier.exception_recipients = YAML::load(IO.read("#{RAILS_ROOT}/config/exception_notifier_recipients.yml"))
   # Sender address: defaults to exception.notifier@default.com
-  ExceptionNotifier.sender_address = %("[SDS ERROR]" <#{RAILS_DATABASE_PREFIX}error@concord.org>)
+  ExceptionNotifier.sender_address = %("[SDS ERROR]" <sds_error@concord.org>)
   # defaults to "[ERROR] "
-  ExceptionNotifier.email_prefix = "[SDS ERROR]"
+  ExceptionNotifier.email_prefix = "[SDS ERROR] (#{RAILS_ROOT})"
 end
 
 # runs background job daemon

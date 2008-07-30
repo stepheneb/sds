@@ -31,6 +31,8 @@ task :after_symlink, :roles => :app do
   run "cp #{shared_path}/config/database.yml #{release_path}/config/database.yml"
   run "cp #{shared_path}/config/environment.rb #{release_path}/config/environment.rb"
   run "ln -s #{shared_path}/cache #{release_path}/public/cache"
+  run "cp #{shared_path}/config/mailer.yml #{release_path}/config/mailer.yml"
+  run "cp #{shared_path}/config/exception_notifier_recipients.yml #{release_path}/config/exception_notifier_recipients.yml"
 end
 
 task :production do
@@ -54,4 +56,6 @@ task :set_vars do
   depend :remote, :file, "#{shared_path}/config/database.yml"
   depend :remote, :file, "#{shared_path}/config/environment.rb"
   depend :remote, :directory, "#{shared_path}/cache"
+  depend :remote, :file, "#{shared_path}/config/mailer.yml"
+  depend :remote, :file, "#{shared_path}/config/exception_notifier_recipients.yml"
 end
