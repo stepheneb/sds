@@ -139,6 +139,10 @@ class WorkgroupController < ApplicationController
       redirect_to :action => :list
     end
   end
+  
+  def new
+    create
+  end
 
   def create
     if request.post?
