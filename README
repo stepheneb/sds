@@ -2,7 +2,7 @@
 
 SAIL is the Scalable Architecture for Interactive Learning:
 
-  http://www.telscenter.org/confluence/display/SAIL. 
+* http://www.telscenter.org/confluence/display/SAIL. 
 
 The SAIL Data Service implements web services which allow portals to deploy SAIL-based 
 Java learning environments.
