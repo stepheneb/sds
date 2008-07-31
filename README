@@ -4,6 +4,14 @@ SAIL is the Scalable Architecture for Interactive Learning:
 
 * http://www.telscenter.org/confluence/display/SAIL. 
 
+Current SAIL projects are migrating to use the OTrunk framework for activity assembly, scripting, and object persistence. You can find out more about OTrunk here:
+
+* https://confluence.concord.org/display/CSP/OTrunk
+
+YOu can see many examples of activities and activity forms at this page:
+
+* http://continuum.concord.org/otrunk/examples/example-index.html
+
 The SAIL Data Service implements web services which allow portals to deploy SAIL-based 
 Java learning environments.
 
