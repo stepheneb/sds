@@ -123,9 +123,9 @@ class Bundle < ActiveRecord::Base
   end
     
   def self.process_bundles
-    bundle.count = Bundle.count
+    bundle_count = Bundle.count
     puts "Processing Bundles in database, recreating Pods and Socks in database and cache ..."
-    puts "Bundles to process: #{bundle.count}:"
+    puts "Bundles to process: #{bundle_count}:"
     tracker = TimeTracker.new
     tracker.start
     @@process_errors = []
@@ -149,7 +149,7 @@ class Bundle < ActiveRecord::Base
         print '  '
         tracker.mark
         ave = tracker.elapsed / count
-        projected = (bundle.count - count) * ave
+        projected = (bundle_count - count) * ave
         print " :: ave: #{TimeTracker.seconds_to_s(ave)}, projected: #{TimeTracker.seconds_to_s(projected)}"
         print "\n#{sprintf("%5d", count)}: "
       end
