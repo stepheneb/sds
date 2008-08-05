@@ -23,10 +23,10 @@ class CreateUsers < ActiveRecord::Migration
       t.column "#{RAILS_DATABASE_PREFIX}user_id", :integer
     end
     
-    Role.create(:title => 'sds_admin')
-    Role.create(:title => 'portal_admin')
-    Role.create(:title => 'portal_user')
-
+    # Role.create(:title => 'sds_admin')
+    # Role.create(:title => 'portal_admin')
+    # Role.create(:title => 'portal_user')
+    # 
 # This doesn't work because the User table doesn't exist at this point in the migration
 #    u = User.new(:login => "stephen", :email => "stephen@concord.org", :password_hash => "fd035914661eb4f8b00a57be66a2be2b", :first_name => "Stephen", :last_name => "Bannasch")
 #    u.save(false)
