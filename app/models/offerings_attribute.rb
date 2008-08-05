@@ -1,5 +1,5 @@
 class OfferingsAttribute < ActiveRecord::Base
-  set_table_name "sds_offerings_attributes"
+  set_table_name "#{RAILS_DATABASE_PREFIX}offerings_attributes"
   
   validates_presence_of :name
   

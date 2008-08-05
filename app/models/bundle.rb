@@ -19,7 +19,7 @@
 #
 
 class Bundle < ActiveRecord::Base
-  set_table_name "sds_bundles"
+  set_table_name "#{RAILS_DATABASE_PREFIX}bundles"
 
 #  acts_as_reportable
   belongs_to :workgroup

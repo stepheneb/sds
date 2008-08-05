@@ -20,7 +20,7 @@
 
 class Curnit < ActiveRecord::Base
   require 'net/http'
-  set_table_name "sds_curnits"
+  set_table_name "#{RAILS_DATABASE_PREFIX}curnits"
 
   attr_reader :podxml_cache, :test
   

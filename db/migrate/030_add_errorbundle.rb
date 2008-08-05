@@ -1,6 +1,6 @@
 class AddErrorbundle < ActiveRecord::Migration
   def self.up
-    create_table :sds_errorbundles do |t|
+    create_table "#{RAILS_DATABASE_PREFIX}errorbundles" do |t|
       t.column :offering_id, :integer
       t.column :comment, :string
       t.column :name, :string
@@ -11,6 +11,6 @@ class AddErrorbundle < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table :sds_errorbundles
+    drop_table "#{RAILS_DATABASE_PREFIX}errorbundles"
   end
 end

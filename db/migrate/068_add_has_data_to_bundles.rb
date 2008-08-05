@@ -1,6 +1,6 @@
 class AddHasDataToBundles < ActiveRecord::Migration
   def self.up
-    add_column :sds_bundles, :has_data, :boolean
+    add_column "#{RAILS_DATABASE_PREFIX}bundles", :has_data, :boolean
     
     # I think this will work -- the key is Bundle.reset_column_information
     say_with_time "Generating values for the new Bundle#has_data attribute ..." do
@@ -11,6 +11,6 @@ class AddHasDataToBundles < ActiveRecord::Migration
   end
 
   def self.down
-    remove_column :sds_bundles, :has_data
+    remove_column "#{RAILS_DATABASE_PREFIX}bundles", :has_data
   end
 end

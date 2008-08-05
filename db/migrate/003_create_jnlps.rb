@@ -1,6 +1,6 @@
 class CreateJnlps < ActiveRecord::Migration
   def self.up
-    create_table :sds_jnlps do |t|
+    create_table "#{RAILS_DATABASE_PREFIX}jnlps" do |t|
       t.column :portal_id, :integer
       t.column :name, :string, :limit => 60
       t.column :url, :string, :limit => 256
@@ -10,6 +10,6 @@ class CreateJnlps < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table :sds_jnlps
+    drop_table "#{RAILS_DATABASE_PREFIX}jnlps"
   end
 end

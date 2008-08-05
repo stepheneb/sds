@@ -1,6 +1,6 @@
 class CreateSailUsers < ActiveRecord::Migration
   def self.up
-    create_table :sds_sail_users do |t|
+    create_table "#{RAILS_DATABASE_PREFIX}sail_users" do |t|
       t.column :portal_id, :integer
       t.column :portal_token, :string
       t.column :first_name, :string, :limit => 60
@@ -12,6 +12,6 @@ class CreateSailUsers < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table :sds_sail_users
+    drop_table "#{RAILS_DATABASE_PREFIX}sail_users"
   end
 end

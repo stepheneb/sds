@@ -29,8 +29,6 @@
       <td>Report:
         <%= link_to 'html', {:controller => 'workgroup', :action => 'report', :id => w.id}, {:title => "HTML report on the work done by this workgroup."} %>,
         <%= link_to 'xls', {:controller => 'workgroup', :action => 'report_xls', :id => w.id}, {:title => "XLS report on the work done by this workgroup."} %>,
-        <%= link_to 'pdf', "#{PDF_SITE_ROOT}/#{@portal.id}/offering/#{@offering.id}/workgroup/#{w.id}?sdsBaseUrl=#{@sdsBaseUrl}" %>
-         | 
         <%= link_to 'Show', {:controller => 'workgroup', :action => 'show', :id => w.id}, {:title => "Show the raw data returned by this workgroup."} %> | 
         <%= link_to 'Run', {:controller => 'offering', :action => 'jnlp', :id => @offering.id, :wid => w.id, :type => 'workgroup', :savedata => true, :only_path => false}, {:title => "Run the SAIL curnit for this workgroup"} %> | 
         <%= link_to 'View', {:controller => 'offering', :action => 'jnlp', :id => @offering.id, :wid => w.id, :type => 'workgroup', :savedata => nil, :only_path => false}, {:title => "View the SAIL curnit for this workgroup (saving data is disabled)"} %> | 

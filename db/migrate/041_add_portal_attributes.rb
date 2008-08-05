@@ -1,19 +1,19 @@
 class AddPortalAttributes < ActiveRecord::Migration
   def self.up
-    add_column :sds_portals, :title, :string
-    add_column :sds_portals, :vendor, :string
-    add_column :sds_portals, :home_page_url, :string
-    add_column :sds_portals, :description, :string
-    add_column :sds_portals, :image_url, :string
-    add_column :sds_portals, :last_bundle_only, :boolean
+    add_column "#{RAILS_DATABASE_PREFIX}portals", :title, :string
+    add_column "#{RAILS_DATABASE_PREFIX}portals", :vendor, :string
+    add_column "#{RAILS_DATABASE_PREFIX}portals", :home_page_url, :string
+    add_column "#{RAILS_DATABASE_PREFIX}portals", :description, :string
+    add_column "#{RAILS_DATABASE_PREFIX}portals", :image_url, :string
+    add_column "#{RAILS_DATABASE_PREFIX}portals", :last_bundle_only, :boolean
   end
 
   def self.down
-    remove_column :sds_portals, :title
-    remove_column :sds_portals, :vendor
-    remove_column :sds_portals, :home_page_url
-    remove_column :sds_portals, :description
-    remove_column :sds_portals, :image_url
-    remove_column :sds_portals, :last_bundle_only
+    remove_column "#{RAILS_DATABASE_PREFIX}portals", :title
+    remove_column "#{RAILS_DATABASE_PREFIX}portals", :vendor
+    remove_column "#{RAILS_DATABASE_PREFIX}portals", :home_page_url
+    remove_column "#{RAILS_DATABASE_PREFIX}portals", :description
+    remove_column "#{RAILS_DATABASE_PREFIX}portals", :image_url
+    remove_column "#{RAILS_DATABASE_PREFIX}portals", :last_bundle_only
   end
 end

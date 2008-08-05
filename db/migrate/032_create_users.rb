@@ -20,7 +20,7 @@ class CreateUsers < ActiveRecord::Migration
     
     create_table "sds_roles_users", :id => false, :force => true do |t|
       t.column :role_id, :integer
-      t.column :sds_user_id, :integer
+      t.column "#{RAILS_DATABASE_PREFIX}user_id", :integer
     end
     
     Role.create(:title => 'sds_admin')

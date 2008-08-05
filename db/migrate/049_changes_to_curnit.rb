@@ -1,10 +1,10 @@
 class ChangesToCurnit < ActiveRecord::Migration
   def self.up
-    remove_column :sds_curnits, :filename
+    remove_column "#{RAILS_DATABASE_PREFIX}curnits", :filename
     
   end
 
   def self.down
-    add_column :sds_curnits, :filename, :string
+    add_column "#{RAILS_DATABASE_PREFIX}curnits", :filename, :string
   end
 end

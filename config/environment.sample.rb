@@ -8,6 +8,9 @@
 RAILS_GEM_VERSION = '2.0.2' unless defined? RAILS_GEM_VERSION
 USE_LIBXML = false
 
+# set this value if you want to set a standard prefix for all the database tables
+RAILS_DATABASE_PREFIX=''
+
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
 

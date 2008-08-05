@@ -1,6 +1,6 @@
 class CreateOfferings < ActiveRecord::Migration
   def self.up
-    create_table :sds_offerings do |t|
+    create_table "#{RAILS_DATABASE_PREFIX}offerings" do |t|
       t.column :portal_id, :integer
       t.column :curnit_id, :integer
       t.column :jnlp_id, :integer
@@ -11,6 +11,6 @@ class CreateOfferings < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table :sds_offerings
+    drop_table "#{RAILS_DATABASE_PREFIX}offerings"
   end
 end

@@ -1,9 +1,9 @@
 class RemoveSessionFromSocks < ActiveRecord::Migration
   def self.up
-    remove_column :sds_socks, :session_id
+    remove_column "#{RAILS_DATABASE_PREFIX}socks", :session_id
   end
 
   def self.down
-    add_column :sds_socks, :session_id, :integer
+    add_column "#{RAILS_DATABASE_PREFIX}socks", :session_id, :integer
   end
 end

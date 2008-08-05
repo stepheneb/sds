@@ -10,7 +10,7 @@
 #
 
 class ModelActivityModelrun < ActiveRecord::Base
-  set_table_name "sds_pas_model_activity_modelruns"
+  set_table_name "#{RAILS_DATABASE_PREFIX}pas_model_activity_modelruns"
   belongs_to :model_activity_dataset
   has_many :computational_input_value, :dependent => :destroy
   has_many :representational_value, :dependent => :destroy

@@ -16,7 +16,7 @@
 #
 
 class Pod < ActiveRecord::Base
-  set_table_name "sds_pods"
+  set_table_name "#{RAILS_DATABASE_PREFIX}pods"
   # has_and_belongs_to_many :curnits, options = {:join_table => "sds_curnits_sds_pods"}
 
   belongs_to :curnit

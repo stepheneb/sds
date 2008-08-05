@@ -8,7 +8,7 @@
 #
 
 class BundleContent < ActiveRecord::Base
-  set_table_name "sds_bundle_contents"
+  set_table_name "#{RAILS_DATABASE_PREFIX}bundle_contents"
   has_one :bundle
   
   def ot_learner_data    

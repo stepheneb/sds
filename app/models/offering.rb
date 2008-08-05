@@ -16,7 +16,7 @@
 
 class Offering < ActiveRecord::Base
   
-  set_table_name "sds_offerings"
+  set_table_name "#{RAILS_DATABASE_PREFIX}offerings"
   
   validates_presence_of :curnit_id, :jnlp_id, :name
   

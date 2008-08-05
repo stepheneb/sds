@@ -15,7 +15,7 @@
 
 class Errorbundle < ActiveRecord::Base
 
-  set_table_name "sds_errorbundles"
+  set_table_name "#{RAILS_DATABASE_PREFIX}errorbundles"
   belongs_to :offering
   
   validates_presence_of :name

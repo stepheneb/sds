@@ -12,7 +12,7 @@
 #
 
 class ComputationalInput < ActiveRecord::Base
-  set_table_name "sds_pas_computational_inputs"
+  set_table_name "#{RAILS_DATABASE_PREFIX}pas_computational_inputs"
   belongs_to :model_activity_dataset
   has_many :computational_input_value, :dependent => :destroy
   

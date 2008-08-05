@@ -14,7 +14,7 @@
 require 'zlib'
 
 class Sock < ActiveRecord::Base
-  set_table_name "sds_socks"
+  set_table_name "#{RAILS_DATABASE_PREFIX}socks"
 #  acts_as_reportable
   belongs_to :bundle
   belongs_to :pod

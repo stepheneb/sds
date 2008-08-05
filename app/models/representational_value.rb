@@ -10,7 +10,7 @@
 #
 
 class RepresentationalValue < ActiveRecord::Base
-  set_table_name "sds_pas_representational_values"
+  set_table_name "#{RAILS_DATABASE_PREFIX}pas_representational_values"
   belongs_to :representational_attribute
   belongs_to :model_activity_modelrun
   

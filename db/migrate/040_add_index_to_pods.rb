@@ -1,11 +1,11 @@
 class AddIndexToPods < ActiveRecord::Migration
   def self.up
-    add_index :sds_pods, :curnit_id
-    add_index :sds_pods, :uuid
+    add_index "#{RAILS_DATABASE_PREFIX}pods", :curnit_id
+    add_index "#{RAILS_DATABASE_PREFIX}pods", :uuid
   end
 
   def self.down
-    remove_index :sds_pods, :curnit_id
-    remove_index :sds_pods, :uuid
+    remove_index "#{RAILS_DATABASE_PREFIX}pods", :curnit_id
+    remove_index "#{RAILS_DATABASE_PREFIX}pods", :uuid
   end
 end
