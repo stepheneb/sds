@@ -108,3 +108,4 @@ end
 # svn co https://tels.svn.sourceforge.net/svnroot/tels/trunk/workgroup-pdf-wrapper
 # 
 # PDF_SITE_ROOT="http://localhost:3003"
+PDF_SITE_ROOT=nil
