@@ -4,10 +4,12 @@
 
 STABLE_DB_NAME = "****"
 STABLE_DB_HOST = "****"
+STABLE_DB_TABLE_PREFIX = "****"
 STABLE_DB_USER = "****"
 STABLE_DB_PASSWORD = "****"
 CURRENT_DB_NAME = "****"
 CURRENT_DB_HOST = "****"
+CURRENT_DB_TABLE_PREFIX = "****"
 CURRENT_DB_USER = "****"
 CURRENT_DB_PASSWORD = "****"
 TEMP_FILE = "****"   # e.g. /tmp/sds_stable_db.mysql

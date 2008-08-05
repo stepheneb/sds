@@ -231,58 +231,6 @@ namespace :sds do
     tracker.stop
   end
   
-  desc "Delete current database, copy from stable, convert tables ..."
-  task :delete_copy_and_convert_db => :environment do
-    # pull in config
-    # stable db: name, host, user, pass
-    # current db: is already known, but we still need it all defined)
-    require 'config/db_transfer_config.rb'
-    
-    # get a connection to the current db
-    con = User.connection
-   
-    # get the stable db
-    print "Getting the stable database..."
-    tables = `mysqlshow -u #{STABLE_DB_USER} --password='#{STABLE_DB_PASSWORD}' -h #{STABLE_DB_HOST} #{STABLE_DB_NAME} 'sds_%'`.scan(/sds_\S+/)[1..-1].join(' ')
-    `mysqldump -u #{STABLE_DB_USER} --password='#{STABLE_DB_PASSWORD}' -h #{STABLE_DB_HOST} #{STABLE_DB_NAME} #{tables} > #{TEMP_FILE}`
-    print " done.\n"
-    
-    # clear out the current db
-    print "Deleting tables in the current database..."
-    con.tables.each do |t|
-      if t.match "^sds_"
-        con.drop_table(t)
-        print "."
-      end
-    end
-    print " done.\n"
-    
-    # import the stable db
-    print "Importing the stable database..."
-    `mysql -u #{CURRENT_DB_USER} --password='#{CURRENT_DB_PASSWORD}' -h #{CURRENT_DB_HOST} #{CURRENT_DB_NAME} < #{TEMP_FILE}`
-    print " done.\n"
-    
-    # do the db transformations
-    print "Renaming tables and columns..."
-    con.rename_table :sds_users, :sds_sail_users
-    print "."
-    con.rename_table :sds_sds_users, :sds_users
-    print "."
-    con.rename_table :sds_roles_sds_users, :sds_roles_users
-    print "."
-    con.rename_table :sds_offerings_users, :sds_offerings_sail_users
-    print "."
-    con.rename_column :sds_offerings_sail_users, :user_id, :sail_user_id
-    print "."
-    con.rename_column :sds_workgroup_memberships, :user_id, :sail_user_id
-    print "."
-    con.rename_column :sds_roles_users, :sds_user_id, :user_id
-    print "."
-    # have to set the db version to 42, since 43 in stable and 43 in trunk are not the same...
-    con.execute("update sds_schema_info set version='42'")
-    print ". done.\n"
-    puts "\n*** Now apply the new database migrations with this command:\n\n  rake db:migrate\n\nWhen the migrations complete successfully  run the second part of the conversion with this command:\n\n  rake sds:rebuild_db\n\n"
-  end
 
   desc "Rebuild database newly converted from stable. First apply migrations!"
   task :rebuild_db => [:environment, :copy_bundle_content_to_related_model, :create_sail_session_attributes, :copy_curnit_jars_to_cache, :rebuild_pods_and_socks] do
