@@ -27,12 +27,35 @@ role :app, "seymour.concord.org"
 role :web, "seymour.concord.org"
 role :db,  "seymour.concord.org", :primary => true
 
+after "deploy:restart", :restart_longrunning
+after "deploy:start", :start_longrunning
+after "deploy:stop", :stop_longrunning
+
 task :after_symlink, :roles => :app do
   run "cp #{shared_path}/config/database.yml #{release_path}/config/database.yml"
   run "cp #{shared_path}/config/environment.rb #{release_path}/config/environment.rb"
   run "ln -s #{shared_path}/cache #{release_path}/public/cache"
   run "cp #{shared_path}/config/mailer.yml #{release_path}/config/mailer.yml"
   run "cp #{shared_path}/config/exception_notifier_recipients.yml #{release_path}/config/exception_notifier_recipients.yml"
+end
+
+task :set_longrunning_vars do
+  set :mongrel_conf, "/etc/mongrel_cluster/#{version}-#{application}-longrunning.yml"
+end
+
+task :restart_longrunning, :roles => :app do
+  set_longrunning_vars
+  mongrel::cluster::restart
+end
+
+task :start_longrunning, :roles => :app do
+  set_longrunning_vars
+  mongrel::cluster::start
+end
+
+task :stop_longrunning, :roles => :app do
+  set_longrunning_vars
+  mongrel::cluster::stop
 end
 
 task :production do
