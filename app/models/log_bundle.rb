@@ -1,5 +1,5 @@
 class LogBundle < ActiveRecord::Base
-  set_table_name "#{RAILS_DATABASE_PREFIX}log_bundles"
+
   require 'cgi'
   
   belongs_to :workgroup

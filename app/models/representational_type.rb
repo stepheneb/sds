@@ -9,7 +9,7 @@
 #
 
 class RepresentationalType < ActiveRecord::Base
-  set_table_name "#{RAILS_DATABASE_PREFIX}pas_representational_types"
+
   belongs_to :model_activity_dataset
   has_many :representational_attribute, :dependent => :destroy
   

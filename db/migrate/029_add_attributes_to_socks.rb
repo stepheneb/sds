@@ -1,15 +1,15 @@
 class AddAttributesToSocks < ActiveRecord::Migration
   def self.up
-    add_column "#{RAILS_DATABASE_PREFIX}socks", :mime_type, :string
-    add_column "#{RAILS_DATABASE_PREFIX}socks", :encoding, :string
-    add_column "#{RAILS_DATABASE_PREFIX}socks", :pas_type, :string
-    add_column "#{RAILS_DATABASE_PREFIX}socks", :extension, :string
+    add_column "socks", :mime_type, :string
+    add_column "socks", :encoding, :string
+    add_column "socks", :pas_type, :string
+    add_column "socks", :extension, :string
   end
 
   def self.down
-    remove_column "#{RAILS_DATABASE_PREFIX}socks", :mime_type
-    remove_column "#{RAILS_DATABASE_PREFIX}socks", :encoding
-    remove_column "#{RAILS_DATABASE_PREFIX}socks", :pas_type
-    remove_column "#{RAILS_DATABASE_PREFIX}socks", :extension
+    remove_column "socks", :mime_type
+    remove_column "socks", :encoding
+    remove_column "socks", :pas_type
+    remove_column "socks", :extension
   end
 end

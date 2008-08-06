@@ -11,7 +11,7 @@
 
 class WorkgroupMembership < ActiveRecord::Base
 
-  set_table_name "#{RAILS_DATABASE_PREFIX}workgroup_memberships"
+
 
   belongs_to :workgroup
   belongs_to :sail_user

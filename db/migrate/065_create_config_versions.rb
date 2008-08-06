@@ -1,6 +1,6 @@
 class CreateConfigVersions < ActiveRecord::Migration
   def self.up
-    create_table "#{RAILS_DATABASE_PREFIX}config_versions" do |t|
+    create_table "config_versions" do |t|
       t.column :name, :string
       t.column :version, :float
       t.column :template, :text
@@ -11,6 +11,6 @@ class CreateConfigVersions < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table "#{RAILS_DATABASE_PREFIX}config_versions"
+    drop_table "config_versions"
   end
 end

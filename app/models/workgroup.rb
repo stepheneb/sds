@@ -14,7 +14,7 @@
 #
 
 class Workgroup < ActiveRecord::Base  
-  set_table_name "#{RAILS_DATABASE_PREFIX}workgroups"
+
 #  acts_as_reportable
   belongs_to :portal
   belongs_to :offering

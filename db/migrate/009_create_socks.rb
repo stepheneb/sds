@@ -1,6 +1,6 @@
 class CreateSocks < ActiveRecord::Migration
   def self.up
-    create_table "#{RAILS_DATABASE_PREFIX}socks" do |t|
+    create_table "socks" do |t|
       t.column :offering_id, :integer
       t.column :workgroup_id, :integer
       t.column :session_id, :integer
@@ -13,6 +13,6 @@ class CreateSocks < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table "#{RAILS_DATABASE_PREFIX}socks"
+    drop_table "socks"
   end
 end

@@ -6,11 +6,11 @@ class CreatePasFindings < ActiveRecord::Migration
       t.column :evidence, :string
       t.column :text, :string
     end
-    add_index "#{RAILS_DATABASE_PREFIX}pas_findings", :model_activity_dataset_id
+    add_index "pas_findings", :model_activity_dataset_id
   end
 
   def self.down
-    remove_index "#{RAILS_DATABASE_PREFIX}pas_findings", :model_activity_dataset_id
+    remove_index "pas_findings", :model_activity_dataset_id
     drop_table 'sds_pas_findings'
   end
 end

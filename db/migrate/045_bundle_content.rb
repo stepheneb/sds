@@ -1,13 +1,13 @@
 class BundleContent < ActiveRecord::Migration
   def self.up
-    create_table "#{RAILS_DATABASE_PREFIX}bundle_contents" do |t|
+    create_table "bundle_contents" do |t|
       t.column :content, :text, :limit => 16777215
     end
-    add_column "#{RAILS_DATABASE_PREFIX}bundles", :bundle_content_id, :integer
+    add_column "bundles", :bundle_content_id, :integer
   end
 
   def self.down
-    drop_table "#{RAILS_DATABASE_PREFIX}bundle_contents"
-    remove_column "#{RAILS_DATABASE_PREFIX}bundles", :bundle_content_id
+    drop_table "bundle_contents"
+    remove_column "bundles", :bundle_content_id
   end
 end

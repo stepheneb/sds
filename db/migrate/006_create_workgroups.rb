@@ -1,6 +1,6 @@
 class CreateWorkgroups < ActiveRecord::Migration
   def self.up
-    create_table "#{RAILS_DATABASE_PREFIX}workgroups" do |t|
+    create_table "workgroups" do |t|
       t.column :portal_id, :integer
       t.column :offering_id, :integer
       t.column :portal_token, :string
@@ -13,6 +13,6 @@ class CreateWorkgroups < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table "#{RAILS_DATABASE_PREFIX}workgroups"
+    drop_table "workgroups"
   end
 end

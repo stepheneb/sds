@@ -18,7 +18,7 @@
 require 'open-uri'
 
 class Jnlp < ActiveRecord::Base  
-  set_table_name "#{RAILS_DATABASE_PREFIX}jnlps"
+
 
   belongs_to :portal
   belongs_to :config_version

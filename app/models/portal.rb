@@ -20,7 +20,7 @@
 # require 'conversions.rb'
 
 class Portal < ActiveRecord::Base
-  set_table_name "#{RAILS_DATABASE_PREFIX}portals"
+
   validates_presence_of :name, :title, :vendor, :home_page_url, :image_url
 
   has_many :curnits, :order => "created_at DESC"

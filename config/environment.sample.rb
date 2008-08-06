@@ -8,9 +8,6 @@
 RAILS_GEM_VERSION = '2.0.2' unless defined? RAILS_GEM_VERSION
 USE_LIBXML = false
 
-# set this value if you want to set a standard prefix for all the database tables
-RAILS_DATABASE_PREFIX=''
-
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
 
@@ -87,19 +84,6 @@ Rails::Initializer.run do |config|
     # Spawn::method :fork
   end
 end
-
-# If you are using a common prefix for all table names in the database
-# like: "sds_" then you will need to edit the next two sections 
-# accordingly. If you're not, comment them out.
-# CGI::Session::ActiveRecordStore::Session.table_name = 'sds_sessions'
-# 
-# module ActiveRecord
-#   class Migrator
-#     def Migrator.schema_info_table_name
-#       Base.table_name_prefix + "sds_schema_info" + Base.table_name_suffix
-#     end
-#   end
-# end
 
 # If you are using the SDS with TELS SAIL-WISE curnits you will
 # need to point your SDS to an appropriate curnitmap and pdf server. 

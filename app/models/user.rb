@@ -21,7 +21,7 @@ require 'digest/sha1'
 require 'digest/md5' 
 
 class User < ActiveRecord::Base
-  set_table_name "#{RAILS_DATABASE_PREFIX}users"
+
 #  acts_as_authorized_user
 
   has_and_belongs_to_many :roles, options = {:join_table => "sds_roles_users"}

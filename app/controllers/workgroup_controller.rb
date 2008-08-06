@@ -56,7 +56,7 @@ class WorkgroupController < ApplicationController
            @workgroups = Workgroup.search(params[:search], params[:page], @portal)
         }
         wants.xml { 
-          workgroups = Workgroup.find(:all, :conditions => ['sds_workgroups.portal_id = ?', @portal.id])
+          workgroups = Workgroup.find(:all, :conditions => ["workgroups.portal_id = ?", @portal.id])
           render :xml => (workgroups.empty? ? "<workgroups />" : workgroups.to_xml(:except => ['created_at', 'updated_at'])) }
       end
     end

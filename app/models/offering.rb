@@ -16,7 +16,7 @@
 
 class Offering < ActiveRecord::Base
   
-  set_table_name "#{RAILS_DATABASE_PREFIX}offerings"
+
   
   validates_presence_of :curnit_id, :jnlp_id, :name
   
@@ -27,17 +27,17 @@ class Offering < ActiveRecord::Base
   has_many :bundles, :through => :workgroups
 
   has_many :socks,
-    :finder_sql => 'SELECT sds_socks.* FROM sds_socks 
-    INNER JOIN sds_bundles ON sds_socks.bundle_id = sds_bundles.id 
-    INNER JOIN sds_workgroups ON sds_bundles.workgroup_id = sds_workgroups.id 
-    WHERE sds_workgroups.offering_id = #{id}'
+    :finder_sql => "SELECT socks.* FROM socks 
+    INNER JOIN bundles ON socks.bundle_id = bundles.id 
+    INNER JOIN workgroups ON bundles.workgroup_id = workgroups.id 
+    WHERE workgroups.offering_id = #{id}"
 
   has_many :pods,
-    :finder_sql => 'SELECT DISTINCT sds_pods.* FROM sds_pods
-    INNER JOIN sds_socks ON sds_pods.id = sds_socks.pod_id    
-    INNER JOIN sds_bundles ON sds_socks.bundle_id = sds_bundles.id 
-    INNER JOIN sds_workgroups ON sds_bundles.workgroup_id = sds_workgroups.id 
-    WHERE sds_workgroups.offering_id = #{id}'
+    :finder_sql => "SELECT DISTINCT pods.* FROM pods
+    INNER JOIN socks ON pods.id = socks.pod_id    
+    INNER JOIN bundles ON socks.bundle_id = bundles.id 
+    INNER JOIN workgroups ON bundles.workgroup_id = workgroups.id 
+    WHERE workgroups.offering_id = #{id}""
   
   has_many :errorbundles
   has_many :offerings_attributes

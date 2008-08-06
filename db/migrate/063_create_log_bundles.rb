@@ -1,6 +1,6 @@
 class CreateLogBundles < ActiveRecord::Migration
   def self.up
-    create_table "#{RAILS_DATABASE_PREFIX}log_bundles" do |t|
+    create_table "log_bundles" do |t|
       t.column :bundle_id, :integer
       t.column :workgroup_id, :integer
       t.column :portal_id, :integer
@@ -13,6 +13,6 @@ class CreateLogBundles < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table "#{RAILS_DATABASE_PREFIX}log_bundles"
+    drop_table "log_bundles"
   end
 end

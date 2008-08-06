@@ -1,5 +1,5 @@
 class ConfigVersion < ActiveRecord::Base
-  set_table_name "#{RAILS_DATABASE_PREFIX}config_versions"
+
   
   has_many :jnlp
   

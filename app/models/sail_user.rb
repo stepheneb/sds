@@ -14,7 +14,7 @@
 
 class SailUser < ActiveRecord::Base
   
-  set_table_name "#{RAILS_DATABASE_PREFIX}sail_users"
+
 
   validates_presence_of :first_name, :last_name
 

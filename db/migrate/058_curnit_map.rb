@@ -1,6 +1,6 @@
 class CurnitMap < ActiveRecord::Migration
   def self.up
-    create_table "#{RAILS_DATABASE_PREFIX}curnit_maps" do |t|
+    create_table "curnit_maps" do |t|
       t.column :parent_id, :integer
       t.column :position, :integer
       t.column :pod_uuid, :string, :limit => 36
@@ -12,6 +12,6 @@ class CurnitMap < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table "#{RAILS_DATABASE_PREFIX}curnit_maps"
+    drop_table "curnit_maps"
   end
 end

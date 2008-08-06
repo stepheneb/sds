@@ -1,6 +1,6 @@
 class CreatePortals < ActiveRecord::Migration
   def self.up
-    create_table "#{RAILS_DATABASE_PREFIX}portals" do |t|
+    create_table "portals" do |t|
       t.column :name, :string
       t.column :use_authentication, :boolean
       t.column :auth_username, :string
@@ -11,6 +11,6 @@ class CreatePortals < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table "#{RAILS_DATABASE_PREFIX}portals"
+    drop_table "portals"
   end
 end
