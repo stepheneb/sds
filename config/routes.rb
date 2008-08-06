@@ -99,8 +99,6 @@ ActionController::Routing::Routes.draw do |map|
 
 # workgroup
 
-  map.resources :workgroups, :controller => 'workgroup', :path_prefix => '/:pid', :member => { :ot_learner_data => :get }
-
   map.connect ':pid/workgroup', :controller => 'workgroup', :action => 'list'
   map.connect ':pid/workgroup/list', :controller => 'workgroup', :action => 'list'
   map.connect ':pid/workgroup/create', :controller => 'workgroup', :action => 'create'
@@ -112,7 +110,9 @@ ActionController::Routing::Routes.draw do |map|
   map.connect ':pid/workgroup/:id/membership/:version', :controller => 'workgroup', :action => 'membership'
   map.connect ':pid/workgroup/:id/membership', :controller => 'workgroup', :action => 'membership'
 #  map.connect ':pid/workgroup/atom', :controller => 'workgroup', :action => 'atom'
-   map.connect ':pid/workgroup/:id', :controller => 'workgroup', :action => 'show'
+  map.connect ':pid/workgroup/:id', :controller => 'workgroup', :action => 'show'
+
+  map.resources :workgroups, :controller => 'workgroup', :path_prefix => '/:pid', :member => { :ot_learner_data => :get }
 
 # sail_user
 
