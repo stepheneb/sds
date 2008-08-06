@@ -1,6 +1,6 @@
 class CreateUsers < ActiveRecord::Migration
   def self.up
-    create_table "sds_users"  do |t|
+    create_table "users"  do |t|
       t.column :login, :string
       t.column :email, :string
       t.column :first_name, :string
@@ -14,11 +14,11 @@ class CreateUsers < ActiveRecord::Migration
       t.column :remember_token_expires_at, :datetime
     end
     
-    create_table "sds_roles", :force => true do |t|
+    create_table "roles", :force => true do |t|
       t.column :title, :string
     end
     
-    create_table "sds_roles_users", :id => false, :force => true do |t|
+    create_table "roles_users", :id => false, :force => true do |t|
       t.column :role_id, :integer
       t.column "user_id", :integer
     end
@@ -36,9 +36,9 @@ class CreateUsers < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table "sds_users"
-    drop_table "sds_roles_sds_users"
-    drop_table "sds_roles"
+    drop_table "users"
+    drop_table "roles_users"
+    drop_table "roles"
   end
 end
 

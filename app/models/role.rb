@@ -10,6 +10,6 @@
 class Role < ActiveRecord::Base
 
   
-  has_and_belongs_to_many :users, options = {:join_table => "sds_roles_users"}
+  has_and_belongs_to_many :users, options = {:join_table => "roles_users"}
 
 end

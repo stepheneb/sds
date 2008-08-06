@@ -51,10 +51,10 @@ class Workgroup < ActiveRecord::Base
   has_many :socks, :through => :valid_bundles
 
   has_many :pods,
-    :finder_sql => 'SELECT DISTINCT sds_pods.* FROM sds_pods
-    INNER JOIN sds_socks ON sds_pods.id = sds_socks.pod_id    
-    INNER JOIN sds_bundles ON sds_socks.bundle_id = sds_bundles.id 
-    WHERE sds_bundles.workgroup_id = #{id}'
+    :finder_sql => 'SELECT DISTINCT pods.* FROM pods
+    INNER JOIN socks ON pods.id = socks.pod_id    
+    INNER JOIN bundles ON socks.bundle_id = bundles.id 
+    WHERE bundles.workgroup_id = #{id}'
 
   validates_presence_of :offering, :name
   validates_associated :offering

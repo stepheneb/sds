@@ -15,9 +15,7 @@
 #
 
 class Offering < ActiveRecord::Base
-  
 
-  
   validates_presence_of :curnit_id, :jnlp_id, :name
   
   belongs_to :portal
@@ -37,7 +35,7 @@ class Offering < ActiveRecord::Base
     INNER JOIN socks ON pods.id = socks.pod_id    
     INNER JOIN bundles ON socks.bundle_id = bundles.id 
     INNER JOIN workgroups ON bundles.workgroup_id = workgroups.id 
-    WHERE workgroups.offering_id = #{id}""
+    WHERE workgroups.offering_id = #{id}"
   
   has_many :errorbundles
   has_many :offerings_attributes

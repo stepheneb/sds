@@ -23,7 +23,7 @@ class SailUser < ActiveRecord::Base
   
   # this creates the following possible search
   # workgroups = user.workgroups?
-  has_many :workgroups, :through => :workgroup_memberships, :select => 'DISTINCT sds_workgroups.*'
+  has_many :workgroups, :through => :workgroup_memberships, :select => 'DISTINCT workgroups.*'
 
   # see: http://github.com/mislav/will_paginate/wikis/simple-search
   def self.search(search, page, portal)

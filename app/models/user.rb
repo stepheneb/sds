@@ -24,7 +24,7 @@ class User < ActiveRecord::Base
 
 #  acts_as_authorized_user
 
-  has_and_belongs_to_many :roles, options = {:join_table => "sds_roles_users"}
+  has_and_belongs_to_many :roles, options = {:join_table => "roles_users"}
 
   # Virtual attribute for the unencrypted password
   attr_accessor :password

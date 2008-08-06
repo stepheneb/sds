@@ -1,6 +1,6 @@
 class CreatePasFindings < ActiveRecord::Migration
   def self.up
-    create_table 'sds_pas_findings' do |t|
+    create_table 'pas_findings' do |t|
       t.column :model_activity_dataset_id, :int
       t.column :sequence, :integer
       t.column :evidence, :string
@@ -11,6 +11,6 @@ class CreatePasFindings < ActiveRecord::Migration
 
   def self.down
     remove_index "pas_findings", :model_activity_dataset_id
-    drop_table 'sds_pas_findings'
+    drop_table 'pas_findings'
   end
 end
