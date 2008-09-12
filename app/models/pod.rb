@@ -73,7 +73,16 @@ class Pod < ActiveRecord::Base
     shape = self.rim_shape
     name = self.rim_name
     name = name[/(undefined).*/, 1] || name
-    Hash[*[@@pod_type_keys, @@pod_type_map[[shape, name]]].transpose.flatten]
+    value_array = @@pod_type_map[[shape, name]]
+    if value_array == nil
+      case shape
+        when 'bytearray'
+          value_array = @@pod_type_map[[shape, '']]
+        when 'text'
+          value_array = @@pod_type_map[[shape, 'undefined']]
+        end
+    end
+    Hash[*[@@pod_type_keys, value_array].transpose.flatten]
   end
 
   def bytearray?
