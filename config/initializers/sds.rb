@@ -20,6 +20,7 @@ end
 # gem install bj
 # see: http://codeforpeople.com/lib/ruby/bj/bj-1.0.1/README
 require 'bj'
+GEM_BACKGROUND_JOB_AVAILABLE = true
 
 # see: http://github.com/mislav/will_paginate/wikis/installation
 require 'will_paginate'
