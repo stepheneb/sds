@@ -94,7 +94,11 @@ class Bj
 
       def key ppid = 0
         ppid ||= 0
-        "#{ Bj.rails_env }.#{ ppid }.pid"
+        # by including the ppid, we get one bj process per mongrel process
+        # if we leave it out, we get one bj process per rails environment
+        # which is what it should do according to the documentation
+        # "#{ Bj.rails_env }.#{ ppid }.pid"
+        "#{ Bj.rails_env }.pid"
       end
 
       def no_tickle_key 
