@@ -494,8 +494,7 @@ class OfferingController < ApplicationController
       @workgroup.workgroup_memberships.create!(:sail_user_id => cm_user.id, :version => 0)
     end
 
-    # pdf_host = (request.env['HTTP_X_FORWARDED_SERVER'] ? request.env['HTTP_X_FORWARDED_SERVER'] : request.env['HTTP_HOST']) 
-    pdf_host = "dhcp124:3001"
+    pdf_host = (request.env['HTTP_X_FORWARDED_SERVER'] ? request.env['HTTP_X_FORWARDED_SERVER'] : request.env['HTTP_HOST']) 
     pdf_relative_root = request.env['REQUEST_URI'].match(/(.*)\/[\d]+\/offering\/[\d]+[\/]?/)[1]
     @sdsBaseUrl = "http://#{pdf_host}#{pdf_relative_root}"  
 
