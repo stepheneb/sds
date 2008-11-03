@@ -3,6 +3,7 @@ class HomeController < ApplicationController
   layout "standard"
   
   skip_before_filter :find_portal
+  skip_before_filter :require_login_for_non_rest
 
   def index
     if params[:pid]

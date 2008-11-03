@@ -78,7 +78,7 @@ pre {
 #document {
   margin-left: 5px;
   padding-left: 5px;
-  width:90%;
+  width:95%;
   background: white;
 }
 
@@ -141,6 +141,7 @@ a:hover {
 #titlebar_right {
   float: right;
   text-align: right;
+  margin-right: 10px;
 }
 
 #menubar {
@@ -176,7 +177,8 @@ a:hover {
   color: #161;
   font-family: verdana, arial, helvetica, sans-serif;
   text-decoration: none;
-  font-size: small;
+  font-size: 0.75em;
+  font-style:italic;
 }
 
 
@@ -201,11 +203,13 @@ a:hover {
 #menubar_left {
   float: left;
   float: top;
+  margin-left: 5px;
 }
 
 #menubar_right {
   float: right;
   text-align: right;
+  margin-right: 10px;
 }
 
 

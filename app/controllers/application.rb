@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
   # protect_from_forgery :secret => 'ace4fa914693f0739e588729756205e7'
 
   include AuthenticatedSystem
-  # before_filter :login_from_cookie
+  before_filter :login_from_cookie
   # before_filter :check_user
 
   session :off, :if => proc { |request| (request.env['CONTENT_TYPE'] == "application/xml") || (request.env['HTTP_ACCEPT'] == "application/xml")}
@@ -26,11 +26,31 @@ class ApplicationController < ActionController::Base
   
   before_filter :find_portal
   before_filter :setup_request_var
+  # before_filter :log_headers
+  before_filter :require_login_for_non_rest
  
   after_filter :calc_content_length
-
   # Pick a unique cookie name to distinguish our session data from other rails apps
   session :session_key => '_sds_session_id'
+  
+  # what happens when the user is not authorized to view a page/resource
+  def permission_denied
+    redirect_to(permission_denied_path)
+  end
+  
+  def require_login_for_non_rest
+    # if request is rest, just allow it for now
+    respond_to do |format|
+      format.xml { return true }
+      format.html {
+        if request.headers['CONTENT_TYPE'] == "application/xml"
+          return true
+        else
+          return permission_required('researcher || admin')
+        end
+      }
+    end
+  end
  
    def setup_request_var
 	   Thread.current[:request] = request
@@ -41,6 +61,12 @@ class ApplicationController < ActionController::Base
     render(:text => body, :status => 500)
   end
  
+  def log_headers
+      request.headers.each do |k,v|
+          logger.info "#{k} = #{v}"        
+      end    
+  end
+  
 protected
   
   class Time

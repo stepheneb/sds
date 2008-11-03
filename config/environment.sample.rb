@@ -83,6 +83,9 @@ Rails::Initializer.run do |config|
     # to use forks instead of threads, set Spawn::method :fork
     # Spawn::method :fork
   end
+
+  # This triggers activation emails to be sent when a user registers  
+  config.active_record.observers = :user_observer
 end
 
 # If you are using the SDS with TELS SAIL-WISE curnits you will

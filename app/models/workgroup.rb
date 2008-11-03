@@ -20,6 +20,8 @@ class Workgroup < ActiveRecord::Base
   belongs_to :offering
   has_many :workgroup_memberships
   has_many :log_bundles
+
+  before_create { |wg| wg.version = 0 }
   
   # see: http://github.com/mislav/will_paginate/wikis/simple-search
   def self.search(search, page, portal)

@@ -1,7 +1,7 @@
 class PortalController < ApplicationController
 
   layout "standard"
-
+  
   skip_before_filter :find_portal
 
   def list

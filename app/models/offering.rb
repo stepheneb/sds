@@ -25,17 +25,17 @@ class Offering < ActiveRecord::Base
   has_many :bundles, :through => :workgroups
 
   has_many :socks,
-    :finder_sql => "SELECT socks.* FROM socks 
+    :finder_sql => 'SELECT socks.* FROM socks 
     INNER JOIN bundles ON socks.bundle_id = bundles.id 
     INNER JOIN workgroups ON bundles.workgroup_id = workgroups.id 
-    WHERE workgroups.offering_id = #{id}"
+    WHERE workgroups.offering_id = #{id}'
 
   has_many :pods,
-    :finder_sql => "SELECT DISTINCT pods.* FROM pods
+    :finder_sql => 'SELECT DISTINCT pods.* FROM pods
     INNER JOIN socks ON pods.id = socks.pod_id    
     INNER JOIN bundles ON socks.bundle_id = bundles.id 
     INNER JOIN workgroups ON bundles.workgroup_id = workgroups.id 
-    WHERE workgroups.offering_id = #{id}"
+    WHERE workgroups.offering_id = #{id}'
   
   has_many :errorbundles
   has_many :offerings_attributes

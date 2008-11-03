@@ -10,9 +10,10 @@ class OfferingController < ApplicationController
 
   before_filter :log_referrer
   before_filter :find_offering, :except => [ :list, :create ]
+  
+  skip_before_filter :require_login_for_non_rest, :only => [:jnlp, :config]
 
   after_filter :compress, :only => [:bundle]
-  
   after_filter :add_md5_checksum, :only => [:bundle]
 
   layout "standard", :except => [ :atom ] 
@@ -149,6 +150,7 @@ class OfferingController < ApplicationController
       @savedata = params[:savedata]
       @nobundles = params[:nobundles]
       # need last mod?
+      response.headers["Last-Modified"] = @jnlp.last_modified
       response.headers["Content-Type"] = "application/x-java-jnlp-file"
       response.headers["Cache-Control"] = "max-age=1"
       # look for any dynamically added jnlp parameters
@@ -492,7 +494,8 @@ class OfferingController < ApplicationController
       @workgroup.workgroup_memberships.create!(:sail_user_id => cm_user.id, :version => 0)
     end
 
-    pdf_host = (request.env['HTTP_X_FORWARDED_SERVER'] ? request.env['HTTP_X_FORWARDED_SERVER'] : request.env['HTTP_HOST']) 
+    # pdf_host = (request.env['HTTP_X_FORWARDED_SERVER'] ? request.env['HTTP_X_FORWARDED_SERVER'] : request.env['HTTP_HOST']) 
+    pdf_host = "dhcp124:3001"
     pdf_relative_root = request.env['REQUEST_URI'].match(/(.*)\/[\d]+\/offering\/[\d]+[\/]?/)[1]
     @sdsBaseUrl = "http://#{pdf_host}#{pdf_relative_root}"  
 

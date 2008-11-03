@@ -1,4 +1,14 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :users
+
+  map.resource :sessions
+  
+  map.signup  '/signup', :controller => 'users',   :action => 'new' 
+  map.login   '/login',  :controller => 'sessions', :action => 'new'
+  map.logout  '/logout', :controller => 'sessions', :action => 'destroy'
+  map.sessions_start  '/sessions/create', :controller => 'sessions', :action => 'create'
+  map.activate '/activate/:activation_code', :controller => 'users', :action => 'activate', :activation_code => nil
+  map.permission_denied '/permission_denied', :controller => 'sessions', :action => 'permission_denied'
 
   # The priority is based upon order of creation: first created -> highest priority.
 
@@ -124,15 +134,6 @@ ActionController::Routing::Routes.draw do |map|
   map.connect ':pid/sail_user/:id', :controller => 'sail_user', :action => 'show'
   map.connect ':pid/sail_user/:id/workgroups', :controller => 'sail_user', :action => 'workgroups'
 
-# user
-
-  map.connect ':pid/user', :controller => 'user', :action => 'list'
-  map.connect ':pid/user/list', :controller => 'user', :action => 'list'
-  map.connect ':pid/user/create', :controller => 'user', :action => 'create'
-  map.connect ':pid/user/edit/:id', :controller => 'user', :action => 'edit'
-#  map.connect ':pid/user/destroy/:id', :controller => 'user', :action => 'destroy'
-  map.connect ':pid/user/:id', :controller => 'user', :action => 'show'
-
 # jnlp
 
   map.connect ':pid/jnlp/', :controller => 'jnlp', :action => 'list'
@@ -165,7 +166,7 @@ ActionController::Routing::Routes.draw do |map|
   # Install the default route as the lowest priority.
 #  map.connect ':controller/:action/:id'
 
-  map.connect 'user/:action', :controller => 'user'
+#  map.connect 'users/:action', :controller => 'users'
 
   map.connect '', :controller => "home", :action => 'index', :pid => nil
   map.connect ':pid', :controller => "home", :action => 'index'

@@ -38,98 +38,57 @@ class User < ActiveRecord::Base
   validates_length_of       :email,    :within => 3..100
   validates_uniqueness_of   :login, :email, :case_sensitive => false
   before_save :encrypt_password
+  before_create :make_activation_code
+  
+  after_create :add_member_role
+  
+  # prevents a user from submitting a crafted form that bypasses activation
+  # anything else you want your user to change should be added here.
+  attr_accessible :login, :email, :first_name, :last_name, :password, :password_confirmation
 
   def name
     "#{first_name} #{last_name}"
   end
-
-  # Authenticates an user by their login name and unencrypted password.  Returns the user or nil.
-  def self.authenticate(identifier, password)
-    unless remote_authenticate(identifier, password)
-      self.local_authenticate(identifier, password)
-    end
-  end
-
-  def self.synch_with_local_user(cc_user, password)
-    user = User.find_by_email(ccuser.user_email) unless user = User.find_by_login(ccuser.user_username)
-    if user.blank?
-      user = User.new
-      user.login = ccuser.user_username
-      user.email = ccuser.user_email
-      user.first_name = ccuser.user_first_name 
-      user.last_name = ccuser.user_last_name
-      user.save
-    else
-      if user.password_hash != ccuser.user_password
-        user.save
-      end
-    end
-  end
-    
-# ----
-
-  def self.remote_authenticate(identifier, password)
-    begin
-      if ccuser = SunflowerMystriUser.find_user(identifier)
-        if remote_authenticated?(password, ccuser.user_password)
-          synch_with_local_user(cc_user, password)
-        else
-          nil
-        end
-      else
-        nil
-      end
-    rescue Mysql::Error
-    rescue NameError
-      nil
+  
+  def add_member_role
+    if self.roles.size == 0
+      self.roles << Role.find_by_title('member')
     end
   end
   
-  def self.remote_authenticated?(password, remote_password)
-    (remote_encrypt(password) == remote_encrypt(remote_password))
+  # Activates the user in the database.
+  def activate
+    @activated = true
+    self.activated_at = Time.now.utc
+    self.activation_code = nil
+    save(false)
   end
 
-  def self.local_authenticate(identifier, password)
-    if u = User.find_by_login(identifier) || User.find_by_email(identifier)
-      logger.warn("How did we get here? u: #{u}") 
-      # u.local_authenticated?(password) ? u : nil
-      nil
-    else
-      nil
-    end
+  def active?
+    # the existence of an activation code means they have not activated yet
+    activation_code.nil?
   end
 
-  def local_authenticated?(password)
-    if crypted_password
-      crypted_password == salted_sha_encrypt(password)
-    else
-      if password_hash == md5_encrypt(password)
-        crypted_password = salted_sha_encrypt(password)
-        true
-      end
-    end
+  # Authenticates a user by their login name and unencrypted password.  Returns the user or nil.
+  def self.authenticate(login, password)
+    return nil if login.blank? || password.blank?
+    u = find :first, :conditions => ['login = ? OR email = ? and activated_at IS NOT NULL', login, login] # need to get the salt
+    u && u.authenticated?(password) ? u : nil
   end
-  
+
   # Encrypts some data with the salt.
-  def self.local_encrypt(password, salt)
+  def self.encrypt(password, salt)
     Digest::SHA1.hexdigest("--#{salt}--#{password}--")
   end
 
   # Encrypts the password with the user salt
-  def salted_sha_encrypt(password)
-    self.class.local_encrypt(password, salt)
+  def encrypt(password)
+    self.class.encrypt(password, salt)
   end
 
-  # Encrypts just using MD5 hash
-  def md5_encrypt(password)
-    self.class.remote_encrypt(password)
+  def authenticated?(password)
+    crypted_password == encrypt(password)
   end
-
-    # Encrypts just using MD5 hash
-  def self.remote_encrypt(password)
-    Digest::MD5.hexdigest(password)
-  end
-
 
   def remember_token?
     remember_token_expires_at && Time.now.utc < remember_token_expires_at 
@@ -137,8 +96,16 @@ class User < ActiveRecord::Base
 
   # These create and unset the fields required for remembering users between browser closes
   def remember_me
-    self.remember_token_expires_at = 2.weeks.from_now.utc
-    self.remember_token            = salted_sha_encrypt("#{email}--#{remember_token_expires_at}")
+    remember_me_for 2.weeks
+  end
+
+  def remember_me_for(time)
+    remember_me_until time.from_now.utc
+  end
+
+  def remember_me_until(time)
+    self.remember_token_expires_at = time
+    self.remember_token            = encrypt("#{email}--#{remember_token_expires_at}")
     save(false)
   end
 
@@ -148,16 +115,26 @@ class User < ActiveRecord::Base
     save(false)
   end
 
+  # Returns true if the user has just been activated.
+  def recently_activated?
+    @activated
+  end
+
   protected
     # before filter 
     def encrypt_password
       return if password.blank?
       self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--") if new_record?
-      self.crypted_password = local_encrypt(password)
-      self.password_hash = Digest::MD5.hexdigest(password)
+      self.crypted_password = encrypt(password)
     end
-    
+      
     def password_required?
       crypted_password.blank? || !password.blank?
     end
+    
+    def make_activation_code
+
+      self.activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
+    end
+    
 end

@@ -4,6 +4,7 @@
 # 2) Create config/exception_notifier_recipients.yml with the list of address to receive mails.
 MAILER_CONFIG_EXISTS = File.exists?("#{RAILS_ROOT}/config/mailer.yml")
 if MAILER_CONFIG_EXISTS
+  require "action_mailer"
   EXCEPTION_NOTIFIER_CONFIGS_EXISTS = File.exists?("#{RAILS_ROOT}/config/exception_notifier_recipients.yml")
 else
   EXCEPTION_NOTIFIER_CONFIGS_EXISTS = nil

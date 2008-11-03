@@ -14,11 +14,18 @@
       </div>
       <div id="titlebar">
         <div id="titlebar_left">
-          <h3><%= page_title %><%= yield :tip %></h3>
+          <h4>
+            <% if p = params[:pid] %>
+              Portal <%= p.to_s %>: <%= @portal.name %>
+            <% end %>
+            <%= page_title %><%= yield :tip %>
+          </h4>
         </div>
         <div id="titlebar_right">
-          <% if p = params[:pid] %>
-            <h4>Portal <%= p.to_s %>: <%= @portal.name %></h4>
+          <% if logged_in? %>
+            <span class="salutation">Welcome <%= current_user.roles.first.title.capitalize %>: <%= current_user.name %></span>
+          <% else %>
+            <span class="salutation">Welcome anonymous user: please login</span>
           <% end %>
         </div>
       </div>
@@ -40,16 +47,15 @@
             <span class="inactive">Curnits | Jnlps | SailUsers | Offerings | Workgroups</span>
           <% end %>
         </div>
-        <div id="menubar_right">
+        <div id="menubar_right">        
           <% if logged_in? %>
-            <span class="salutation">Welcome <%= current_user.name %>,</span> <%= link_to 'Logout', :controller => 'user', :action => 'logout' %>
+            <%= link_to 'Logout', logout_url %>
           <% else %>
-            <%= link_to 'Login', :controller => 'user', :action => 'login' %>
+            <%= link_to 'Login', login_url %>
           <% end %>
         </div>
       </div>
 
-      <p style="color: green"><%= flash[:notice] %></p>
       <div id="content">
         <%= yield %>
       </div>
