@@ -42,7 +42,7 @@ class UsersController < ApplicationController
     if @user.errors.empty?
       # don't automatically log them in. wait until they've activated
       # self.current_user = @user
-      redirect_back_or_default('/')
+      redirect_back_or_default(home_url)
       flash[:notice] = "Thanks for signing up! You'll need to activate your account before you can log in."
     else
       render :action => 'new'
@@ -68,7 +68,7 @@ class UsersController < ApplicationController
       current_user.activate
       flash[:notice] = "Signup complete!"
     end
-    redirect_back_or_default('/')
+    redirect_back_or_default(home_url)
   end
 
 end

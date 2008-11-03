@@ -168,7 +168,7 @@ ActionController::Routing::Routes.draw do |map|
 
 #  map.connect 'users/:action', :controller => 'users'
 
-  map.connect '', :controller => "home", :action => 'index', :pid => nil
+  map.home '', :controller => "home", :action => 'index', :pid => nil
   map.connect ':pid', :controller => "home", :action => 'index'
   map.connect ':pid.:format', :controller => "home", :action => 'index'  
 
