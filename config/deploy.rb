@@ -32,8 +32,7 @@ after "deploy:start", :start_longrunning
 after "deploy:stop", :stop_longrunning
 
 task :after_symlink, :roles => :app do
-  run "cp #{shared_path}/config/* #{release_path}/config"
-  run "cp #{shared_path}/config/initializers/* #{release_path}/config/initializers"
+  run "cp -r #{shared_path}/config/* #{release_path}/config"
   run "ln -s #{shared_path}/cache #{release_path}/public/cache"
 end
 
