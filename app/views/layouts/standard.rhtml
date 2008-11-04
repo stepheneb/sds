@@ -32,19 +32,28 @@
       <div id="menubar">
         <div id="menubar_left">
           <span class="active">        
-            <%= link_to 'Home', :controller => 'home', :action => 'index' %> | 
-            <%= link_to 'Portals', :controller => 'portal', :action => 'list' %> | 
+            <%= link_to 'Home', :controller => 'home', :action => 'index' %>
           </span>
-          <% if params[:pid] %>
+          <% restrict_to 'admin || researcher' do %> | 
             <span class="active">        
-            <%= link_to 'Curnits', :controller => 'curnit', :action => 'list' %> | 
-            <%= link_to 'Jnlps', :controller => 'jnlp', :action => 'list' %> | 
-            <%= link_to 'SailUsers', :controller => 'sail_user', :action => 'list' %> | 
-            <%= link_to 'Offerings', :controller => 'offering', :action => 'list' %> | 
-            <%= link_to 'Workgroups', :controller => 'workgroup', :action => 'list' %>
+              <%= link_to 'Portals', :controller => 'portal', :action => 'list' %> | 
             </span>
-          <% else %>
-            <span class="inactive">Curnits | Jnlps | SailUsers | Offerings | Workgroups</span>
+            <% if params[:pid] %>
+              <span class="active">        
+                <%= link_to 'Curnits', :controller => 'curnit', :action => 'list' %> | 
+                <%= link_to 'Jnlps', :controller => 'jnlp', :action => 'list' %> | 
+                <%= link_to 'SailUsers', :controller => 'sail_user', :action => 'list' %> | 
+                <%= link_to 'Offerings', :controller => 'offering', :action => 'list' %> | 
+                <%= link_to 'Workgroups', :controller => 'workgroup', :action => 'list' %>
+              </span>
+            <% else %>
+              <span class="inactive">Curnits | Jnlps | SailUsers | Offerings | Workgroups </span>
+            <% end %>
+          <% end %>
+          <% restrict_to 'admin' do %> |
+            <span class="active">
+              <%= link_to 'Users', users_path %>
+            </span>
           <% end %>
         </div>
         <div id="menubar_right">        

@@ -3,14 +3,14 @@ class UserMailer < ActionMailer::Base
     setup_email(user)
     @subject    += 'Please activate your new account'
   
-    @body[:url]  = "http://saildataservice.concord.org/activate/#{user.activation_code}"
+    @body[:url]  = activate_url(:activation_code => user.activation_code)
   
   end
   
   def activation(user)
     setup_email(user)
     @subject    += 'Your account has been activated!'
-    @body[:url]  = "http://saildataservice.concord.org/"
+    @body[:url]  = home_url
   end
   
   protected

@@ -181,6 +181,13 @@ a:hover {
   font-style:italic;
 }
 
+.properties {
+  color: #161;
+  font-family: verdana, arial, helvetica, sans-serif;
+  text-decoration: none;
+  font-size: 1.0em;
+  font-style:italic;
+}
 
 .active {
   color: #282;
@@ -227,7 +234,7 @@ td {
 .PageTitle {
   color: #244;
   font-family: verdana, arial, helvetica, sans-serif;
-  font-size:   30px;
+  font-size:   20px;
   font-weight: bold;
   text-align: left;
 }

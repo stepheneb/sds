@@ -1,17 +1,16 @@
-<p><label for="login">Username</label><br/>
-<%= f.text_field :login %></p>
-
-<p><label for="email">Email</label><br/>
-<%= f.text_field :email %></p>
-
-<p><label for="first_name">First name</label><br/>
-<%= f.text_field :first_name %></p>
-
-<p><label for="last_name">Last name</label><br/>
-<%= f.text_field :last_name %></p>
-
-<p><label for="password">Password</label><br/>
-<%= f.password_field :password %></p>
-
-<p><label for="password_confirmation">Confirm Password</label><br/>
-<%= f.password_field :password_confirmation %></p>
+<%= error_messages_for 'user' %>
+<% restrict_to 'admin' do %>
+  <span class="properties">Roles: </span>
+  <% Role.find(:all, :order => :position).each do |r|  %>
+   <%= r.title.capitalize %>
+    <input type="checkbox" name="user[role_ids][]" value="<%= r.id %>" 
+           <% if @user.roles.include?(r) %> checked="checked" <% end %> />
+           &nbsp;
+  <% end %>
+<% end %>
+<p><span class="properties">Username: </span><%= form.text_field :login, :size => 30 %></p>
+<p><span class="properties">Email: </span><%= form.text_field :email, :size => 72 %></p>
+<p><span class="properties">First name: </span><%= form.text_field :first_name, :size => 36 %></p>
+<p><span class="properties">Last name: </span><%= form.text_field :last_name, :size => 36 %></p>
+<p><span class="properties">Password: </span><%= form.password_field :password, :size => 36 %></p>
+<p><span class="properties">Password confirmation: </span><%= form.password_field :password_confirmation, :size => 36 %></p>

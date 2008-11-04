@@ -5,33 +5,60 @@ class UsersController < ApplicationController
   skip_before_filter :require_login_for_non_rest, :only => [:new, :create, :activate]
   skip_before_filter :find_portal
   
+  before_filter :find_user, :only => [:edit, :destroy, :show, :update]
+  
+  access_rule 'admin', :only => [:index, :destroy]
+  
   # GETs should be safe (see http://www.w3.org/2001/tag/doc/whenToUseGet.html)
-  verify :method => :post, :only => [ :destroy, :create, :update ],
-         :redirect_to => { :action => :index }
+  # verify :method => :post, :only => [ :destroy, :create],
+  #        :redirect_to => { :action => :index }
 
+  def find_user
+    begin
+      @user = User.find(params[:id])
+    rescue
+      redirect_to :action => 'index'
+    end
+  end
+  
   def index
     # FIXME This should use some sort of pagination
-    @users = User.find(:all)
+    respond_to do |wants|
+      wants.html {
+        @users = User.search(params[:search], params[:page])
+      }
+    end
   end
   
   def edit
-    @user = User.find(params[:id])
+    if current_user != @user
+      # unless you're an admin, you can only look at your own details
+      permission_required('admin')      
+    end
   end
 
   def destroy
-    User.find(params[:id]).destroy
+    @user.destroy
     redirect_to :action => 'index'
   end
   
   def show
-    @user = User.find(params[:id])
+    if current_user != @user
+      # unless you're an admin, you can only look at your own details
+      permission_required('admin')    
+    end
   end
   
   # render new.rhtml
   def new
+    @user = User.new
   end
 
   def create
+    # only users with admin role can set roles for users
+    unless current_user && current_user.has_role('admin')
+      params[:user].delete(:role_ids)
+    end
     cookies.delete :auth_token
     # protects against session fixation attacks, wreaks havoc with 
     # request forgery protection.
@@ -50,15 +77,28 @@ class UsersController < ApplicationController
   end
 
   def update
-    if request.post?   
-      if @user.update_attributes(params[:user])
-        flash[:notice] = 'User was successfully updated.'
-        redirect_to :action => 'index'
-      else
-        render :action => 'edit'
-      end
+    # If either the password field or the password_confirmation fields are blank
+    # then remove both values from the hash 
+    if params[:user][:password].blank? || params[:user][:password].blank?
+      params[:user].delete(:password)
+      params[:user].delete(:password_confirmation)
+    end
+    
+    # only users with admin role can set roles for users
+    unless current_user.has_role('admin')
+      params[:user].delete(:role_ids)
+    end
+    
+    if current_user != @user
+      # unless you're an admin, you can only update your own details
+      permission_required('admin')    
+    end
+    
+    if @user.update_attributes(params[:user])
+      flash[:notice] = 'User was successfully updated.'
+      redirect_to :action => 'index'
     else
-      redirect_to(action => :edit)
+      render :action => 'edit'
     end
   end
   

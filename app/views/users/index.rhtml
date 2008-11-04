@@ -1,23 +1,40 @@
 <div id="pageheader"><span class="PageTitle">User Listing</span></div>
 
+<p><%= page_entries_info @users %></p>
+<p><%= will_paginate @users %></p>
+<% form_tag "#{ActionController::AbstractRequest.relative_url_root}/users", :method => 'get' do %>
+  <input type="submit" value="Search" /> 
+  <% content_tag :label do %>
+    <%= text_field_tag :search, params[:search], :size => 40 %>
+    <span style="font-weight: normal; font-style: italic; font-size: 90%">
+      (leave search field blank to find everything)</span>
+  <% end %>
+<% end %>
+<span class='create'><%= link_to 'New User', new_user_path %></span>
+<hr />
+
 <table width="90%" cellpadding="5" cellspacing="0">
-    <% odd_or_even = 0
-    for user in @users 
-        odd_or_even = 1 - odd_or_even
-    %>
+  <% odd_or_even = 0
+  for user in @users 
+    odd_or_even = 1 - odd_or_even %>
     <tr valign="top" class="ListLine<%= odd_or_even %>">
-        <% if current_user.email == 'stephen@concord.org'%>
-        <td align="Listactions">
-            <%= link_to 'Edit', :action => 'edit', :id => user %><br />
-            <%= link_to 'Delete', { :action => 'destroy', :id => user }, :confirm => 'Are you sure?', :post => true %>
-        </td>
-        <% end %>
-        <td width="80%">
-            <span class="ListTitle"><%= h(user.first_name) %> <%= h(user.last_name) %></span><br />
-            Username: <%= user.login %>, Probeware: <%= user.vendor_interface.name %>
-        </td>
+      <td align="Listactions">
+        <%= link_to 'Edit', edit_user_path(user) %><br />
+        <%= link_to 'Delete', user, 
+          :confirm => "Are you sure you want to delete the user: #{user.name}, login: #{user.login}, email: #{user.email}?", 
+          :method => :delete %>
+      </td>
+      <td width="80%">
+        <span class="ListTitle"><%= h(user.first_name) %> <%= h(user.last_name) %></span><br />
+        <span class="properties">
+          Roles: <strong><%= user.roles.collect {|r| r.title }.join(', ') %></strong>;
+          Username: <strong><%= user.login %></strong>;
+          Email: <strong><%= user.email %></strong>; 
+          Activated: <strong><%= user.active? %></strong>; 
+        </span>
+      </td>
     </tr>
-    <% end %>
+  <% end %>
 </table>
 
 

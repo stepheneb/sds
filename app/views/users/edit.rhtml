@@ -1,8 +1,8 @@
-<h1>Editing user</h1>
+<h2>Editing user: <%= @user.name %></h2>
 
 <%= error_messages_for :user %>
 
-<% form_for :user, :url => {:action => :edit} do |f| -%>
-    <%= render :partial => 'form', :locals => {:f => f} %>
+<% form_for :user , :url => user_path(@user), :html => { :method => :put } do |f| -%>
+    <%= render :partial => 'form', :object => f %>
     <%= submit_tag "Save changes" %>
 <% end -%>

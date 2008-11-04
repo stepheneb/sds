@@ -32,11 +32,9 @@ after "deploy:start", :start_longrunning
 after "deploy:stop", :stop_longrunning
 
 task :after_symlink, :roles => :app do
-  run "cp #{shared_path}/config/database.yml #{release_path}/config/database.yml"
-  run "cp #{shared_path}/config/environment.rb #{release_path}/config/environment.rb"
+  run "cp #{shared_path}/config/* #{release_path}/config"
+  run "cp #{shared_path}/config/initializers/* #{release_path}/config/initializers"
   run "ln -s #{shared_path}/cache #{release_path}/public/cache"
-  run "cp #{shared_path}/config/mailer.yml #{release_path}/config/mailer.yml"
-  run "cp #{shared_path}/config/exception_notifier_recipients.yml #{release_path}/config/exception_notifier_recipients.yml"
 end
 
 task :set_longrunning_vars do
@@ -81,4 +79,6 @@ task :set_vars do
   depend :remote, :directory, "#{shared_path}/cache"
   depend :remote, :file, "#{shared_path}/config/mailer.yml"
   depend :remote, :file, "#{shared_path}/config/exception_notifier_recipients.yml"
+  depend :remote, :file, "#{shared_path}/config/initializers/mailer.rb"
+  depend :remote, :file, "#{shared_path}/config/initializers/site_keys.rb"
 end

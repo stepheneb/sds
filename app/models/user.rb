@@ -21,7 +21,10 @@ require 'digest/sha1'
 require 'digest/md5' 
 
 class User < ActiveRecord::Base
-
+  include Authentication
+  include Authentication::ByPassword
+  include Authentication::ByCookieToken
+  
 #  acts_as_authorized_user
 
   has_and_belongs_to_many :roles, options = {:join_table => "roles_users"}
@@ -30,13 +33,17 @@ class User < ActiveRecord::Base
   attr_accessor :password
 
   validates_presence_of     :login, :email
-  validates_presence_of     :password,                   :if => :password_required?
-  validates_presence_of     :password_confirmation,      :if => :password_required?
-  validates_length_of       :password, :within => 3..40, :if => :password_required?
-  validates_confirmation_of :password,                   :if => :password_required?
+
+  validates_each :first_name, :last_name, :login, :email do |model, attr, value| 
+    unless value =~ /\S+/ 
+      model.errors.add(attr, "must not be empty") 
+    end 
+  end
+  
   validates_length_of       :login,    :within => 3..40
   validates_length_of       :email,    :within => 3..100
   validates_uniqueness_of   :login, :email, :case_sensitive => false
+
   before_save :encrypt_password
   before_create :make_activation_code
   
@@ -44,10 +51,34 @@ class User < ActiveRecord::Base
   
   # prevents a user from submitting a crafted form that bypasses activation
   # anything else you want your user to change should be added here.
-  attr_accessible :login, :email, :first_name, :last_name, :password, :password_confirmation
+  # attr_accessible :login, :email, :first_name, :last_name, :password, :password_confirmation
+
+  def self.search(search, page)
+    paginate :per_page => 20, :page => page,
+             :conditions => ['first_name like ? OR last_name like ? OR login like ? OR email like ?',"%#{search}%","%#{search}%", "%#{search}%", "%#{search}%"], :order => 'created_at ASC'
+  end
 
   def name
     "#{first_name} #{last_name}"
+  end
+  
+  # Returns True if User has one of the roles.
+  # False otherwize.
+  #
+  # You can pass in a sequence of strings:
+  #
+  #  user.has_role("admin", "manager")
+  #
+  # or an array of strings:
+  #
+  #  user.has_role(%w{admin manager})
+  #
+  def has_role(*role_list)
+    (roles.map{ |r| r.title.downcase } & role_list.flatten).length > 0
+  end
+
+  def does_not_have_role(*role_list)
+    !has_role(role_list)
   end
   
   def add_member_role
@@ -76,61 +107,12 @@ class User < ActiveRecord::Base
     u && u.authenticated?(password) ? u : nil
   end
 
-  # Encrypts some data with the salt.
-  def self.encrypt(password, salt)
-    Digest::SHA1.hexdigest("--#{salt}--#{password}--")
-  end
-
-  # Encrypts the password with the user salt
-  def encrypt(password)
-    self.class.encrypt(password, salt)
-  end
-
-  def authenticated?(password)
-    crypted_password == encrypt(password)
-  end
-
-  def remember_token?
-    remember_token_expires_at && Time.now.utc < remember_token_expires_at 
-  end
-
-  # These create and unset the fields required for remembering users between browser closes
-  def remember_me
-    remember_me_for 2.weeks
-  end
-
-  def remember_me_for(time)
-    remember_me_until time.from_now.utc
-  end
-
-  def remember_me_until(time)
-    self.remember_token_expires_at = time
-    self.remember_token            = encrypt("#{email}--#{remember_token_expires_at}")
-    save(false)
-  end
-
-  def forget_me
-    self.remember_token_expires_at = nil
-    self.remember_token            = nil
-    save(false)
-  end
-
   # Returns true if the user has just been activated.
   def recently_activated?
     @activated
   end
 
   protected
-    # before filter 
-    def encrypt_password
-      return if password.blank?
-      self.salt = Digest::SHA1.hexdigest("--#{Time.now.to_s}--#{login}--") if new_record?
-      self.crypted_password = encrypt(password)
-    end
-      
-    def password_required?
-      crypted_password.blank? || !password.blank?
-    end
     
     def make_activation_code
 

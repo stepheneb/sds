@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 74) do
+ActiveRecord::Schema.define(:version => 76) do
 
   create_table "bj_config", :primary_key => "bj_config_id", :force => true do |t|
     t.text "hostname"
@@ -300,7 +300,8 @@ ActiveRecord::Schema.define(:version => 74) do
   end
 
   create_table "roles", :force => true do |t|
-    t.string "title"
+    t.string  "title"
+    t.integer "position"
   end
 
   create_table "roles_users", :id => false, :force => true do |t|
@@ -352,6 +353,7 @@ ActiveRecord::Schema.define(:version => 74) do
     t.datetime "remember_token_expires_at"
     t.string   "activation_code",           :limit => 40
     t.datetime "activated_at"
+    t.boolean  "change_password"
   end
 
   create_table "workgroup_memberships", :force => true do |t|
