@@ -78,6 +78,5 @@ task :set_vars do
   depend :remote, :directory, "#{shared_path}/cache"
   depend :remote, :file, "#{shared_path}/config/mailer.yml"
   depend :remote, :file, "#{shared_path}/config/exception_notifier_recipients.yml"
-  depend :remote, :file, "#{shared_path}/config/initializers/mailer.rb"
   depend :remote, :file, "#{shared_path}/config/initializers/site_keys.rb"
 end
