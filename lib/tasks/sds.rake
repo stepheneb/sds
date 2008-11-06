@@ -19,6 +19,23 @@ namespace :sds do
       Rake::Task['db:migrate'].invoke
       Rake::Task['sds:setup:default_users_roles'].invoke
       Rake::Task['sds:setup:config:setup_all_config_versions'].invoke
+      
+      puts <<HEREDOC
+
+You can now start the SDS by running this command:
+
+  script/server
+
+You can re-edit the configuration parameters by running:
+
+  ruby config/setup.rb
+
+You can also create an OTrunk Examples Portal Realm in the SDS with this rake task:
+
+  rake sds:setup:otrunk_testing_portal
+  
+HEREDOC
+
     end
     
     desc "Create default users and roles"

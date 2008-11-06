@@ -11,16 +11,19 @@ development:
   encoding: utf8
   host: localhost
   database: sds_development
+  pool: 5
   username: root
-  password: 
+  password: password
+  socket: /tmp/mysql.sock
 
 test:
   adapter: <% if RUBY_PLATFORM =~ /java/ %>jdbcmysql<% else %>mysql<% end %>
   encoding: utf8
   host: localhost
   database: sds_test
+  pool: 5
   username: root
-  password: 
+  password: password
   socket: /tmp/mysql.sock
 
 production:
@@ -28,13 +31,7 @@ production:
   encoding: utf8
   host: localhost
   database: sds_production
+  pool: 5
   username: root
-  password: 
+  password: password
   socket: /tmp/mysql.sock
-
-sunflower:
-  adapter: mysql
-  host: database.concord.org
-  username: rails
-  password: 
-  database: sunflower

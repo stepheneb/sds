@@ -1,7 +1,10 @@
 --- 
-:address: smtp.host.com
-:authentication: :login
-:password: abc123
-:user_name: username
-:port: 25
-:domain: mywebapp.host.com
+:delivery_method: :test
+:host: saildataservice.org
+:smtp: 
+  :password: your_smtp_password
+  :address: mail.saildataservice.org
+  :port: 25
+  :authentication: :login
+  :user_name: your_smtp_username
+  :domain: saildataservice.org
