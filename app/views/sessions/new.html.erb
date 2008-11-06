@@ -1,3 +1,6 @@
+<span id='messages' class='flash'> <%= flash[:notice] %></span>
+<span id='messages' class='flash' style='color: red'> <%= flash[:error] %></span>
+
 <h1>Log in</h1>
 
 <% form_tag sessions_start_url do -%>

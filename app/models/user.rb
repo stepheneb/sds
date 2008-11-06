@@ -100,11 +100,18 @@ class User < ActiveRecord::Base
     activation_code.nil?
   end
 
-  # Authenticates a user by their login name and unencrypted password.  Returns the user or nil.
+  # Authenticates a user by their login name and unencrypted password.
+  # Returns the user if authenticated and activated, false if authenticated but not activated or nil if neither.
   def self.authenticate(login, password)
     return nil if login.blank? || password.blank?
-    u = find :first, :conditions => ['login = ? OR email = ? and activated_at IS NOT NULL', login, login] # need to get the salt
-    u && u.authenticated?(password) ? u : nil
+    u = find :first, :conditions => ['login = ? OR email = ?', login, login] # need to get the salt
+    
+    authed_user = (u && u.authenticated?(password)) ? u : nil
+    if authed_user
+      return (authed_user.active? ? authed_user : false)
+    else
+      return nil
+    end
   end
 
   # Returns true if the user has just been activated.

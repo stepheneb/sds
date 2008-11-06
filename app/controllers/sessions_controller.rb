@@ -29,7 +29,11 @@ class SessionsController < ApplicationController
       redirect_back_or_default(home_url)
       flash[:notice] = "Logged in successfully"
     else
-      note_failed_signin
+      if (user == false)
+        note_failed_signin(true)
+      else
+        note_failed_signin
+      end
       @login       = params[:login]
       @remember_me = params[:remember_me]
       render :action => 'new'
@@ -52,8 +56,12 @@ class SessionsController < ApplicationController
   
   protected
     # Track failed login attempts
-    def note_failed_signin
-      flash[:error] = "Couldn't log you in as '#{params[:login]}'"
+    def note_failed_signin(needs_activated = false)
+      if needs_activated
+        flash[:error] = "You will need to activate your account before you may log in. Please check your email at the address you provided."
+      else
+        flash[:error] = "Couldn't log you in as '#{params[:login]}'"
+      end
       logger.warn "Failed login for '#{params[:login]}' from #{request.remote_ip}"
     end
 end
