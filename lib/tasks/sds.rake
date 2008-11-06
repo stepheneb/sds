@@ -38,20 +38,67 @@ HEREDOC
 
     end
     
+    def edit_user(user)
+      require 'highline/import'
+      
+      puts <<HEREDOC
+
+Editing user: #{user.login}
+
+HEREDOC
+
+      user.login =                 ask("            login: ") {|q| q.default = user.login}
+      user.email =                 ask("            email: ") {|q| q.default = user.email}
+      user.first_name =            ask("       first name: ") {|q| q.default = user.first_name}
+      user.last_name =             ask("        last name: ") {|q| q.default = user.last_name}
+      user.password =              ask("         password: ") {|q| q.default = user.password}
+      user.password_confirmation = ask(" confirm password: ") {|q| q.default = user.password_confirmation}
+      
+      user
+    end
+      
+      
+    
     desc "Create default users and roles"
     task :default_users_roles => :environment do
-        admin_role = Role.find_or_create_by_title('admin')
-        researcher_role = Role.find_or_create_by_title('researcher')
-        member_role = Role.find_or_create_by_title('member')
-        guest_role = Role.find_or_create_by_title('guest')
 
-        admin_user = User.create(:login => "admin", :email => "admin@concord.org", :password => "password", :password_confirmation => "password", :first_name => "Admin", :last_name => "User")
-        researcher_user = User.create(:login => 'researcher', :first_name => 'Researcher', :last_name => 'User', :email => 'researcher@concord.org', :password => "password", :password_confirmation => "password")
-        member_user = User.create(:login => 'member', :first_name => 'Member', :last_name => 'User', :email => 'member@concord.org', :password => "password", :password_confirmation => "password")
+      puts <<HEREDOC
 
-        admin_user.roles << admin_role 
+This task creates four roles (if they don't already exist):
 
-        researcher_user.roles << researcher_role 
+  admin
+  researcher
+  member
+  guest
+
+In addition it create three new default users with these logins:
+
+  admin
+  researcher
+  member
+
+You can edit the default settings for these users.
+
+HEREDOC
+
+      admin_role = Role.find_or_create_by_title('admin')
+      researcher_role = Role.find_or_create_by_title('researcher')
+      member_role = Role.find_or_create_by_title('member')
+      guest_role = Role.find_or_create_by_title('guest')
+
+      admin_user = User.create(:login => "admin", :email => "admin@concord.org", :password => "password", :password_confirmation => "password", :first_name => "Admin", :last_name => "User")
+      researcher_user = User.create(:login => 'researcher', :first_name => 'Researcher', :last_name => 'User', :email => 'researcher@concord.org', :password => "password", :password_confirmation => "password")
+      member_user = User.create(:login => 'member', :first_name => 'Member', :last_name => 'User', :email => 'member@concord.org', :password => "password", :password_confirmation => "password")
+
+      edit_user(admin_user).save
+      edit_user(researcher_user).save
+      edit_user(member_user).save
+
+      admin_user.roles << admin_role 
+      researcher_user.roles << researcher_role
+
+      puts
+
     end
 
     desc "Creates (or finishes creating) an sds portal-realm to run a local copy of otrunk-examples"
@@ -62,16 +109,14 @@ HEREDOC
     
       hl = HighLine.new
 
-      intro = <<PREAMBLE
+      puts <<HEREDOC
 
 This task will create (or finish creating) an sds portal-realm to run a local 
 copy of otrunk-examples
 
 You will need to first set the urls for the SDS and for the all-otrunk jnlp:
 
-PREAMBLE
-
-      puts intro
+HEREDOC
     
       sds_host = hl.ask("Url for SDS host?\n\n  ") { |q| q.default = "http://localhost:3000" }
 
@@ -81,34 +126,6 @@ PREAMBLE
         q.default = "http://jnlp/org/concord/maven-jnlp/all-otrunk-snapshot/all-otrunk-snapshot.jnlp" 
       }
 
-      proposed_task = <<PROPOSED_TASK    
-
-A new offering will be created in this SDS:
-
-  #{sds_host}
-
-that references this jnlp:
-
-  #{jnlp_url}
-
-Before continuing make sure your Tomcat jnlp server is working and serving the 
-all-otrunk-snapshot.jnlp.  You can test the Tomcat jnlp server by running this 
-command in a shell:
-
-  curl -I #{jnlp_url}
-
-The command should produce a response similar to this:
-
-  HTTP/1.1 200 OK
-  Date: Sat, 01 Nov 2008 20:00:47 GMT
-  Server: Apache-Coyote/1.1
-  Last-Modified: Sat, 01 Nov 2008 17:45:14 GMT
-  Content-Type: application/x-java-jnlp-file
-  Content-Length: 10631
-
-PROPOSED_TASK
-
-      puts proposed_task
    
       return unless hl.agree("Do you want to continue? (y/n): ", true)
 
@@ -193,7 +210,7 @@ PROPOSED_TASK
       view_path = rs.generate(:pid => portal.id, :controller => "offering", :action => "jnlp", :id => offering.id, 
       :wid => workgroup.id, :type => "workgroup", :savedata => nil, :only_path => false)
 
-      wrapup = <<POSTAMBLE
+      puts <<HEREDOC
 
 SDS portal realm: #{portal.name} (#{portal.id}) created.
 
@@ -201,9 +218,7 @@ The SAIL Jnlp view path to the new offering is:
 
   #{sds_host}#{view_path}
 
-POSTAMBLE
-    
-      puts wrapup
+HEREDOC
 
     end
     
