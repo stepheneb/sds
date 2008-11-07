@@ -1,5 +1,7 @@
 class ModelActivityDataset < ActiveRecord::Base
 
+  set_table_name "pas_model_activity_datasets"
+  
   belongs_to :sock
   has_many :model_activity_modelrun, :dependent => :destroy
   has_many :computational_input, :dependent => :destroy

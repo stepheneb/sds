@@ -10,7 +10,8 @@
 #
 
 class RepresentationalValue < ActiveRecord::Base
-
+  set_table_name "pas_representational_values"
+  
   belongs_to :representational_attribute
   belongs_to :model_activity_modelrun
   

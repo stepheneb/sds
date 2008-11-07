@@ -9,7 +9,8 @@
 #
 
 class RepresentationalAttribute < ActiveRecord::Base
-
+  set_table_name "pas_representational_attributes"
+  
   belongs_to :representational_type
   has_many :representational_value, :dependent => :destroy
   
