@@ -41,7 +41,6 @@ class ApplicationController < ActionController::Base
   def require_login_for_non_rest
     # if request is rest, just allow it for now
     respond_to do |format|
-      format.xml { return true }
       format.html {
         if request.headers['CONTENT_TYPE'] == "application/xml"
           return true
@@ -49,6 +48,7 @@ class ApplicationController < ActionController::Base
           return permission_required('researcher || admin')
         end
       }
+      format.xml { return true }
     end
   end
  
