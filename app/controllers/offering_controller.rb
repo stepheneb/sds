@@ -150,7 +150,7 @@ class OfferingController < ApplicationController
       @savedata = params[:savedata]
       @nobundles = params[:nobundles]
       # need last mod?
-      response.headers["Last-Modified"] = @jnlp.last_modified
+      response.headers["Last-Modified"] = @jnlp.last_modified.httpdate
       response.headers["Content-Type"] = "application/x-java-jnlp-file"
       response.headers["Cache-Control"] = "max-age=1"
       # look for any dynamically added jnlp parameters
@@ -287,7 +287,7 @@ class OfferingController < ApplicationController
         end
         response.headers["Content-Type"] = "text/xml"
         if @bundles.size > 0
-          response.headers["last-modified"] = @bundles[-1].created_at
+          response.headers["Last-Modified"] = @bundles[-1].created_at.httpdate
         end
         render :action => 'bundlelist', :layout => false
       rescue => e
