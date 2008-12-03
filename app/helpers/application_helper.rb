@@ -49,4 +49,24 @@ module ApplicationHelper
     rewritten_url
   end
   
+  def ms_to_time_string(ms)
+    time = {}
+    s = ms / 1000
+    time['ms'] = (ms % 1000)
+    m = s / 60
+    time['s'] = (s % 60)
+    h = m / 60
+    time['m'] = (m % 60)
+    time['h'] = h
+    if time['h'] == 0
+      if time['m'] == 0
+        return sprintf("%d.%03d", time['s'], time['ms'])
+      else
+        return sprintf("%d:%02d.%03d", time['m'], time['s'], time['ms'])
+      end
+    else
+        return sprintf("%d:%02d:%02d.%03d", time['h'], time['m'], time['s'], time['ms'])
+    end
+  end
+  
 end

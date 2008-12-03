@@ -21,7 +21,7 @@
 		<% mycontent = @log_bundle.extracted_content -%>
 		<% mycontent.keys.sort.each do |k| -%>
 		<tr valign="top">
-			<td><%= k %> ms </td>
+			<td><%= ms_to_time_string(k) %></td>
 			<td></td>
 			<td><%= mycontent[k].join("<br/>") %></td>
 		</tr>

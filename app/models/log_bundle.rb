@@ -33,7 +33,7 @@ class LogBundle < ActiveRecord::Base
   end
   
   def associate_bundle
-    if self.sail_session_uuid && self.sail_session_uuid.length == 36
+    if self.sail_session_uuid && (self.sail_session_uuid.respond_to?('length')) && self.sail_session_uuid.length == 36
       self.bundle = Bundle.find(:first, :conditions => ["sail_session_uuid = ?", self.sail_session_uuid])
     end
   end
