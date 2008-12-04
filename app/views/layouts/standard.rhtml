@@ -52,7 +52,9 @@
           <% end %>
           <% restrict_to 'admin' do %> |
             <span class="active">
-              <%= link_to 'Users', users_path %>
+              <%= link_to 'Users', users_path %> | 
+              <%= link_to 'NotificationListeners', notification_listeners_path %> |
+              <%= link_to 'NotificationTypes', notification_types_path %>
             </span>
           <% end %>
         </div>

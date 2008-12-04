@@ -1,0 +1,8 @@
+<%= link_to 'List', notification_types_path %>
+
+<% form_for(@notification_type) do |f| %>
+  <p>
+    <%= render :partial => 'form', :object => f %>
+    <%= f.submit "Create" %>
+  </p>
+<% end %>

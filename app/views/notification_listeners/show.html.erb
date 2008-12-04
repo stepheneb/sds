@@ -1,0 +1,14 @@
+<%= link_to 'List', notification_listeners_path %> | 
+<%= link_to 'Edit', edit_notification_listener_path(@notification_listener) %>
+
+<table cellpadding="3" cellspacing="4">
+  <tr><td>Id: </td><td><%= @notification_listener.id.to_s %></td></tr>
+  <tr><td>Name: </td><td><%= @notification_listener.name %></td></tr>
+  <tr><td>Description: </td><td><%= @notification_listener.description %></td></tr>
+  <tr><td>URL: </td><td><%= @notification_listener.url %></td></tr>
+  <tr><td>Type: </td><td><%= "#{@notification_listener.notification_type.id}, #{@notification_listener.notification_type.name}" %></td></tr>
+  <tr><td>Created: </td><td><%= @notification_listener.created_at %></td></tr>
+  <tr><td>Updated: </td><td><%= @notification_listener.updated_at %></td></tr>
+</table>
+
+<%= display_xml(@notification_listener) %>

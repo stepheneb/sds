@@ -1,0 +1,9 @@
+<%= link_to 'List', notification_types_path %> | 
+<%= link_to 'Show', @notification_type %>
+
+<% form_for(@notification_type) do |f| %>
+  <p>
+    <%= render :partial => 'form', :object => f %>
+    <%= f.submit "Save" %>
+  </p>
+<% end %>

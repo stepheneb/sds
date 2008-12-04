@@ -1,4 +1,8 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :notification_types
+
+  map.resources :notification_listeners
+
   map.resources :users
 
   map.resource :sessions

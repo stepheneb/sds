@@ -1,0 +1,33 @@
+<p><%= page_entries_info @notification_types %></p>
+<p><%= will_paginate @notification_types %></p>
+<% form_tag "#{ActionController::AbstractRequest.relative_url_root}/notification_types", :method => 'get' do %>
+  <input type="submit" value="Search" /> 
+  <% content_tag :label do %>
+    <%= text_field_tag :search, params[:search], :size => 40 %>
+    <span style="font-weight: normal; font-style: italic; font-size: 90%">
+      (leave search field blank to find everything)</span>
+  <% end %>
+<% end %>
+<span class='create'><%= link_to 'New Notification Type', new_notification_type_path %></span>
+<hr />
+<table cellpadding="3" cellspacing="3">
+  <tr>
+    <td><b>Id</b></td>
+    <td><b>Name</b></td>
+    <td><b>Description</b></td>
+  </tr>
+  <% @notification_types.each {|notification_type| %>
+    <tr>
+      <td><%= notification_type.id.to_s %></td>
+      <td><%= notification_type.name %></td>
+      <td>
+        <%= notification_type.description %><br />
+        <em>(<%= pluralize(notification_type.notification_listeners.count, "listener")%>, created: <%= notification_type.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em>
+      </td>
+      <td><%= link_to 'Show', notification_type %> | 
+        <%= link_to 'Edit', edit_notification_type_path(notification_type) %> | 
+        <%= link_to 'Destroy', notification_type, :confirm => 'Are you sure?', :method => :delete %>
+      </td>
+    </tr>
+  <% } %>
+</table>

@@ -1,0 +1,12 @@
+<%= link_to 'List', notification_types_path %> | 
+<%= link_to 'Edit', edit_notification_type_path(@notification_type) %>
+
+<table cellpadding="3" cellspacing="4">
+  <tr><td>Id: </td><td><%= @notification_type.id.to_s %></td></tr>
+  <tr><td>Name: </td><td><%= @notification_type.name %></td></tr>
+  <tr><td>Description: </td><td><%= @notification_type.description %></td></tr>
+  <tr><td>Created: </td><td><%= @notification_type.created_at %></td></tr>
+  <tr><td>Updated: </td><td><%= @notification_type.updated_at %></td></tr>
+</table>
+
+<%= display_xml(@notification_type) %>

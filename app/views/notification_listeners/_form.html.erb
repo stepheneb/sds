@@ -1,0 +1,13 @@
+<%= error_messages_for :notification_listener %>
+
+<p><label for="notification_listener_name">Name</label><br/>
+<%= form.text_field :name, :size => 72 %></p>
+
+<p><label for="notification_listener_url">URL</label><br/>
+<%= form.text_field :url, :size => 72 %></p>
+
+<p><label for="notification_listener_description">Description</label><br/>
+<%= form.text_field :description, :size => 72 %></p>
+
+<p><label for="notification_type_id">Type</label><br/>
+<%= form.select :notification_type_id,  NotificationType.find(:all).map { |t| ["#{t.id}: #{t.name}", t.id] }  %></p>
