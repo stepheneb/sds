@@ -20,6 +20,9 @@ class Workgroup < ActiveRecord::Base
   belongs_to :offering
   has_many :workgroup_memberships
   has_many :log_bundles
+  
+  has_many :notification_scopes, :as => :notifier
+  has_many :notification_listeners, :as => :notifier, :through => :notification_scopes
 
   before_create { |wg| wg.version = 0 }
   

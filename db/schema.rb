@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 78) do
+ActiveRecord::Schema.define(:version => 79) do
 
   create_table "bj_config", :primary_key => "bj_config_id", :force => true do |t|
     t.text "hostname"
@@ -166,6 +166,17 @@ ActiveRecord::Schema.define(:version => 78) do
 
   add_index "notification_listeners", ["notification_type_id"], :name => "index_notification_listeners_on_notification_type_id"
   add_index "notification_listeners", ["url"], :name => "index_notification_listeners_on_url"
+
+  create_table "notification_scopes", :force => true do |t|
+    t.integer  "notifier_id"
+    t.string   "notifier_type"
+    t.integer  "notification_listener_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "notification_scopes", ["notifier_id"], :name => "index_notification_scopes_on_notifier_id"
+  add_index "notification_scopes", ["notification_listener_id"], :name => "index_notification_scopes_on_notification_listener_id"
 
   create_table "notification_types", :force => true do |t|
     t.string   "name"

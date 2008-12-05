@@ -21,6 +21,9 @@ class SailUser < ActiveRecord::Base
   belongs_to :portal
   has_many :workgroup_memberships
   
+  has_many :notification_scopes, :as => :notifier
+  has_many :notification_listeners, :as => :notifier, :through => :notification_scopes
+  
   # this creates the following possible search
   # workgroups = user.workgroups?
   has_many :workgroups, :through => :workgroup_memberships, :select => 'DISTINCT workgroups.*'

@@ -40,6 +40,9 @@ class Portal < ActiveRecord::Base
     end
   end
   
+  has_many :notification_scopes, :as => :notifier
+  has_many :notification_listeners, :as => :notifier, :through => :notification_scopes
+  
   # see: http://github.com/mislav/will_paginate/wikis/simple-search
   def self.search(search, page)
     paginate :per_page => 20, :page => page,

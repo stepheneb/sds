@@ -7,9 +7,15 @@ class NotificationListener < ActiveRecord::Base
   validates_uniqueness_of :url, :scope => :notification_type_id
   
   belongs_to :notification_type
+  has_many :notification_scopes
   
   def self.search(search, page)
       paginate :per_page => 20, :page => page,
                :conditions => ['name like ? OR description like ?',"%#{search}%", "%#{search}%"], :order => 'created_at DESC'
     end
+    
+  def notifiers
+    self.notification_scopes.collect { |s| s.notifier }
+  end
+
 end

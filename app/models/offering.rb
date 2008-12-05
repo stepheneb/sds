@@ -23,6 +23,9 @@ class Offering < ActiveRecord::Base
   belongs_to :jnlp
   has_many :workgroups
   has_many :bundles, :through => :workgroups
+  
+  has_many :notification_scopes, :as => :notifier
+  has_many :notification_listeners, :as => :notifier, :through => :notification_scopes
 
   has_many :socks,
     :finder_sql => 'SELECT socks.* FROM socks 
