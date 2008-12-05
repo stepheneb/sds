@@ -2,6 +2,7 @@ class NotificationType < ActiveRecord::Base
   
   validates_presence_of :name
   validates_uniqueness_of :name
+  validates_uniqueness_of :key
   
   has_many :notification_listeners
   

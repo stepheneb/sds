@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 79) do
+ActiveRecord::Schema.define(:version => 80) do
 
   create_table "bj_config", :primary_key => "bj_config_id", :force => true do |t|
     t.text "hostname"
@@ -183,9 +183,12 @@ ActiveRecord::Schema.define(:version => 79) do
     t.string   "description"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.text     "script"
+    t.string   "key"
   end
 
   add_index "notification_types", ["name"], :name => "index_notification_types_on_name"
+  add_index "notification_types", ["key"], :name => "index_notification_types_on_key"
 
   create_table "offerings", :force => true do |t|
     t.integer  "portal_id"

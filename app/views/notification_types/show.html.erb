@@ -4,9 +4,11 @@
 <table cellpadding="3" cellspacing="4">
   <tr><td>Id: </td><td><%= @notification_type.id.to_s %></td></tr>
   <tr><td>Name: </td><td><%= @notification_type.name %></td></tr>
+  <tr><td>Key: </td><td><%= @notification_type.key %></td></tr>
   <tr><td>Description: </td><td><%= @notification_type.description %></td></tr>
   <tr><td>Created: </td><td><%= @notification_type.created_at %></td></tr>
   <tr><td>Updated: </td><td><%= @notification_type.updated_at %></td></tr>
+  <tr><td>Script: </td><td><div style="background-color: #999999;"><pre><%= @notification_type.script %></pre></div></td></tr>
 </table>
 
 <%= display_xml(@notification_type) %>

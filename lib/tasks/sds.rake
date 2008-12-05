@@ -511,6 +511,48 @@ HEREDOC
     end
     
   end
+  
+  namespace :notification do
+    types = []
+    
+    task :define_types do
+      bundle_create_type = {:name => "Bundle Create", :key => "bundle:create", :description => "Fired whenever a bundle is created."}
+      bundle_create_type[:script] = '
+# @object is a Bundle
+hash = {}
+hash[:workgroup_id] = @object.workgroup_id
+hash[:offering_id] = @object.workgroup.offering_id
+hash[:portal_id] = @object.workgroup.portal_id
+hash[:bundle_id] = @object.id
+hash[:event_type] = "create"
+
+post_data(@url, hash)
+'
+      types << bundle_create_type
+    end
+  
+    desc "create/update default notification types"
+    task :setup_default_notification_types => [:environment, :define_types] do
+      types.each do |t|
+        created = false
+        nt = NotificationType.find_by_key(t[:key]) || NotificationType.find_by_name(t[:name])
+        if ! nt
+          nt = NotificationType.new
+          created = true
+        end
+        nt.key = t[:key]
+        nt.name = t[:name]
+        nt.description = t[:description]
+        nt.script = t[:script]
+        if ! nt.save
+          puts "Failed to save #{created ? "new" : ""} NotificationType: #{nt.key} - #{nt.name}"
+        else
+          puts "#{created ? "Created" : "Updated"} NotificationType: #{nt.key} - #{nt.name}"
+        end
+      end
+    end
+  
+  end
 
   namespace :utils do
   

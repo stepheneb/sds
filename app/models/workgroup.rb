@@ -22,7 +22,11 @@ class Workgroup < ActiveRecord::Base
   has_many :log_bundles
   
   has_many :notification_scopes, :as => :notifier
-  has_many :notification_listeners, :as => :notifier, :through => :notification_scopes
+  has_many :notification_listeners, :as => :notifier, :through => :notification_scopes do
+    def by_type(type)
+      find(:all).select {|nl| nl.notification_type_id == type.id}
+    end
+  end
 
   before_create { |wg| wg.version = 0 }
   

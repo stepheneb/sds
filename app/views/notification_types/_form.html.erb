@@ -3,5 +3,11 @@
 <p><label for="notification_type_name">Name</label><br/>
 <%= form.text_field :name, :size => 72 %></p>
 
+<p><label for="notification_type_key">Key</label><br/>
+<%= form.text_field :key, :size => 72 %></p>
+
 <p><label for="notification_type_description">Description</label><br/>
 <%= form.text_field :description, :size => 72 %></p>
+
+<p><label for="notification_type_description">Script: (@object and @url are pre-defined; post_data(url, hash) is available)</label><br/>
+<%= form.text_area :script, :cols => 72, :rows => 12 %></p>

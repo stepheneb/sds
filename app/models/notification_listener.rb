@@ -17,5 +17,20 @@ class NotificationListener < ActiveRecord::Base
   def notifiers
     self.notification_scopes.collect { |s| s.notifier }
   end
+  
+  def notify(object)
+    @object = object
+    @url = self.url
+    # eval the script associated with this notification_type. The script handles sending the information to the url
+    begin
+      eval(self.notification_type.script)
+    rescue Exception => e
+      logger.error("NotificationType script eval failed! #{e}")
+    end
+  end
+  
+  def post_data(url, hash)
+    res = Net::HTTP.post_form(URI.parse(url), hash)
+  end
 
 end

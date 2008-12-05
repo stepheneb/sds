@@ -252,13 +252,10 @@ class OfferingController < ApplicationController
             raise "Bundle MD5 Mismatch"
           end
         end
+        
         @bundle = Bundle.create!(:workgroup_id => params[:wid],
         :workgroup_version => params[:version], :bc => content)
-        if GEM_BACKGROUND_JOB_AVAILABLE
-          jobs = Bj.submit "./script/runner 'Bundle.find(#{@bundle.id}).process_bundle_contents'"
-        else
-          @bundle.process_bundle_contents
-        end
+        
         response.headers['Content-MD5'] = digest
         #        response.headers['Location'] = "#{url_for(:controller => 'bundle', :id => @bundle.id)}"
         response.headers['Cache-Control'] = 'public'

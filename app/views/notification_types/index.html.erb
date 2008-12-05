@@ -14,12 +14,15 @@
   <tr>
     <td><b>Id</b></td>
     <td><b>Name</b></td>
+    <td><b>Key</b></td>
     <td><b>Description</b></td>
+    <td><b>Options</b></td>
   </tr>
   <% @notification_types.each {|notification_type| %>
     <tr>
       <td><%= notification_type.id.to_s %></td>
       <td><%= notification_type.name %></td>
+      <td><%= notification_type.key %></td>
       <td>
         <%= notification_type.description %><br />
         <em>(<%= pluralize(notification_type.notification_listeners.count, "listener")%>, created: <%= notification_type.created_at.strftime("%a %b %d %H:%M %Z %Y") %>)</em>

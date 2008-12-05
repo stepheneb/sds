@@ -41,7 +41,11 @@ class Portal < ActiveRecord::Base
   end
   
   has_many :notification_scopes, :as => :notifier
-  has_many :notification_listeners, :as => :notifier, :through => :notification_scopes
+  has_many :notification_listeners, :as => :notifier, :through => :notification_scopes do
+    def by_type(type)
+      find(:all).select {|nl| nl.notification_type_id == type.id}
+    end
+  end
   
   # see: http://github.com/mislav/will_paginate/wikis/simple-search
   def self.search(search, page)
