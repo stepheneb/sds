@@ -1,22 +1,25 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-        "http://www.w3.org/TR/html4/strict.dtd">
-<html lang="en">
-  <% pagetitle = "Show Portal: #{@portal.name} (#{@portal.id.to_s})" %>
-    <head>
-        <title><%= pagetitle %></title>
-    </head>
-<h2><%= pagetitle %></h2>
-
-<%= link_to 'List', :action => 'list'  %> | 
+<%= link_to 'List', :action => 'list' %> | 
 <%= link_to 'Edit', :action => 'edit' %>
 
 <table cellpadding="3" cellspacing="4">
-  <% for column in Portal.columns %>
-    <tr>
-      <td><%= h column.human_name %></td>
-      <td><%= h @portal.send(column.name) %></td>
-    </tr>
+  <tr><td>Id: </td><td><%= @portal.id.to_s %></td></tr>
+  <tr><td>Name: </td><td><%= @portal.name %></td></tr>
+  <tr><td>Use Authentication?: </td><td><%= @portal.use_authentication ? "Yes" : "No" %></td></tr>
+  <% if @portal.use_authentication %>
+    <tr><td>Auth Username: </td><td><%= @portal.auth_username %></td></tr>
+    <tr><td>Auth Password: </td><td><%= @portal.auth_password %></td></tr>
   <% end %>
+  <tr><td>Title: </td><td><%= @portal.title %></td></tr>
+  <tr><td>Vendor: </td><td><%= @portal.vendor %></td></tr>
+  <tr><td>Home Page URL: </td><td><%= @portal.home_page_url %></td></tr>
+  <tr><td>Image URL: </td><td><%= @portal.image_url %></td></tr>
+  <tr><td>Description: </td><td><%= @portal.description %></td></tr>
+  <tr><td>Last Bundle Only?: </td><td><%= @portal.last_bundle_only ? "Yes" : "No" %></td></tr>
+  <tr><td>Created: </td><td><%= @portal.created_at %></td></tr>
+  <tr><td>Updated: </td><td><%= @portal.updated_at %></td></tr>
 </table>
 
+<% @notifier = @portal %>
+<%= render :partial => "shared/notification_listeners_list" %>
 
+<%= display_xml(@portal) %>

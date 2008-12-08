@@ -32,6 +32,7 @@ ActiveRecord::Base.default_timezone = :utc
 require 'sds_init'
 require 'uuidtools'
 require 'b64'
+require 'notifier'
 
 require "math/statistics"
 class Array

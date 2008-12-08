@@ -6,6 +6,9 @@
 <p><label for="workgroup_offering">Offering: </label><br/>
 <%= select 'workgroup', 'offering_id',  @portal.offerings.map { |p| ["#{p.id}: #{p.name}", p.id] }  %></p>
 
+<% @notifier = @workgroup %>
+<%= render :partial => "shared/notification_listeners_form" %>
+
 <p>Membership (version: <%= @workgroup.version %>):</p>
 <%=
   collection_multiple_select(

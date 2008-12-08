@@ -12,6 +12,8 @@
     } %>
 </p>
 
+<% @notifier = @workgroup %>
+<%= render :partial => "shared/notification_listeners_list" %>
 
 <% @workgroup.valid_bundles.desc.each do |b| %>
   <hr />

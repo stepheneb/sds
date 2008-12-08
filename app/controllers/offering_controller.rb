@@ -61,6 +61,7 @@ class OfferingController < ApplicationController
 
   def edit
     if request.post?
+      params[:offering][:notification_listener_ids] ||= []
       if @offering.update_attributes(params[:offering])
         flash[:notice] = "Offering #{@offering.id} was successfully updated."
         redirect_to :action => 'list'

@@ -20,7 +20,8 @@
 # require 'conversions.rb'
 
 class Portal < ActiveRecord::Base
-
+  include Notifier
+  
   validates_presence_of :name, :title, :vendor, :home_page_url, :image_url
 
   has_many :curnits, :order => "created_at DESC"
@@ -37,13 +38,6 @@ class Portal < ActiveRecord::Base
     def created_after(date)
       find_all {|b| b.created_at > date}
       # find(:all, :conditions => ['created_at > ?', date])
-    end
-  end
-  
-  has_many :notification_scopes, :as => :notifier
-  has_many :notification_listeners, :as => :notifier, :through => :notification_scopes do
-    def by_type(type)
-      find(:all).select {|nl| nl.notification_type_id == type.id}
     end
   end
   

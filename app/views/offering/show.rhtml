@@ -42,6 +42,9 @@
   <% end %>
 </table>
 <br />
+<% @notifier = @offering %>
+<%= render :partial => "shared/notification_listeners_list" %>
+<br />
 <b>Attributes:</b>
 <table cellpadding="3" cellspacing="3">
 <tr>

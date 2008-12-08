@@ -29,6 +29,7 @@ class PortalController < ApplicationController
   def edit
     begin
       if request.post?
+        params[:portal][:notification_listener_ids] ||= []
         @portal = Portal.find(params[:id])
         if @portal.update_attributes(params[:portal])
           flash[:notice] = "Portal #{@portal.id} was successfully updated."
@@ -37,8 +38,8 @@ class PortalController < ApplicationController
       else
         @portal = Portal.find(params[:id])
       end
-    rescue
-      flash[:notice] = "Portal #{@portal.id} does not exist." 
+    rescue => e
+      flash[:notice] = "Portal #{@portal.id} does not exist. <!-- #{e}, #{e.backtrace.join("\n")} -->" 
       redirect_to :action => :list
     end
   end

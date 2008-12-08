@@ -105,6 +105,7 @@ class WorkgroupController < ApplicationController
   def edit
     begin
       if request.post?
+        params[:workgroup][:notification_listener_ids] ||= []
         @workgroup.version += 1
         if @workgroup.update_attributes(params[:workgroup])
           users = params[:users]

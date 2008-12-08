@@ -1,0 +1,16 @@
+<p><b>Notification Listeners</b><br/>
+<table>
+  <tr>
+    <td><b>Id</b></td>
+    <td><b>Name</b></td>
+    <td><b>Listening Since</b></td>
+  </tr>
+<% @notifier.notification_listeners.each do |nl| %>
+  <tr>
+    <td><%= link_to "#{nl.id}", nl %></td>
+    <td><%= nl.name %></td>
+    <td><%= nl.created_at %></td>
+  </tr>
+<% end %>
+</table>
+</p>

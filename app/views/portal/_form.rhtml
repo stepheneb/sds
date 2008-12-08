@@ -34,5 +34,8 @@
 <p><label for="portal_last_bundle_only">Return last non-empty session bundle only</label><br/>
 <%= check_box 'portal', 'last_bundle_only'  %></p>
 
+<h3>Notification Listeners</h3>
+<% @notifier = @portal %>
+<%= render :partial => "shared/notification_listeners_form" %>
 
 <!--[eoform:portal]-->

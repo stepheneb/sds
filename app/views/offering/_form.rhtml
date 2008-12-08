@@ -8,3 +8,6 @@
 
 <p><label for="offering_jnlp">Jnlp: </label><br/>
 <%= select 'offering', 'jnlp_id',  @portal.jnlps.find(:all).map { |p| ["#{p.id}: #{p.name}", p.id] }  %></p>
+
+<% @notifier = @offering %>
+<%= render :partial => "shared/notification_listeners_form" %>
