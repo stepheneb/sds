@@ -1,5 +1,30 @@
 <p><b>Notification Listeners</b><br/>
 <table>
+  <% inherited = @notifier.inherited_notification_listeners %>
+  <% if inherited.size > 0 %>
+    <tr>
+      <td colspan='3'>
+        <b>Inherited Listeners<b>
+      </td>
+    </tr>
+    <tr>
+      <td><b>Id</b></td>
+      <td><b>Name</b></td>
+      <td><b>Listening Since</b></td>
+    </tr>
+    <% inherited.each do |nl| %>
+    <tr>
+      <td><%= link_to "#{nl.id}", nl %></td>
+      <td><%= nl.name %></td>
+      <td><%= nl.created_at %></td>
+    </tr>
+    <% end %>
+  <% end %>
+  <tr>
+    <td colspan='3'>
+      <b>Direct Listeners<b>
+    </td>
+  </tr>
   <tr>
     <td><b>Id</b></td>
     <td><b>Name</b></td>

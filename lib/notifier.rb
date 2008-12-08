@@ -11,6 +11,42 @@ module Notifier
     end
   end
   
+  def notification_listeners_include_inherited
+    self.notification_listeners | self.inherited_notification_listeners
+  end
+  
+  def notification_listeners_include_inherited_by_type(type)
+    self.notification_listeners.by_type(type) | self.inherited_notification_listeners_by_type(type)
+  end
+  
+  def inherited_notification_listeners
+    case self.class.name
+      when "Workgroup"
+        return self.offering.notification_listeners | self.offering.inherited_notification_listeners
+      when "Offering"
+        return self.portal.notification_listeners
+      when "Portal"
+        # find nothing, since Portal can't inherit listeners right now
+        []
+      else
+        []
+    end
+  end
+  
+  def inherited_notification_listeners_by_type(type)
+      case self.class.name
+        when "Workgroup"
+          return self.offering.notification_listeners.by_type(type) | self.offering.inherited_notification_listeners_by_type(type)
+        when "Offering"
+          return self.portal.notification_listeners.by_type(type)
+        when "Portal"
+          # find nothing, since Portal can't inherit listeners right now
+          []
+        else
+          []
+      end
+    end
+  
   def notification_listener_ids=(arr)
     # figure out what is the same, and then using that set, figure out what
     # needs to be deleted and added

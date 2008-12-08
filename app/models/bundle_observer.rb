@@ -8,7 +8,7 @@ class BundleObserver < ActiveRecord::Observer
     end
     
     # then schedule the notification
-    script = "bundle = Bundle.find(#{bundle.id}); type = NotificationType.find_by_key(\"bundle:create\"); listeners = bundle.workgroup.notification_listeners.by_type(type) | bundle.workgroup.offering.notification_listeners.by_type(type) | bundle.workgroup.portal.notification_listeners.by_type(type); listeners.each{|l| l.notify(bundle) }"
+    script = "bundle = Bundle.find(#{bundle.id}); type = NotificationType.find_by_key(\"bundle:create\"); bundle.workgroup.notification_listeners_include_inherited_by_type(type).each{|l| l.notify(bundle) }"
     # notify listeners
     if GEM_BACKGROUND_JOB_AVAILABLE
       jobs = Bj.submit "./script/runner '#{script}'"
