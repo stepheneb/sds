@@ -55,11 +55,12 @@ class ApplicationController < ActionController::Base
    def setup_request_var
 	   Thread.current[:request] = request
 	 end
-	
-  def rescue_action_in_public(e)
-    body = "<html><body><p><font color='red'>There was an error processing your request</font></p><p>\n<!-- #{e}\n #{e.backtrace.join("\n")} -->\n</p></body></html>"
-    render(:text => body, :status => 500)
-  end
+
+#	 ExceptionNotifiable now handles this...	
+#  def rescue_action_in_public(e)
+#    body = "<html><body><p><font color='red'>There was an error processing your request</font></p><p>\n<!-- #{e}\n #{e.backtrace.join("\n")} -->\n</p></body></html>"
+#    render(:text => body, :status => 500)
+#  end
  
   def log_headers
       request.headers.each do |k,v|
@@ -104,9 +105,14 @@ protected
   
   def portal_resource_not_found(resource, id)
     msg = "#{resource}: #{id.to_s} does not exist in Portal: #{@portal.id.to_s}: #{@portal.name}."
-    respond_to do |wants|
-      wants.html { flash[:notice] = msg ; redirect_to :action => 'index' }
-      wants.xml { render(:text => "<error>#{msg}</error>", :status => 404) } # Not Found
+    begin
+      respond_to do |wants|
+        wants.html { flash[:notice] = msg ; redirect_to :action => 'index' }
+        wants.xml { render(:text => "<error>#{msg}</error>", :status => 404) } # Not Found
+      end
+    rescue ActionController::RoutingError
+      # this can happen if there is no 'index' action for a controller
+      raise ActiveRecord::RecordNotFound.new(msg)
     end
     false # returing false in a controller filter stops the chain of proccessing
   end
@@ -127,13 +133,6 @@ protected
       wants.xml { render(:text => "<error>#{msg}</error>", :status => 404) } # Not Found
     end
     false
-  end
-    
-  def find_portal
-    unless @portal = Portal.find_by_id(params[:pid])
-      # when it's a login, they don't have a portal and that's ok
-      resource_not_found('Portal', params[:id]) unless params['action'] == 'login' || params['action'] == 'logout' || params['action'] == 'list'
-    end
   end
   
   def resource_not_found(resource, id, enclosing_resource=@portal)
