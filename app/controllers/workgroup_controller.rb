@@ -204,6 +204,26 @@ class WorkgroupController < ApplicationController
     end
   end
   
+  def copy_bundle
+    begin
+      @dest_workgroup = find_portal_resource('Workgroup', params[:wid])
+      if @dest_workgroup.offering == @workgroup.offering
+        bundles = @workgroup.valid_bundles.desc
+        if bundles.size > 0
+          bundle = bundles[0]
+          new_bundle = Bundle.create!(:workgroup_id => @dest_workgroup.id, :workgroup_version => @dest_workgroup.version, :bc => bundle.bundle_content.content)
+          render(:xml => "", :status => 201)
+        else
+          render(:xml => "<message>Source workgroup has no valid bundles. No action taken.</message>", :status => 200)
+        end
+      else
+        render(:xml => "<xml><error>The specified workgroups must be in the same offering!</error></xml>", :status => 400)
+      end
+    rescue => e
+      render(:xml => "<xml><error>#{e}</error><backtrace>#{e.backtrace.join("\n")}</backtrace></xml>", :status => 400)
+    end
+  end
+  
   def report
     @members = @workgroup.sail_users.version(@workgroup.version) # array of SailUser objects
     @membership_array = WorkgroupMembership.find_all_in_workgroup(params[:id]) # array of WorkgroupMembership objects

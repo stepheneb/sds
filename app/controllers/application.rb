@@ -149,6 +149,31 @@ protected
     false
   end
   
+  def compress 
+    return unless request.get?    
+    accepts = request.env['HTTP_ACCEPT_ENCODING'] 
+    return unless accepts && accepts =~ /(x-gzip|gzip)/ 
+    encoding = $1 
+    output = StringIO.new 
+    def output.close # Zlib does a close. Bad Zlib... 
+      rewind 
+    end 
+    gz = Zlib::GzipWriter.new(output) 
+    gz.write(response.body) 
+    gz.close 
+    if output.length < response.body.length 
+      response.body = output.string 
+      response.headers['Content-Encoding'] = encoding 
+    end 
+  end 
+  
+  def log_referrer
+    if request.env["HTTP_REFERER"]
+      refer = request.env["HTTP_REFERER"]
+      logger.info("\nREFERRER: " + refer.to_s + "\n")
+    end
+  end
+  
 private
 
   def process_portal_realm
@@ -165,13 +190,6 @@ private
       session[:intended_action] = [controller_name, action_name] 
       flash[:warning]  = "You need to be logged in first."
       redirect_to :controller => 'user', :action => 'login' 
-    end
-  end
-
-  def log_referrer
-    if request.env["HTTP_REFERER"]
-      refer = request.env["HTTP_REFERER"]
-      logger.info("\nREFERRER: " + refer.to_s + "\n")
     end
   end
   

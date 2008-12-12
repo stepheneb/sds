@@ -2,6 +2,7 @@
 <%= link_to 'Show', :action => 'show', :id => @workgroup %>
 
 <% form_for :workgroup, @workgroup, :url => { :action => "update" }, :html => { :method => :put } do |f| %>
+  <%= f.submit "Save" %>
   <%= render :partial => 'form' %>
   <%= f.submit "Save" %>
 <% end %>

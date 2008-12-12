@@ -561,24 +561,6 @@ class OfferingController < ApplicationController
   end  
 
   protected 
-
-  def compress 
-    return unless request.get?    
-    accepts = request.env['HTTP_ACCEPT_ENCODING'] 
-    return unless accepts && accepts =~ /(x-gzip|gzip)/ 
-    encoding = $1 
-    output = StringIO.new 
-    def output.close # Zlib does a close. Bad Zlib... 
-      rewind 
-    end 
-    gz = Zlib::GzipWriter.new(output) 
-    gz.write(response.body) 
-    gz.close 
-    if output.length < response.body.length 
-      response.body = output.string 
-      response.headers['Content-Encoding'] = encoding 
-    end 
-  end 
   
   def add_md5_checksum
     # It would be more effcient to do this at the http

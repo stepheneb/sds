@@ -1,6 +1,7 @@
 <%= link_to 'List', :action => 'list' %>
 
 <% form_for :workgroup, @workgroup, :url => { :action => "create" } do |f| %>
+  <%= f.submit "Create" %>
   <%= render :partial => 'form' %>
   <%= f.submit "Create" %>
 <% end %>
