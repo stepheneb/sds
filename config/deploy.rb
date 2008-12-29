@@ -8,6 +8,10 @@ set :repository,  "https://svn.concord.org/svn/sds/trunk"
 set :mongrel_user, "mongrel"
 set :mongrel_group, "users"
 
+set(:subroot_pass) do
+  Capistrano::CLI.password_prompt( "Enter the subroot mysql password: ")
+end
+
 # Caches the svn co in shared and just does a svn up before copying the code to a new release
 # see: http://blog.innerewut.de/tags/capistrano%20deployment%20webistrano%20svn%20subversion%20cache
 set :deploy_via, :remote_cache
@@ -63,6 +67,19 @@ end
 task :staging do
   set :version, "staging"
   set_vars
+end
+
+task :reset_staging_db, :roles => :db do
+  set :version, "staging"
+  set_vars
+  
+  # put the app into maintenance mode
+  !deploy::web::disable
+  # dump the production db into the staging db
+  run "mysqldump -u subroot -p#{subroot_pass} --add-drop-table --quick --extended-insert production_#{application}_prod | mysql -u #{application} -p#{application} staging_#{application}_prod"
+  # put app into running mode
+  !deploy::web::enable
+  puts "You'll probably want to run cap reset_staging_db on the SDS so that the database ids will match up correctly. Note that this can mess up references in other staging DIYs, so be careful!"
 end
 
 task :set_vars do
