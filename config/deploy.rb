@@ -76,7 +76,7 @@ task :reset_staging_db, :roles => :db do
   # put the app into maintenance mode
   !deploy::web::disable
   # dump the production db into the staging db
-  run "mysqldump -u subroot -p#{subroot_pass} --add-drop-table --quick --extended-insert production_#{application}_prod | mysql -u #{application} -p#{application} staging_#{application}_prod"
+  run "mysqldump -u subroot -p#{subroot_pass} --lock-tables=false --add-drop-table --quick --extended-insert production_#{application}_prod | mysql -u #{application} -p#{application} staging_#{application}_prod"
   # put app into running mode
   !deploy::web::enable
   puts "You might want to run cap reset_staging_db on any DIYs that are configured to point to the staging SDS so that the database ids will match up correctly."
