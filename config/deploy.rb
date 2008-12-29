@@ -79,7 +79,7 @@ task :reset_staging_db, :roles => :db do
   run "mysqldump -u subroot -p#{subroot_pass} --add-drop-table --quick --extended-insert production_#{application}_prod | mysql -u #{application} -p#{application} staging_#{application}_prod"
   # put app into running mode
   !deploy::web::enable
-  puts "You'll probably want to run cap reset_staging_db on the SDS so that the database ids will match up correctly. Note that this can mess up references in other staging DIYs, so be careful!"
+  puts "You might want to run cap reset_staging_db on any DIYs that are configured to point to the staging SDS so that the database ids will match up correctly."
 end
 
 task :set_vars do
