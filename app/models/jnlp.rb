@@ -54,13 +54,17 @@ class Jnlp < ActiveRecord::Base
           self.last_modified = f.last_modified
           self.filename = File.basename(self.url)
         end
-      rescue SocketError, OpenURI::HTTPError, OpenSSL::SSL::SSLError => e
+      rescue SocketError, OpenURI::HTTPError, OpenSSL::SSL::SSLError, Timeout::Error => e
         if RAILS_ENV == 'production'
           additional_info = ''
         else
           additional_info = "\n#{e.message}\n\n#{e.backtrace.join("\n")}"
         end
-        raise "There was a problem saving the jnlp to the filesystem\n#{additional_info}"
+        if self.body.length > 10
+          # use the old value of the jnlp for now
+        else
+          raise "There was a problem saving the jnlp to the filesystem\n#{additional_info}"
+        end
       end
     end
     self.body
@@ -80,6 +84,8 @@ class Jnlp < ActiveRecord::Base
         end
       rescue SocketError
         "network unavailable"
+      rescue Timeout::Error
+        "network timeout"
       end
     end
   end
