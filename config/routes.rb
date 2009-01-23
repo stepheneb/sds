@@ -56,8 +56,8 @@ ActionController::Routing::Routes.draw do |map|
 
   map.resources :bundle_contents, :path_prefix => '/:pid', :member => { :ot_learner_data => :get }
   
-  map.connect ':pid/bundle/:id', :controller => 'bundle', :action => 'bundle'
-  map.connect ':pid/bundle/:id/copy/:wid', :controller => 'bundle', :action => 'copy'
+  map.bundle ':pid/bundle/:id', :controller => 'bundle', :action => 'bundle'
+  map.bundle_copy ':pid/bundle/:id/copy/:wid', :controller => 'bundle', :action => 'copy'
 
 # offering: java web start services
   # jnlp routes
