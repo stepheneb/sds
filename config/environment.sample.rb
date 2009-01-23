@@ -84,9 +84,6 @@ Rails::Initializer.run do |config|
     # Spawn::method :fork
   end
 
-  # :user_observer triggers activation emails to be sent when a user registers, and confirmation email to be sent when they activate
-  # :bundle_observer triggers notifications to be sent whenever a bundle is created
-  config.active_record.observers = :user_observer, :bundle_observer
 end
 
 # If you are using the SDS with TELS SAIL-WISE curnits you will
