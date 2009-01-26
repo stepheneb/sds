@@ -519,11 +519,18 @@ HEREDOC
       bundle_create_type = {:name => "Bundle Create", :key => "bundle:create", :description => "Fired whenever a bundle is created."}
       bundle_create_type[:script] = '
 # @object is a Bundle
+
+app.host = @object.sds_return_address.host
+@portal = @object.workgroup.portal
+
 hash = {}
 hash[:workgroup_id] = @object.workgroup_id
 hash[:offering_id] = @object.workgroup.offering_id
 hash[:portal_id] = @object.workgroup.portal_id
 hash[:bundle_id] = @object.id
+hash[:bundle_url] = app.bundle_url(:pid => @portal, :id => @object)
+hash[:bundle_content_url] = app.bundle_content_url(:pid => @portal, :id => @object.bundle_content)
+hash[:bundle_ot_learner_data_url] = app.ot_learner_data_bundle_content_url(:pid => @portal, :id => @object.bundle_content)
 hash[:event_type] = "create"
 
 post_data(@url, hash)
