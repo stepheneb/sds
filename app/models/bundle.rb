@@ -365,5 +365,10 @@ class Bundle < ActiveRecord::Base
     end
     data
   end
-
+  
+  def sds_return_address
+    bxml =  REXML::Document.new(self.bundle_content.content).root
+    uri = URI.parse(bxml.elements["//sdsReturnAddresses"].text)
+    return uri
+  end
 end
