@@ -66,7 +66,39 @@ class BundleController < ApplicationController
     end
     
     begin
-      new_bundle = Bundle.create!(:workgroup_id => @workgroup.id, :workgroup_version => @workgroup.version, :bc => @bundle.bundle_content.content)
+      # we need to modify the otrunk uuid and OTUser uuid and name in any ot_learner_data before we copy the bundle
+      pid = spawn do
+        # get the bundle contents
+        content_xml = REXML::Document.new(@bundle.bundle_content.content).root
+        # for each ot_learner_data sock entry
+        content_xml.elements.each("//sockParts[@rimName='ot.learner.data']/sockEntries") { |sock|
+          begin
+            #   unpack it
+            ot_learner_data_xml = REXML::Document.new(Zlib::GzipReader.new(StringIO.new(B64::B64.decode(sock.attributes["value"]))).read).root
+            #   modify it
+            otrunk_id = UUID.timestamp_create().to_s
+            user_id = UUID.timestamp_create().to_s
+            ot_learner_data_xml.attributes["id"] = otrunk_id
+            ot_learner_data_xml.elements["//otrunk/objects/OTStateRoot/userMap/entry"].attributes["key"] = user_id
+            user_object = ot_learner_data_xml.elements["/otrunk/objects/OTStateRoot/userMap/entry/OTReferenceMap/user/OTUserObject"]
+            user_object.attributes["id"] = user_id
+            user_object.attributes["name"] = @workgroup.name
+            #   repack it and save it to the bundle contents
+            gzip_string_io = StringIO.new()
+            gzip = Zlib::GzipWriter.new(gzip_string_io)
+            gzip.write(ot_learner_data_xml.to_s)
+            gzip.close
+            gzip_string_io.rewind
+            val = B64::B64.encode(gzip_string_io.string)
+            sock.attributes["value"] = val
+          rescue
+            logger.warn "Couldn't modify sock entry in bundle #{@bundle.id}"
+          end
+        }
+           
+        new_bundle = Bundle.create!(:workgroup_id => @workgroup.id, :workgroup_version => @workgroup.version, :bc => content_xml.to_s)
+      end
+      wait(pid)
       render(:xml => "", :status => 201)
     rescue => e
       render(:xml => "<xml><error>#{e}</error><backtrace>#{e.backtrace.join("\n")}</backtrace></xml>", :status => 400)
