@@ -99,7 +99,7 @@ class BundleController < ApplicationController
         new_bundle = Bundle.create!(:workgroup_id => @workgroup.id, :workgroup_version => @workgroup.version, :bc => content_xml.to_s)
       end
       wait(pid)
-      render(:xml => "", :status => 201)
+      render(:xml => "<success/>", :status => 201)
     rescue => e
       render(:xml => "<xml><error>#{e}</error><backtrace>#{e.backtrace.join("\n")}</backtrace></xml>", :status => 400)
     end
