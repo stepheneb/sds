@@ -24,8 +24,9 @@ class NotificationListener < ActiveRecord::Base
     # eval the script associated with this notification_type. The script handles sending the information to the url
     begin
       eval(self.notification_type.script)
+      $stdout.puts "Notification complete"
     rescue Exception => e
-      logger.error("NotificationType script eval failed! #{e}")
+      $stderr.puts("NotificationType script eval failed!\n#{e}\n#{e.backtrace.join("\n")}")
     end
   end
   
