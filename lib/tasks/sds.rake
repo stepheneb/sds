@@ -519,7 +519,10 @@ HEREDOC
       bundle_create_type = {:name => "Bundle Create", :key => "bundle:create", :description => "Fired whenever a bundle is created."}
       bundle_create_type[:script] = '
 # @object is a Bundle
+require "action_controller/integration"
 
+# initialize app so that we can do route resolution
+app = ActionController::Integration::Session.new
 app.host = @object.sds_return_address.host
 @portal = @object.workgroup.portal
 
