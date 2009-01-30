@@ -65,6 +65,11 @@ class BundleController < ApplicationController
       resource_not_found('Workgroup', params[:wid])
     end
     
+    if @workgroup == @bundle.workgroup
+      # refuse to copy to the source workgroup
+      render(:xml => "<xml>Not Modified</xml>", :status => 304)
+    else
+    
     begin
       # we need to modify the otrunk uuid and OTUser uuid and name in any ot_learner_data before we copy the bundle
       pid = spawn do
@@ -102,6 +107,7 @@ class BundleController < ApplicationController
       render(:xml => "<success/>", :status => 201)
     rescue => e
       render(:xml => "<xml><error>#{e}</error><backtrace>#{e.backtrace.join("\n")}</backtrace></xml>", :status => 400)
+    end
     end
   end
 
