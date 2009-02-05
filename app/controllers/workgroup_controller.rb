@@ -175,6 +175,7 @@ class WorkgroupController < ApplicationController
   def show
     begin
       @members = @workgroup.sail_users.version(@workgroup.version) # array of SailUser objects
+      @show_bundle = params[:show_bundle] ? params[:show_bundle].to_i : nil
       if request.get?
         respond_to do |wants|
           wants.html
