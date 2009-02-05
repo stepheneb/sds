@@ -235,7 +235,7 @@ class Bundle < ActiveRecord::Base
             puts '------' * 12
             puts
           end
-          p = Pod.create!(:curnit_id => self.workgroup.offering.curnit.id, :uuid => uuid, :rim_name => rim_name, :rim_shape => rim_shape)
+          p = Pod.create!(:curnit_id => curnit.id, :uuid => uuid, :rim_name => rim_name, :rim_shape => rim_shape)
           # p = Pod.new(:curnit_id => self.workgroup.offering.curnit.id, :uuid => uuid, :rim_name => rim_name, :rim_shape => rim_shape)
         end
         sockPart.find('sockEntries').each do |sockEntry|
@@ -243,9 +243,9 @@ class Bundle < ActiveRecord::Base
           ms_offset = sockEntry.find('@millisecondsOffset').first.value
           if console_log
             puts
-            puts "Sock.create!(:bundle_id => #{self.id}, \n:value => #{value.length},\n:ms_offset => #{ms_offset}, :pod_id => #{p.id}, :duplicate => #{(if p.socks.empty? then false else p.socks.last.value == value end)})"
+            puts "Sock.create!(:bundle_id => #{self.id}, \n:value => #{value.length},\n:ms_offset => #{ms_offset}, :pod_id => #{p.id})"
           end
-          Sock.create!(:bundle_id => self.id, :value => value, :ms_offset => ms_offset, :pod_id => p.id, :duplicate => (if p.socks.empty? then false else p.socks.last.value == value end))
+          Sock.create!(:bundle_id => self.id, :value => value, :ms_offset => ms_offset, :pod_id => p.id)
           # Sock.new(:bundle_id => self.id, :value => value, :ms_offset => ms_offset, :pod_id => p.id, :duplicate => (if p.socks.empty? then false else p.socks.last.value == value end))
         end
       end
@@ -259,7 +259,7 @@ class Bundle < ActiveRecord::Base
           if console_log
             puts
             puts '------' * 12
-            puts "Pod.create!(:curnit_id => #{self.workgroup.offering.curnit.id}, :uuid => #{uuid}, :rim_name => #{rim_name}, :rim_shape => #{rim_shape})"
+            puts "Pod.create!(:curnit_id => #{self.workgroup.offering.curnit_id}, :uuid => #{uuid}, :rim_name => #{rim_name}, :rim_shape => #{rim_shape})"
             puts '------' * 12
             puts
           end
@@ -271,9 +271,9 @@ class Bundle < ActiveRecord::Base
           ms_offset = sockEntry.attributes["millisecondsOffset"].to_i
           if console_log
             puts
-            puts "Sock.create!(:bundle_id => #{self.id}, \n:value => #{value.length},\n:ms_offset => #{ms_offset}, :pod_id => #{p.id}, :duplicate => #{(if p.socks.empty? then false else p.socks.last.value == value end)})"
+            puts "Sock.create!(:bundle_id => #{self.id}, \n:value => #{value.length},\n:ms_offset => #{ms_offset}, :pod_id => #{p.id})"
           end
-          Sock.create!(:bundle_id => self.id, :value => value, :ms_offset => ms_offset, :pod_id => p.id, :duplicate => (if p.socks.empty? then false else p.socks.last.value == value end))
+          Sock.create!(:bundle_id => self.id, :value => value, :ms_offset => ms_offset, :pod_id => p.id)
           # Sock.new(:bundle_id => self.id, :value => value, :ms_offset => ms_offset, :pod_id => 3, :duplicate => (if p.socks.empty? then false else p.socks.last.value == value end))
         end
       end
