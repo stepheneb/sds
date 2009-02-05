@@ -3,7 +3,8 @@ module PasModelActivityLib
   
   # Create a worksheet based on a model.activity.data sock
   # formats is an array of format objects, [normal, header, multi-line]
-  def create_mad_worksheet(workbook, sock, formats)
+  def create_mad_worksheet(workbook, sock, previous_runs, formats)
+    @all_runs = previous_runs
     ws = workbook.add_worksheet("#{sock.id}")
     cmap = sock.bundle.curnitmap
     
@@ -20,6 +21,8 @@ module PasModelActivityLib
     mads = get_mad(sock)
     
     row_num = -1
+    
+    runs = []
     
     mads.each do |mad|
     
@@ -48,7 +51,8 @@ module PasModelActivityLib
       @i = 0
       max_column_size = 0
       row_num += 1
-      mad['runs'].each do |r|
+      runs = filter_duplicate_runs(mad['runs'])
+      runs.each do |r|
         
         ws.write(row_num, 0, [get_run_info(r).join("\n"), r['trial_number'], r['trial_goal']])
         
@@ -83,6 +87,19 @@ module PasModelActivityLib
       ws.write(row_num += 1, 0, "There was an error rendering the model activity data for this sock entry.")
     end
     end
+    return runs
+  end
+  
+  def filter_duplicate_runs(runs)
+    non_dupe = []
+    runs.each do |r|
+      if ! @all_runs.include?(r)
+        non_dupe << r
+        @all_runs << r
+      end
+    end
+    
+    return non_dupe
   end
 
   def get_mad(sock)
@@ -133,6 +150,7 @@ module PasModelActivityLib
     end
     
     ## then runs and their associated data
+    run_num = 0
     mad.model_activity_modelrun.each do |mr|
       time_hash = { }
       civs = { }
@@ -159,6 +177,7 @@ module PasModelActivityLib
       end
       
       run = {
+        "num" => run_num += 1,
         "start" => ( (mr.start_time && mr.start_time != 0) ? Time.at(Float(mr.start_time)/1000) : "no time"),
         "end"   => ( (mr.end_time && mr.end_time != 0) ? Time.at(Float(mr.end_time)/1000) : "no time"),
         "civs"  => civs,
@@ -182,7 +201,6 @@ module PasModelActivityLib
   end
   
   def get_run_info(r)
-    @i += 1
     begin
       h,m,s,f = DateTime.day_fraction_to_time(DateTime.parse(r['end'].to_s) - DateTime.parse(r['start'].to_s) )
     rescue
@@ -190,7 +208,7 @@ module PasModelActivityLib
       s = -1
     end
     run_data = []
-    run_data << "Run #{@i}"
+    run_data << "Run #{r['num']}"
     run_data << "Start: #{r['start']}"
     run_data << "End: #{r['end']}"
     run_data << ("Duration: " << (h == 0 ? "" : "#{h} hours, " ) << (m == 0 ? "" : "#{m} minutes, ") << (s < 0 ? "unknown" : "#{s} seconds"))

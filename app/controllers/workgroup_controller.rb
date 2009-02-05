@@ -319,9 +319,11 @@ class WorkgroupController < ApplicationController
     end
 
     # Create a worksheet for each mad sock
+    seen_runs = []
     @workgroup.bundles.each do |b|
       b.socks.find_model_activity_datasets.each do |s|
-        create_mad_worksheet(workbook, s, [format, header_format, wrap_format])
+        seen_runs << create_mad_worksheet(workbook, s, seen_runs, [format, header_format, wrap_format])
+        seen_runs.flatten!
       end
     end
     workbook.close
