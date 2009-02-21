@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 81) do
+ActiveRecord::Schema.define(:version => 82) do
 
   create_table "bj_config", :primary_key => "bj_config_id", :force => true do |t|
     t.text "hostname"
@@ -78,6 +78,12 @@ ActiveRecord::Schema.define(:version => 81) do
     t.boolean  "has_data"
     t.datetime "sail_session_modified_time"
     t.datetime "updated_at"
+    t.boolean  "is_otml"
+    t.string   "maven_jnlp_version"
+    t.string   "sds_time"
+    t.string   "sailotrunk_otmlurl"
+    t.string   "jnlp_properties"
+    t.string   "previous_bundle_session_id"
   end
 
   add_index "bundles", ["workgroup_id"], :name => "sds_bundles_workgroup_id_index"
