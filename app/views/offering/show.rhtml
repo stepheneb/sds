@@ -29,7 +29,7 @@
       <td>Report:
         <%= link_to 'html', {:controller => 'workgroup', :action => 'report', :id => w.id}, {:title => "HTML report on the work done by this workgroup."} %>,
         <%= link_to 'xls', {:controller => 'workgroup', :action => 'report_xls', :id => w.id}, {:title => "XLS report on the work done by this workgroup."} %>,
-        <% if PDF_SITE_ROOT %>
+        <% if defined? PDF_SITE_ROOT %>
           <%= link_to 'pdf', "#{PDF_SITE_ROOT}/#{@portal.id}/offering/#{@offering.id}/workgroup/#{w.id}?sdsBaseUrl=#{@sdsBaseUrl}" %> |
         <% end %>
         <%= link_to 'Show', {:controller => 'workgroup', :action => 'show', :id => w.id}, {:title => "Show the raw data returned by this workgroup."} %> | 

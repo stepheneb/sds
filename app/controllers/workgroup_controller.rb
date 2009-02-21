@@ -31,7 +31,15 @@ class WorkgroupController < ApplicationController
       format.xml  { render :xml => @ot_learner_data }
     end
   end
-  
+
+  def bundles
+    respond_to do |format|
+      format.html { render :xml => @workgroup.valid_bundles.asc.to_xml }
+      format.xml  { render :xml => @workgroup.valid_bundles.asc.to_xml }
+    end
+    
+  end
+
   def index
     list
   end

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 80) do
+ActiveRecord::Schema.define(:version => 81) do
 
   create_table "bj_config", :primary_key => "bj_config_id", :force => true do |t|
     t.text "hostname"
@@ -72,6 +72,7 @@ ActiveRecord::Schema.define(:version => 80) do
     t.datetime "sail_session_end_time"
     t.string   "sail_curnit_uuid"
     t.string   "sail_session_uuid"
+    t.boolean  "content_well_formed_xml"
     t.integer  "bundle_content_id"
     t.text     "processing_error"
     t.boolean  "has_data"
@@ -79,8 +80,9 @@ ActiveRecord::Schema.define(:version => 80) do
     t.datetime "updated_at"
   end
 
-  add_index "bundles", ["workgroup_id"], :name => "index_bundles_on_workgroup_id"
-  add_index "bundles", ["workgroup_version"], :name => "index_bundles_on_workgroup_version"
+  add_index "bundles", ["workgroup_id"], :name => "sds_bundles_workgroup_id_index"
+  add_index "bundles", ["workgroup_version"], :name => "sds_bundles_workgroup_version_index"
+  add_index "bundles", ["sail_session_start_time"], :name => "sds_bundles_sail_session_start_time_index"
 
   create_table "config_versions", :force => true do |t|
     t.string   "name"
@@ -104,7 +106,7 @@ ActiveRecord::Schema.define(:version => 80) do
 
   create_table "curnits", :force => true do |t|
     t.integer  "portal_id"
-    t.string   "name",              :limit => 60
+    t.string   "name",              :limit => 60,  :default => "", :null => false
     t.string   "url",               :limit => 256
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -117,7 +119,7 @@ ActiveRecord::Schema.define(:version => 80) do
     t.string   "title"
   end
 
-  add_index "curnits", ["portal_id"], :name => "index_curnits_on_portal_id"
+  add_index "curnits", ["portal_id"], :name => "sds_curnits_portal_id_index"
 
   create_table "errorbundles", :force => true do |t|
     t.integer  "offering_id"
@@ -132,7 +134,7 @@ ActiveRecord::Schema.define(:version => 80) do
 
   create_table "jnlps", :force => true do |t|
     t.integer  "portal_id"
-    t.string   "name",              :limit => 60
+    t.string   "name",              :limit => 60,  :default => "", :null => false
     t.string   "url",               :limit => 256
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -143,7 +145,7 @@ ActiveRecord::Schema.define(:version => 80) do
     t.integer  "config_version_id"
   end
 
-  add_index "jnlps", ["portal_id"], :name => "index_jnlps_on_portal_id"
+  add_index "jnlps", ["portal_id"], :name => "sds_jnlps_portal_id_index"
 
   create_table "log_bundles", :force => true do |t|
     t.integer  "bundle_id"
@@ -154,6 +156,15 @@ ActiveRecord::Schema.define(:version => 80) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "log_bundles", ["bundle_id"], :name => "log_bundles_bundle_id_index"
+  add_index "log_bundles", ["workgroup_id"], :name => "log_bundles_workgroup_id_index"
+  add_index "log_bundles", ["sail_session_uuid"], :name => "log_bundles_sail_session_uuid_index"
+  add_index "log_bundles", ["sail_curnit_uuid"], :name => "log_bundles_sail_curnit_uuid_index"
+  add_index "log_bundles", ["bundle_id"], :name => "index_log_bundles_on_bundle_id"
+  add_index "log_bundles", ["workgroup_id"], :name => "index_log_bundles_on_workgroup_id"
+  add_index "log_bundles", ["sail_session_uuid"], :name => "index_log_bundles_on_sail_session_uuid"
+  add_index "log_bundles", ["sail_curnit_uuid"], :name => "index_log_bundles_on_sail_curnit_uuid"
 
   create_table "notification_listeners", :force => true do |t|
     t.string   "name"
@@ -194,24 +205,24 @@ ActiveRecord::Schema.define(:version => 80) do
     t.integer  "portal_id"
     t.integer  "curnit_id"
     t.integer  "jnlp_id"
-    t.string   "name",           :limit => 60
+    t.string   "name",           :limit => 60, :default => "", :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "open_offering"
     t.datetime "close_offering"
   end
 
-  add_index "offerings", ["portal_id"], :name => "index_offerings_on_portal_id"
-  add_index "offerings", ["curnit_id"], :name => "index_offerings_on_curnit_id"
-  add_index "offerings", ["jnlp_id"], :name => "index_offerings_on_jnlp_id"
+  add_index "offerings", ["portal_id"], :name => "sds_offerings_portal_id_index"
+  add_index "offerings", ["curnit_id"], :name => "sds_offerings_curnit_id_index"
+  add_index "offerings", ["jnlp_id"], :name => "sds_offerings_jnlp_id_index"
 
   create_table "offerings_attributes", :force => true do |t|
     t.integer "offering_id"
-    t.text    "name"
+    t.text    "name",        :null => false
     t.text    "value"
   end
 
-  add_index "offerings_attributes", ["offering_id"], :name => "index_offerings_attributes_on_offering_id"
+  add_index "offerings_attributes", ["offering_id"], :name => "sds_offerings_attributes_offering_id_index"
 
   create_table "pas_computational_input_values", :force => true do |t|
     t.integer "model_activity_modelrun_id"
@@ -241,7 +252,7 @@ ActiveRecord::Schema.define(:version => 80) do
     t.string  "text"
   end
 
-  add_index "pas_findings", ["model_activity_dataset_id"], :name => "index_pas_findings_on_model_activity_dataset_id"
+  add_index "pas_findings", ["model_activity_dataset_id"], :name => "sds_pas_findings_model_activity_dataset_id_index"
 
   create_table "pas_model_activity_datasets", :force => true do |t|
     t.integer  "sock_id"
@@ -302,18 +313,18 @@ ActiveRecord::Schema.define(:version => 80) do
     t.datetime "updated_at"
   end
 
-  add_index "pods", ["curnit_id"], :name => "index_pods_on_curnit_id"
-  add_index "pods", ["uuid"], :name => "index_pods_on_uuid"
-  add_index "pods", ["rim_name"], :name => "index_pods_on_rim_name"
+  add_index "pods", ["curnit_id"], :name => "sds_pods_curnit_id_index"
+  add_index "pods", ["uuid"], :name => "sds_pods_uuid_index"
+  add_index "pods", ["rim_name"], :name => "sds_pods_rim_name_index"
 
   create_table "portal_urls", :force => true do |t|
     t.integer "portal_id"
-    t.string  "name",      :limit => 60
-    t.string  "url",       :limit => 120
+    t.string  "name",      :limit => 60,  :default => "", :null => false
+    t.string  "url",       :limit => 120, :default => "", :null => false
   end
 
   create_table "portals", :force => true do |t|
-    t.string   "name"
+    t.string   "name",               :default => "", :null => false
     t.boolean  "use_authentication"
     t.string   "auth_username"
     t.string   "auth_password"
@@ -346,9 +357,9 @@ ActiveRecord::Schema.define(:version => 80) do
 
   create_table "sail_users", :force => true do |t|
     t.integer  "portal_id"
-    t.string   "first_name", :limit => 60
-    t.string   "last_name",  :limit => 60
-    t.string   "uuid",       :limit => 36
+    t.string   "first_name", :limit => 60, :default => "", :null => false
+    t.string   "last_name",  :limit => 60, :default => "", :null => false
+    t.string   "uuid",       :limit => 36, :default => "", :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -359,7 +370,7 @@ ActiveRecord::Schema.define(:version => 80) do
     t.datetime "updated_at"
   end
 
-  add_index "sessions", ["session_id"], :name => "index_sessions_on_session_id"
+  add_index "sessions", ["session_id"], :name => "sds_sessions_session_id_index"
 
   create_table "socks", :force => true do |t|
     t.datetime "created_at"
@@ -371,8 +382,8 @@ ActiveRecord::Schema.define(:version => 80) do
     t.datetime "updated_at"
   end
 
-  add_index "socks", ["bundle_id"], :name => "index_socks_on_bundle_id"
-  add_index "socks", ["pod_id"], :name => "index_socks_on_pod_id"
+  add_index "socks", ["bundle_id"], :name => "sds_socks_bundle_id_index"
+  add_index "socks", ["pod_id"], :name => "sds_socks_pod_id_index"
 
   create_table "users", :force => true do |t|
     t.string   "login"
@@ -393,24 +404,24 @@ ActiveRecord::Schema.define(:version => 80) do
 
   create_table "workgroup_memberships", :force => true do |t|
     t.integer "sail_user_id"
-    t.integer "workgroup_id"
-    t.integer "version"
+    t.integer "workgroup_id", :default => 0, :null => false
+    t.integer "version",      :default => 0, :null => false
   end
 
-  add_index "workgroup_memberships", ["sail_user_id"], :name => "index_workgroup_memberships_on_sail_user_id"
-  add_index "workgroup_memberships", ["workgroup_id"], :name => "index_workgroup_memberships_on_workgroup_id"
+  add_index "workgroup_memberships", ["sail_user_id"], :name => "sds_workgroup_memberships_user_id_index"
+  add_index "workgroup_memberships", ["workgroup_id"], :name => "sds_workgroup_memberships_workgroup_id_index"
 
   create_table "workgroups", :force => true do |t|
     t.integer  "portal_id"
     t.integer  "offering_id"
-    t.string   "name",        :limit => 60
-    t.string   "uuid",        :limit => 36
-    t.integer  "version"
+    t.string   "name",        :limit => 60, :default => "", :null => false
+    t.string   "uuid",        :limit => 36, :default => "", :null => false
+    t.integer  "version",                   :default => 0,  :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "workgroups", ["offering_id"], :name => "index_workgroups_on_offering_id"
-  add_index "workgroups", ["portal_id"], :name => "index_workgroups_on_portal_id"
+  add_index "workgroups", ["offering_id"], :name => "sds_workgroups_offering_id_index"
+  add_index "workgroups", ["portal_id"], :name => "sds_workgroups_portal_id_index"
 
 end

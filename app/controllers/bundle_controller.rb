@@ -26,6 +26,18 @@ class BundleController < ApplicationController
 
   public
   
+  def ot_learner_data
+    if @bundle.socks.count > 0
+      @ot_learner_data = @bundle.bundle_content.ot_learner_data
+    else
+      @ot_learner_data =  @bundle.workgroup.blank_ot_learner_data
+    end
+    respond_to do |format|
+      format.html { render :xml => @ot_learner_data }
+      format.xml  { render :xml => @ot_learner_data }
+    end
+  end
+
   def bundle
     if @bundle
       if request.put? and (request.env['CONTENT_TYPE'] == "application/xml")
@@ -48,7 +60,12 @@ class BundleController < ApplicationController
         end
       elsif request.get?
         response.headers["Content-Type"] = "text/xml"
-        render :text => @bundle.bundle_content.content, :layout => false
+        preamble = '<?xml version="1.0" encoding="UTF-8"?>' + "\n"
+          '<sailuserdata:EPortfolio xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:sailuserdata="sailuserdata">' + "\n"
+        respond_to do |format|
+          format.html { render :xml => (preamble + @bundle.bundle_content.content), :layout => false }
+          format.xml  { render :xml => (preamble + @bundle.bundle_content.content), :layout => false }
+        end
       else
         render(:text => "Forbidden: request not allowed. Only PUT and GET requests are allowed.", :status => 403) # Forbidden
       end

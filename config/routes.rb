@@ -55,6 +55,8 @@ ActionController::Routing::Routes.draw do |map|
 # direct bundle manipulation
 
   map.resources :bundle_contents, :path_prefix => '/:pid', :member => { :ot_learner_data => :get }
+
+  map.resources :bundles, :controller => 'bundle', :path_prefix => '/:pid', :member => { :ot_learner_data => :get }
   
   map.bundle ':pid/bundle/:id', :controller => 'bundle', :action => 'bundle'
   map.formatted_bundle ':pid/bundle/:id.:format', :controller => 'bundle', :action => 'bundle'
@@ -131,6 +133,7 @@ ActionController::Routing::Routes.draw do |map|
   map.connect ':pid/workgroup/:id', :controller => 'workgroup', :action => 'show'
 
   map.resources :workgroups, :controller => 'workgroup', :path_prefix => '/:pid', :member => { :ot_learner_data => :get }
+  map.resources :workgroups, :controller => 'workgroup', :path_prefix => '/:pid', :member => { :bundles => :get }
 
 # sail_user
 
