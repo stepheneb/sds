@@ -33,6 +33,7 @@ require 'sds_init'
 require 'uuidtools'
 require 'b64'
 require 'notifier'
+require 'process_logger'
 
 require "math/statistics"
 class Array

@@ -565,7 +565,37 @@ post_data(@url, hash)
   end
 
   namespace :utils do
-  
+    require 'nokogiri'
+    desc "populate the bundle launch property attributes added in migration 082"
+    task :populate_the_bundle_launch_property_attributes => :environment do
+      include ProcessLogger
+      bundle_count = Bundle.count
+      puts "\nProcessing BundleContent from #{bundle_count} Bundles to generate bundle launch property attributes added in migration 082."
+      offset = 0
+      limit = 1000
+      bundles = Bundle.find(:all, :offset => offset, :limit => limit)
+      while bundles.length > 0 do
+        puts "\n\nProcessing: #{offset+1}..#{offset+limit} out of #{bundle_count}; process memory: #{ProcessLogger::process_memory/1024} MB\n"
+        bundles.each do |b|
+          doc = Nokogiri::XML(b.bundle_content.content)
+          b.is_otml = !doc.xpath('//sockParts[@rimName="ot.learner.data"]').empty?
+          lp = {}
+          doc.xpath('//launchProperties').each {|l| lp[l['key']] = l['value']}        
+          b.maven_jnlp_version         = lp['maven.jnlp.version']
+          b.sds_time                   = lp['sds_time']
+          b.sailotrunk_otmlurl         = lp['sailotrunk.otmlurl']
+          b.maven_jnlp_version         = lp['maven.jnlp.version']
+          b.jnlp_properties            = lp['jnlp_properties']
+          b.previous_bundle_session_id = lp['previous.bundle.session.id']
+          b.save
+          print '.'
+        end
+        offset += limit
+        GC.start
+        bundles = Bundle.find(:all, :offset => offset, :limit => limit)
+      end
+    end
+    
     desc "display the cache path"
     task :path => :environment do
       puts SdsCache.instance.path
