@@ -5,8 +5,19 @@ homepage_url = @controller.url_for(:controller => 'offering', :action => 'show',
 url_params_hash = request.query_parameters             # this is a hack because I can't delete hash values from the
 url_params_hash.delete('jnlp_filename')   # request.query_parameters hash (should be done in offering_controller)
 extra_properties = hash_to_url_params(url_params_hash)
-config_url =   @controller.url_for(:controller => "offering", :action => "config", :id => @offering.id, 
-  :wid => @workgroup.id, :version => @workgroup.version, :savedata => @savedata, :only_path => false, :nobundles => @nobundles).to_s
+if @direct_bundle
+  config_url =   @controller.url_for(:controller => "offering", :action => "config", :id => @offering.id, 
+    :wid => @workgroup.id, :version => @workgroup.version, :savedata => nil, :only_path => false, :nobundles => true,
+    :direct_bundle => true, :bid => @bundle_id).to_s
+else
+  config_url =   @controller.url_for(:controller => "offering", :action => "config", :id => @offering.id, 
+    :wid => @workgroup.id, :version => @workgroup.version, :savedata => @savedata, :only_path => false, :nobundles => @nobundles).to_s
+end
+if !extra_properties.blank?
+  config_url = config_url + '?' + extra_properties.to_s
+end
+
+
 if !extra_properties.blank?
   config_url = config_url + '?' + extra_properties.to_s
 end

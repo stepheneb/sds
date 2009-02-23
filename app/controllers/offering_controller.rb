@@ -150,6 +150,9 @@ class OfferingController < ApplicationController
       end
       @savedata = params[:savedata]
       @nobundles = params[:nobundles]
+      if @direct_bundle = params[:direct_bundle]
+        @bundle_id = params[:bid]
+      end
       # need last mod?
       response.headers["Last-Modified"] = @jnlp.last_modified.httpdate
       response.headers["Content-Type"] = "application/x-java-jnlp-file"

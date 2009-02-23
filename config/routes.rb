@@ -76,6 +76,8 @@ ActionController::Routing::Routes.draw do |map|
   map.connect ':pid/offering/:id/jnlp/user/:uid/nobundles', :controller => 'offering', :action => 'jnlp', :type => 'user', :savedata => true, :nobundles => true
   map.connect ':pid/offering/:id/jnlp/user/:uid/view/nobundles', :controller => 'offering', :action => 'jnlp', :type => 'user', :savedata => nil, :nobundles => true
   map.connect ':pid/offering/:id/jnlp/workgroup/:wid/nobundles', :controller => 'offering', :action => 'jnlp', :type => 'workgroup', :savedata => true, :nobundles => true
+
+  map.connect ':pid/offering/:id/jnlp/:wid/bundle/:bid', :controller => 'offering', :action => 'jnlp', :type => 'workgroup', :savedata => nil, :nobundles => nil, :direct_bundle => true 
   
   # config routes
   map.connect ':pid/offering/:id/config/:wid/:version', :controller => 'offering', :action => 'config', :savedata => true, :nobundles => nil
