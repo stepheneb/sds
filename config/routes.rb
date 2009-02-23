@@ -85,6 +85,8 @@ ActionController::Routing::Routes.draw do |map|
   map.connect ':pid/offering/:id/config/:wid/:version/view', :controller => 'offering', :action => 'config', :savedata => nil, :nobundles => nil
   map.connect ':pid/offering/:id/config/:wid/:version/nobundles', :controller => 'offering', :action => 'config', :savedata => true, :nobundles => true
   map.connect ':pid/offering/:id/config/:wid/:version/view/nobundles', :controller => 'offering', :action => 'config', :savedata => nil, :nobundles => true
+
+  map.connect ':pid/offering/:id/config/:wid/:version/bundle/:bid', :controller => 'offering', :action => 'config', :savedata => nil, :nobundles => true, :direct_bundle => true 
   
   #bundle routes
   map.connect ':pid/offering/:id/bundle/:wid/:version', :controller => 'offering', :action => 'bundle', :nobundles => nil
