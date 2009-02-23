@@ -17,11 +17,6 @@ if !extra_properties.blank?
   config_url = config_url + '?' + extra_properties.to_s
 end
 
-
-if !extra_properties.blank?
-  config_url = config_url + '?' + extra_properties.to_s
-end
-
 sds_launcher = "net.sf.sail.emf.launch.EMFLauncher2"
 
 if USE_LIBXML
