@@ -4,7 +4,6 @@ class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
   
   include ProcessLogger
-  
 
   include ExceptionNotifiable if EXCEPTION_NOTIFIER_CONFIGS_EXISTS
   
@@ -195,12 +194,12 @@ private
       redirect_to :controller => 'user', :action => 'login' 
     end
   end
-  
+
   def log_memory_filter
     GC.disable
-    start_mem = ProcessLogger::log_memory("START")
+    start_mem = log_memory("START")
     yield
-    ProcessLogger::log_memory("END", start_mem)
+    log_memory("END", start_mem)
     GC.enable
     GC.start
   end

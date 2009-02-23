@@ -214,14 +214,23 @@ class OfferingController < ApplicationController
         @offering_attributes[k[/(^amp;)*(.*)/, 2]] = v 
       end
 
-      @bundle_get_url = url_for(
-                                  :controller => "offering", 
-                                  :action => "bundle", 
-                                  :id => @offering.id, 
-                                  :wid => @workgroup.id,
-                                  :version => @version,
-                                  :nobundles => @nobundles,
-                                  :only_path => false)
+      if params[:direct_bundle]
+        @bundle_get_url = url_for(
+                                    :controller => "bundle", 
+                                    :action => "bundle", 
+                                    :id => params[:bid], 
+                                    :format => "xml",
+                                    :only_path => false)
+      else
+        @bundle_get_url = url_for(
+                                    :controller => "offering", 
+                                    :action => "bundle", 
+                                    :id => @offering.id, 
+                                    :wid => @workgroup.id,
+                                    :version => @version,
+                                    :nobundles => @nobundles,
+                                    :only_path => false)
+      end
 
       @bundle_post_url = url_for(
                                     :controller => "offering", 
