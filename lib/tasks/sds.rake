@@ -565,6 +565,7 @@ post_data(@url, hash)
   end
 
   namespace :utils do
+    gem 'nokogiri',  '= 1.0.7'
     require 'nokogiri'
     desc "populate the bundle launch property attributes added in migration 082"
     task :populate_the_bundle_launch_property_attributes => :environment do
