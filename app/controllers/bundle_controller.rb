@@ -60,11 +60,9 @@ class BundleController < ApplicationController
         end
       elsif request.get?
         response.headers["Content-Type"] = "text/xml"
-        preamble = '<?xml version="1.0" encoding="UTF-8"?>' + "\n"
-          '<sailuserdata:EPortfolio xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:sailuserdata="sailuserdata">' + "\n"
         respond_to do |format|
-          format.html { render :xml => (preamble + @bundle.bundle_content.content), :layout => false }
-          format.xml  { render :xml => (preamble + @bundle.bundle_content.content), :layout => false }
+          format.html  { render :action => 'bundle', :layout => false }
+          format.xml  { render :action => 'bundle', :layout => false }
         end
       else
         render(:text => "Forbidden: request not allowed. Only PUT and GET requests are allowed.", :status => 403) # Forbidden
