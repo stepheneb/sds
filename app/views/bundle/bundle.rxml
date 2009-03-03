@@ -1,0 +1,9 @@
+xml.instruct! :xml, :version=>"1.0", :encoding=>"UTF-8"
+xml.tag!('sailuserdata:EPortfolio', 'xmi:version' => '2.0',  'xmlns:xmi' => 'http://www.omg.org/XMI',  'xmlns:sailuserdata' => 'sailuserdata') {
+  content = @bundle.bundle_content.content
+  if content.empty?
+    xml.sessionBundles
+  else
+    xml << @bundle.bundle_content.content
+  end
+}
