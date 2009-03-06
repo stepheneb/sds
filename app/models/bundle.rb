@@ -206,8 +206,6 @@ class Bundle < ActiveRecord::Base
     starttime = self.sail_session_start_time
     if ! starttime
       return (self.sail_session_end_time ? self.sail_session_end_time : self.created_at)
-    elsif self.sail_session_end_time && self.sail_session_end_time != self.created_at
-      return self.sail_session_end_time
     else
       if self.socks.count > 0
         modtime = starttime + (self.socks.sort{|a,b| b.ms_offset <=> a.ms_offset}.compact[0].ms_offset/1000)
