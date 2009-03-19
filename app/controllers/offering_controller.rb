@@ -267,7 +267,7 @@ class OfferingController < ApplicationController
     else
       begin
         @nobundles = params[:nobundles]
-        @workgroup = @offering.workgroups.find_by_id(params[:wid])
+        @workgroup = Workgroup.find_by_id(params[:wid])
         @portal = Portal.find(params[:pid])
         if @nobundles
           @bundles = []
