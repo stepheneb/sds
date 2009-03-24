@@ -168,7 +168,7 @@ class OfferingController < ApplicationController
       # jnlp_properties value is a string of key-value pairs in a url query-string format
       # in which the reserved characters 
       if request.query_parameters['jnlp_properties']
-        @jnlp_properties = parse_query_parameters(URI.unescape(request.query_parameters['jnlp_properties']))
+        @jnlp_properties = parse_query_parameters(request.query_parameters['jnlp_properties'])
         request.query_string.gsub!(/[?&]jnlp_properties=[^&]*/, '')
         # if @jnlp_properties.has_key?('otrunk.view.author') && !@jnlp_properties.has_key?('otrunk.view.mode')
         #   @jnlp_properties.merge!({'otrunk.view.mode' => 'authoring'})
