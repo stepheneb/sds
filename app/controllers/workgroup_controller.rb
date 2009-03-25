@@ -184,6 +184,11 @@ class WorkgroupController < ApplicationController
     begin
       @members = @workgroup.sail_users.version(@workgroup.version) # array of SailUser objects
       @show_bundle = params[:show_bundle] ? params[:show_bundle].to_i : nil
+      if params[:make_newest]
+        bundle = Bundle.find(params[:make_newest])
+        bundle.sail_session_modified_time = Time.now.utc
+        bundle.save
+      end
       if request.get?
         respond_to do |wants|
           wants.html

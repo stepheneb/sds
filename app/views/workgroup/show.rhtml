@@ -19,8 +19,12 @@
   <% show_bundle_detail = (b.id == @show_bundle) %>
   <hr />
   <div style="background-color: #BBFFEE; padding: 10px; border: 1px solid gray; margin: 10px; font: 9px sans-serif;">
-    <%= %{#{b.created_at.to_s}<br >Bundle: #{b.id}, size: #{show_bundle_detail ? number_to_human_size(b.bundle_content.content.length) : ""}<br />Workgroup membership version: #{b.workgroup_version.to_s}.<br />}%>
+    <%= b.created_at.to_s %><br />
+    Bundle: <%= b.id %>, size: <%= show_bundle_detail ? number_to_human_size(b.bundle_content.content.length) : "" %><br />
+    Workgroup membership version: <%= b.workgroup_version.to_s %>.<br />
+    <%= link_to 'Make newest', :action => 'show', :confirm => 'Are you sure?', :make_newest => b.id %><br />
     <% if show_bundle_detail %>
+    <%= link_to 'Hide bundle content', :action => 'show', :show_bundle => nil %><br />
     <% Sock.find(:all, :conditions => ['bundle_id = ?', b.id]).each do |s| %>
       <% pod = Pod.find(s.pod_id) -%>
       <%= %{<br />Pod: #{pod.id}: UUID: #{pod.uuid})<br />Rim name: #{pod.rim_name}<br />Sock: #{s.id}#{if s.duplicate then " <em>duplicate</em>" end}, ms offset: #{s.ms_offset}.<br />} %>
