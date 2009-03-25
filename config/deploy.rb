@@ -31,33 +31,34 @@ role :app, "seymour.concord.org"
 role :web, "seymour.concord.org"
 role :db,  "seymour.concord.org", :primary => true
 
-after "deploy:restart", :restart_longrunning
-after "deploy:start", :start_longrunning
-after "deploy:stop", :stop_longrunning
+# no longer need to have the longrunning instance
+# after "deploy:restart", :restart_longrunning
+# after "deploy:start", :start_longrunning
+# after "deploy:stop", :stop_longrunning
 
 task :after_symlink, :roles => :app do
   run "cp -r #{shared_path}/config/* #{release_path}/config"
   run "ln -s #{shared_path}/cache #{release_path}/public/cache"
 end
 
-task :set_longrunning_vars do
-  set :mongrel_conf, "/etc/mongrel_cluster/#{version}-#{application}-longrunning.yml"
-end
-
-task :restart_longrunning, :roles => :app do
-  set_longrunning_vars
-  mongrel::cluster::restart
-end
-
-task :start_longrunning, :roles => :app do
-  set_longrunning_vars
-  mongrel::cluster::start
-end
-
-task :stop_longrunning, :roles => :app do
-  set_longrunning_vars
-  mongrel::cluster::stop
-end
+#task :set_longrunning_vars do
+#  set :mongrel_conf, "/etc/mongrel_cluster/#{version}-#{application}-longrunning.yml"
+#end
+#
+#task :restart_longrunning, :roles => :app do
+#  set_longrunning_vars
+#  mongrel::cluster::restart
+#end
+#
+#task :start_longrunning, :roles => :app do
+#  set_longrunning_vars
+#  mongrel::cluster::start
+#end
+#
+#task :stop_longrunning, :roles => :app do
+#  set_longrunning_vars
+#  mongrel::cluster::stop
+#end
 
 task :production do
   set :version, "production"
