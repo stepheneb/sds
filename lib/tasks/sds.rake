@@ -734,9 +734,6 @@ post_data(@url, hash)
       RemoveSdsFromTableNames.up
     end
 
-  end
-  namespace :legacy do
-
     desc "Process any unprocessed bundles"
     task :process_unprocessed_bundles => :environment do
       puts "Processing any unprocessed bundles..."
@@ -750,6 +747,59 @@ post_data(@url, hash)
         end
       end
     end
+    
+    desc "Replace all OTBlob contents in a bundle with a url pointing to a blob object with those contents"
+    task :remove_blob_content_from_bundles => :environment do
+      puts "Pulling OTBlob contents..."
+			limit = 100
+			offset = Bundle.find(:first, :order => 'id asc').id
+			max_offset = Bundle.find(:first, :order => 'id desc').id
+			size = max_offset - offset
+			puts "max = #{max_offset}"
+			while offset < max_offset
+			  print "\n#{0-((1000*(offset-max_offset))/size)/10.0}: "
+				Bundle.find(:all, :conditions => "id >= #{offset} AND id < #{offset + limit}").each do |b|
+          begin
+            num = b.process_ot_blob_resources(true)
+            print num > 9 ? "+" : (num == 0 ? "." : "#{num}")
+          rescue => e
+            print 'x'
+            $stderr.puts "#{b.id}: #{e}"
+          end
+				end
+				offset += limit
+			end
+			puts ""
+			puts " done."
+    end
+    
+    desc "Replace all OTBlob contents in a sock with a url pointing to a blob object with those contents"
+    task :remove_blob_content_from_socks => :environment do
+      puts "Pulling OTBlob contents..."
+      limit = 100
+      offset = Sock.find(:first, :order => 'id asc').id
+      max_offset = Sock.find(:first, :order => 'id desc').id
+      size = max_offset - offset
+      puts "max = #{max_offset}"
+      while offset < max_offset
+        print "\n#{0-((1000*(offset-max_offset))/size)/10.0}: "
+        Sock.find(:all, :conditions => "id >= #{offset} AND id < #{offset + limit}").each do |s|
+          begin
+            num = s.process_ot_blob_resources
+            print num > 9 ? "+" : (num == 0 ? "." : "#{num}")
+          rescue => e
+            print 'x'
+            $stderr.puts "#{s.id}: #{e}"
+          end
+        end
+        offset += limit
+      end
+      puts ""
+      puts " done."
+    end
+    
+  end
+  namespace :legacy do
 
     desc "Copy bundle.content to new model BundleContent.content (added in migration 45)."
     task :copy_bundle_content_to_related_model => :environment do

@@ -19,13 +19,19 @@
 #
 
 class Bundle < ActiveRecord::Base
-
+	require 'zlib'
+	require 'b64'
+	
+  include ActionController::UrlWriter
 
 #  acts_as_reportable
   belongs_to :workgroup
   belongs_to :bundle_content
+  belongs_to :original_bundle_content, :class_name => "BundleContent"
   
   has_one :log_bundle
+  
+  has_many :blobs
 
   has_many :socks do
     def find_notes
@@ -162,6 +168,11 @@ class Bundle < ActiveRecord::Base
     if parse_content_xml     
       content_well_formed_xml = true
       process_sail_session_attributes
+      begin
+        process_ot_blob_resources
+      rescue => e
+        logger.warn "Couldn't extract blob resources! (#{e})"
+      end
       process_sock_parts(console_log)
       if self.sail_session_modified_time == nil
         self.sail_session_modified_time = calc_modified_time.gmtime
@@ -178,7 +189,7 @@ class Bundle < ActiveRecord::Base
       nil || @@session_bundle = @@xml_parser.parse.root
     else
       begin
-        nil || @@session_bundle = REXML::Document.new(self.bundle_content.content).root.elements["//sessionBundles"]
+        nil || @@session_bundle = REXML::Document.new(self.bundle_content.content).root
       rescue REXML::ParseException
         nil
       end        
@@ -277,6 +288,88 @@ class Bundle < ActiveRecord::Base
       end
     end
   end
+  
+  def copy_bundle(destination_workgroup)
+    # we need to modify the otrunk uuid and OTUser uuid and name in any ot_learner_data before we copy the bundle
+    pid = spawn do
+      # get the bundle contents
+      content_xml = REXML::Document.new(self.bundle_content.content).root
+      # for each ot_learner_data sock entry
+      content_xml.elements.each("//sockParts[@rimName='ot.learner.data']/sockEntries") { |sock|
+        begin
+          #   unpack it
+          ot_learner_data_xml = REXML::Document.new(b64gzip_unpack(sock.attributes["value"])).root
+          #   modify it
+          otrunk_id = UUID.timestamp_create().to_s
+          user_id = UUID.timestamp_create().to_s
+          ot_learner_data_xml.attributes["id"] = otrunk_id
+          ot_learner_data_xml.elements["//otrunk/objects/OTStateRoot/userMap/entry"].attributes["key"] = user_id
+          user_object = ot_learner_data_xml.elements["/otrunk/objects/OTStateRoot/userMap/entry/OTReferenceMap/user/OTUserObject"]
+          user_object.attributes["id"] = user_id
+          user_object.attributes["name"] = destination_workgroup.name
+          #   repack it and save it to the bundle contents
+          sock.attributes["value"] = b64gzip_pack(ot_learner_data_xml.to_s)
+        rescue
+          logger.warn "Couldn't modify sock entry in bundle #{self.id}"
+        end
+      }
+         
+      new_bundle = Bundle.create!(:workgroup_id => destination_workgroup.id, :workgroup_version => destination_workgroup.version, :bc => content_xml.to_s)
+    end
+    wait(pid)
+    # FIXME need to figure out if we were successfull and either return true or thrown an exception
+  end
+  
+  def process_ot_blob_resources(reparse = false)
+    num = 0
+    bc = self.bundle_content
+		raise "No bundle contents!" if ! bc
+    if (reparse || (! @@session_bundle)) 
+      parse_content_xml
+    end
+
+    if USE_LIBXML
+			sdsr = @@session_bundle.find("//sdsReturnAddresses").first
+			raise "Invalid return address!" if ! sdsr
+      host = URI.parse(sdsr.content).host
+      @@session_bundle.find("//sockParts[@rimName='ot.learner.data']/sockEntries").each do |sock|
+        @@xml_parser.string = b64gzip_unpack(sock.attributes["value"])
+        ot_learner_data_xml = @@xml_parser.parse.root
+        ot_learner_data_xml.find("//OTBlob/src").each do |raw|
+          next if (raw.content =~ /blobs\/[0-9]+\/raw\/[0-9a-zA-Z]+$/)
+          num += 1
+          blob = Blob.find_or_create_by_content(:content => raw.content, :bundle => self)
+          raw.content = raw_blob_url(:id => blob, :token => blob.token, :host => host )
+        end
+        sock.attributes["value"] = b64gzip_pack(ot_learner_data_xml.to_s)
+      end
+    else
+      sdsr = @@session_bundle.elements["//sdsReturnAddresses"]
+      raise "Invalid return address!" if ! sdsr
+      host = URI.parse(sdsr.text).host
+      @@session_bundle.elements.each("//sockParts[@rimName='ot.learner.data']/sockEntries") do |sock|
+        #   unpack it
+        ot_learner_data_xml = REXML::Document.new(b64gzip_unpack(sock.attributes["value"])).root
+        #   modify it
+        ot_learner_data_xml.elements.each("//OTBlob/src") do |raw|
+          next if (raw.text =~ /blobs\/[0-9]+\/raw\/[0-9a-zA-Z]+$/)
+          num += 1
+          blob = Blob.find_or_create_by_content(:content => raw.text, :bundle => self)
+          raw.text = raw_blob_url(:id => blob, :token => blob.token, :host => host )
+        end
+        #   repack it and save it to the bundle contents
+        sock.attributes["value"] = b64gzip_pack(ot_learner_data_xml.to_s)
+      end
+    end
+    if num > 0
+      # save the original bundle_content so we can always get the unmodified content
+      self.original_bundle_content = BundleContent.new(:content => bc.content)
+      self.save
+      bc.content = @@session_bundle.to_s
+      bc.save
+    end
+    return num
+  end
     
   # class method returns filesystem path to
   # bundle directory root
@@ -368,5 +461,20 @@ class Bundle < ActiveRecord::Base
     bxml =  REXML::Document.new(self.bundle_content.content).root
     uri = URI.parse(bxml.elements["//sdsReturnAddresses"].text)
     return uri
+  end
+  
+  private
+  
+  def b64gzip_unpack(str)
+    Zlib::GzipReader.new(StringIO.new(B64::B64.decode(str))).read
+  end
+  
+  def b64gzip_pack(str)
+    gzip_string_io = StringIO.new()
+    gzip = Zlib::GzipWriter.new(gzip_string_io)
+    gzip.write(str)
+    gzip.close
+    gzip_string_io.rewind
+    B64::B64.encode(gzip_string_io.string)
   end
 end

@@ -220,8 +220,12 @@ class WorkgroupController < ApplicationController
         bundles = @workgroup.valid_bundles.desc
         if bundles.size > 0
           bundle = bundles[0]
-          new_bundle = Bundle.create!(:workgroup_id => @dest_workgroup.id, :workgroup_version => @dest_workgroup.version, :bc => bundle.bundle_content.content)
-          render(:xml => "", :status => 201)
+          begin
+            bundle.copy_bundle(@dest_workgroup)
+            render(:xml => "<success/>", :status => 201)
+          rescue => e
+            render(:xml => "<xml><error>#{e}</error><backtrace>#{e.backtrace.join("\n")}</backtrace></xml>", :status => 400)
+          end
         else
           render(:xml => "<message>Source workgroup has no valid bundles. No action taken.</message>", :status => 200)
         end

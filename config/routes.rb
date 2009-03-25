@@ -1,4 +1,7 @@
 ActionController::Routing::Routes.draw do |map|
+  map.resources :blobs
+  map.raw_blob "blobs/:id/raw/:token", :controller => "blobs", :action => "raw"
+
   map.resources :notification_types
 
   map.resources :notification_listeners

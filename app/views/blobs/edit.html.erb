@@ -1,0 +1,12 @@
+<h1>Editing blob</h1>
+
+<%= error_messages_for :blob %>
+
+<% form_for(@blob) do |f| %>
+  <p>
+    <%= f.submit "Update" %>
+  </p>
+<% end %>
+
+<%= link_to 'Show', @blob %> |
+<%= link_to 'Back', blobs_path %>

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 81) do
+ActiveRecord::Schema.define(:version => 83) do
 
   create_table "bj_config", :primary_key => "bj_config_id", :force => true do |t|
     t.text "hostname"
@@ -57,6 +57,14 @@ ActiveRecord::Schema.define(:version => 81) do
     t.integer  "exit_status"
   end
 
+  create_table "blobs", :force => true do |t|
+    t.text     "content"
+    t.string   "token"
+    t.integer  "bundle_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "bundle_contents", :force => true do |t|
     t.text     "content"
     t.datetime "created_at"
@@ -78,6 +86,7 @@ ActiveRecord::Schema.define(:version => 81) do
     t.boolean  "has_data"
     t.datetime "sail_session_modified_time"
     t.datetime "updated_at"
+    t.integer  "original_bundle_content_id"
   end
 
   add_index "bundles", ["workgroup_id"], :name => "sds_bundles_workgroup_id_index"
@@ -157,10 +166,6 @@ ActiveRecord::Schema.define(:version => 81) do
     t.datetime "updated_at"
   end
 
-  add_index "log_bundles", ["bundle_id"], :name => "log_bundles_bundle_id_index"
-  add_index "log_bundles", ["workgroup_id"], :name => "log_bundles_workgroup_id_index"
-  add_index "log_bundles", ["sail_session_uuid"], :name => "log_bundles_sail_session_uuid_index"
-  add_index "log_bundles", ["sail_curnit_uuid"], :name => "log_bundles_sail_curnit_uuid_index"
   add_index "log_bundles", ["bundle_id"], :name => "index_log_bundles_on_bundle_id"
   add_index "log_bundles", ["workgroup_id"], :name => "index_log_bundles_on_workgroup_id"
   add_index "log_bundles", ["sail_session_uuid"], :name => "index_log_bundles_on_sail_session_uuid"
