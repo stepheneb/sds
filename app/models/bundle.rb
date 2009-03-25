@@ -333,7 +333,7 @@ class Bundle < ActiveRecord::Base
 			raise "Invalid return address!" if ! sdsr
       host = URI.parse(sdsr.content).host
       @@session_bundle.find("//sockParts[@rimName='ot.learner.data']/sockEntries").each do |sock|
-        @@xml_parser.string = b64gzip_unpack(sock.find("@value").first.value)
+        @@xml_parser.string = b64gzip_unpack(sock["value"])
         ot_learner_data_xml = @@xml_parser.parse.root
         ot_learner_data_xml.find("//OTBlob/src").each do |raw|
           next if (raw.content =~ /blobs\/[0-9]+\/raw\/[0-9a-zA-Z]+$/)
@@ -341,7 +341,9 @@ class Bundle < ActiveRecord::Base
           blob = Blob.find_or_create_by_content(:content => raw.content, :bundle => self)
           raw.content = raw_blob_url(:id => blob, :token => blob.token, :host => host )
         end
-        sock.find("@value").first.value = b64gzip_pack(ot_learner_data_xml.to_s)
+        if num > 0
+          sock["value"] = b64gzip_pack(ot_learner_data_xml.to_s)
+        end
       end
     else
       sdsr = @@session_bundle.elements["//sdsReturnAddresses"]
@@ -358,7 +360,9 @@ class Bundle < ActiveRecord::Base
           raw.text = raw_blob_url(:id => blob, :token => blob.token, :host => host )
         end
         #   repack it and save it to the bundle contents
-        sock.attributes["value"] = b64gzip_pack(ot_learner_data_xml.to_s)
+        if num > 0
+          sock.attributes["value"] = b64gzip_pack(ot_learner_data_xml.to_s)
+        end
       end
     end
     if num > 0
