@@ -120,9 +120,13 @@ class Sock < ActiveRecord::Base
         @@xml_parser.string = b64gzip_unpack(self.value)
         ot_learner_data_xml = @@xml_parser.parse.root
         ot_learner_data_xml.find("//OTBlob/src").each do |raw|
-          next if (raw.content =~ /blobs\/[0-9]+\/raw\/[0-9a-zA-Z]+$/)
+          blob_content = raw.content
+          next if (blob_content =~ /blobs\/[0-9]+\/raw\/[0-9a-zA-Z]+$/)
           num += 1
-          blob = Blob.find_or_create_by_content(:content => raw.content, :bundle => self)
+          if blob_content =~ /^gzb64:/
+            blob_content = b64gzip_unpack(blob_content.sub(/^gzb64:/, ""))
+          end
+          blob = Blob.find_or_create_by_content(:content => blob_content, :bundle => self)
           raw.content = raw_blob_url(:id => blob, :token => blob.token, :host => host )
         end
         if num > 0
@@ -134,9 +138,13 @@ class Sock < ActiveRecord::Base
         ot_learner_data_xml = REXML::Document.new(b64gzip_unpack(self.value)).root
         #   modify it
         ot_learner_data_xml.elements.each("//OTBlob/src") do |raw|
-          next if (raw.text =~ /blobs\/[0-9]+\/raw\/[0-9a-zA-Z]+$/)
+          blob_content = raw.text
+          next if (blob_content =~ /blobs\/[0-9]+\/raw\/[0-9a-zA-Z]+$/)
           num += 1
-          blob = Blob.find_or_create_by_content(:content => raw.text, :bundle => self)
+          if blob_content =~ /^gzb64:/
+            blob_content = b64gzip_unpack(blob_content.sub(/^gzb64:/, ""))
+          end
+          blob = Blob.find_or_create_by_content(:content => blob_content, :bundle => self)
           raw.text = raw_blob_url(:id => blob, :token => blob.token, :host => host )
         end
         if num > 0

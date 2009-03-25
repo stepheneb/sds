@@ -58,7 +58,7 @@ ActiveRecord::Schema.define(:version => 83) do
   end
 
   create_table "blobs", :force => true do |t|
-    t.text     "content"
+    t.binary   "content"
     t.string   "token"
     t.integer  "bundle_id"
     t.datetime "created_at"
@@ -359,6 +359,8 @@ ActiveRecord::Schema.define(:version => 83) do
     t.integer "role_id"
     t.integer "user_id"
   end
+
+  add_index "roles_users", ["role_id", "user_id"], :name => "role_user_index"
 
   create_table "sail_users", :force => true do |t|
     t.integer  "portal_id"
