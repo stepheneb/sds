@@ -341,7 +341,7 @@ class Bundle < ActiveRecord::Base
           blob = Blob.find_or_create_by_content(:content => raw.content, :bundle => self)
           raw.content = raw_blob_url(:id => blob, :token => blob.token, :host => host )
         end
-        sock.attributes["value"] = b64gzip_pack(ot_learner_data_xml.to_s)
+        sock.find("@value").first = b64gzip_pack(ot_learner_data_xml.to_s)
       end
     else
       sdsr = @@session_bundle.elements["//sdsReturnAddresses"]
