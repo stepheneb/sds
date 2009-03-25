@@ -70,19 +70,6 @@ class ApplicationController < ActionController::Base
   
 protected
   
-  class Time
-    class << Time
-      def self.java8601(java_date)
-        Time.xmlschema("#{java_date[0..-3]}:#{java_date[-2..-1]}")
-      end
-  
-      def to_java8601
-        ts = self.getlocal.xmlschema(3)
-        ts[0..-4]+ts[-2..-1]
-      end
-    end
-  end
-  
   def calc_content_length
     response.headers['Content-Length'] = response.body.length
   end

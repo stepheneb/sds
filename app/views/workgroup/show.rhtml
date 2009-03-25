@@ -22,7 +22,7 @@
     <%= b.created_at.to_s %><br />
     Bundle: <%= b.id %>, size: <%= show_bundle_detail ? number_to_human_size(b.bundle_content.content.length) : "" %><br />
     Workgroup membership version: <%= b.workgroup_version.to_s %>.<br />
-    <%= link_to 'Make newest', :action => 'show', :confirm => 'Are you sure?', :make_newest => b.id %><br />
+    <%= link_to 'Make newest', :action => 'show', :make_newest => b.id %><br />
     <% if show_bundle_detail %>
     <%= link_to 'Hide bundle content', :action => 'show', :show_bundle => nil %><br />
     <% Sock.find(:all, :conditions => ['bundle_id = ?', b.id]).each do |s| %>
