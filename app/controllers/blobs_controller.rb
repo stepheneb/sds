@@ -20,7 +20,8 @@ class BlobsController < ApplicationController
     @blob = Blob.find(params[:id])
     
     if @blob && @blob.token == params[:token]
-      send_data(@blob.content, :type => "application/octet-stream", :filename => "file", :disposition => 'inline' )
+      type = params[:mimetype] ? params[:mimetype] : "application/octet-stream"
+      send_data(@blob.content, :type => type, :filename => "file", :disposition => 'inline' )
     else
       render :text => "<error>Forbidden</error>", :status => :forbidden  # Forbidden
     end
