@@ -1,6 +1,6 @@
 if USE_LIBXML
   # gem 'libxml-ruby', '= 0.3.8.4.1'
-  gem 'libxml-ruby', '= 0.5.4'
+  gem 'libxml-ruby', '= 0.9.8'
   require 'xml/libxml'
 else
   require "rexml/document"
@@ -64,6 +64,78 @@ class SdsTime < Time
   def to_java8601
     ts = self.getlocal.xmlschema(3)
     ts[0..-4]+ts[-2..-1]
+  end
+end
+
+class URLResolver
+  include ActionController::UrlWriter
+  
+  def getUrl(method, options)
+    eval("#{method}(options)")
+  end
+end
+
+class SDSUtil
+  
+  if USE_LIBXML 
+    @@xml_parser = XML::Parser.new
+  end
+  
+  @@url_resolver = URLResolver.new
+  
+  def self.extract_blob_resources(params)
+    default_params_hash = {:host => "http://saildataservice.concord.org/", :use_relative_url => false}
+    params.merge!(default_params_hash) {|k,o,n| o}
+    num = 0
+    if USE_LIBXML
+      @@xml_parser.string = b64gzip_unpack(params[:data])
+      ot_learner_data_xml = @@xml_parser.parse.root
+      ot_learner_data_xml.find("//OTBlob/src").each do |raw|
+        blob_content = raw.content
+        next if (blob_content =~ /blobs\/[0-9]+\/raw\/[0-9a-zA-Z]+$/)
+        num += 1
+        if blob_content =~ /^gzb64:/
+          blob_content = b64gzip_unpack(blob_content.sub(/^gzb64:/, ""))
+        end
+        blob = Blob.find_or_create_by_content(:content => blob_content)
+        params[:bundle].blobs << blob
+        raw.content = @@url_resolver.getUrl("raw_blob_url", {:id => blob, :token => blob.token, :host => params[:host], :only_path => params[:use_relative_url]})
+      end
+    else
+      ot_learner_data_xml = REXML::Document.new(b64gzip_unpack(params[:data])).root
+      #   modify it
+      ot_learner_data_xml.elements.each("//OTBlob/src") do |raw|
+        blob_content = raw.text
+        next if (blob_content =~ /blobs\/[0-9]+\/raw\/[0-9a-zA-Z]+$/)
+        num += 1
+        if blob_content =~ /^gzb64:/
+          blob_content = b64gzip_unpack(blob_content.sub(/^gzb64:/, ""))
+        end
+        blob = Blob.find_or_create_by_content(:content => blob_content)
+        params[:bundle].blobs << blob
+        raw.text = @@url_resolver.getUrl("raw_blob_url", {:id => blob, :token => blob.token, :host => params[:host], :only_path => params[:use_relative_url]})
+      end
+    end
+    
+    #   repack it and save it to the bundle contents
+    if num > 0
+      b64gzip_sock_data = b64gzip_pack(ot_learner_data_xml.to_s)
+      return b64gzip_sock_data
+    end
+    return nil
+  end
+  
+  def self.b64gzip_unpack(str)
+    Zlib::GzipReader.new(StringIO.new(B64::B64.decode(str))).read
+  end
+  
+  def self.b64gzip_pack(str)
+    gzip_string_io = StringIO.new()
+    gzip = Zlib::GzipWriter.new(gzip_string_io)
+    gzip.write(str)
+    gzip.close
+    gzip_string_io.rewind
+    B64::B64.encode(gzip_string_io.string)
   end
 end
 
