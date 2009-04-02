@@ -107,19 +107,23 @@ class Sock < ActiveRecord::Base
     end
   end
   
-  def process_ot_blob_resources
+  def process_ot_blob_resources(host = nil)
+    update_url = false
     if (self.pod.rim_name != "ot.learner.data")
       return 0
     end
     num = 0
-    host = nil
-    uri = self.bundle.sds_return_address
-    if uri
-      host = uri.host
+    if ! host
+      uri = self.bundle.sds_return_address
+      if uri
+        host = uri.host
+      end
+    else
+      update_url = true
     end
     bundle = self.bundle
     begin
-      new_val = SDSUtil.extract_blob_resources(:data => self.value, :bundle => bundle, :host => host, :use_relative_url => bundle.can_blobs_use_relative_urls)
+      new_val = SDSUtil.extract_blob_resources(:data => self.value, :bundle => bundle, :host => host, :use_relative_url => bundle.can_blobs_use_relative_urls, :update_url => update_url)
       if new_val
         self.value = new_val
         self.save

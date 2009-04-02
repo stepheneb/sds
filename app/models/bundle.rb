@@ -318,33 +318,36 @@ class Bundle < ActiveRecord::Base
     # FIXME need to figure out if we were successfull and either return true or thrown an exception
   end
   
-  def process_ot_blob_resources(reparse = false)
+  def process_ot_blob_resources(args)
+    options = {:host => nil, :reparse => false}
+    options.merge!(args) {|k,o,n| n}
     num = 0
     bc = self.bundle_content
 		raise "No bundle contents!" if ! bc
-    if (reparse || (! @@session_bundle)) 
+    if (options[:reparse] || (! @@session_bundle)) 
       parse_content_xml
     end
     
     use_relative_url = can_blobs_use_relative_urls(false)
-    
+    update_url = false
+    if ! options[:host]
+      sdsr = sds_return_address(false)
+      raise "Invalid return address!" if ! sdsr
+      options[:host] = sdsr.host
+    else
+      update_url = true
+    end
     if USE_LIBXML
-			sdsr = @@session_bundle.find("//sdsReturnAddresses").first
-			raise "Invalid return address!" if ! sdsr
-      host = URI.parse(sdsr.content).host
       @@session_bundle.find("//sockParts[@rimName='ot.learner.data']/sockEntries").each do |sock|
-        new_value = SDSUtil.extract_blob_resources(:data => sock["value"], :host => host, :bundle => self, :use_relative_url => use_relative_url)
+        new_value = SDSUtil.extract_blob_resources(:data => sock["value"], :host => options[:host], :bundle => self, :use_relative_url => use_relative_url, :update_url => update_url)
         if new_value
           num += 1
           sock["value"] = new_value
         end
       end
     else
-      sdsr = sds_return_address(false)
-      raise "Invalid return address!" if ! sdsr
-      host = sdsr.host
       @@session_bundle.elements.each("//sockParts[@rimName='ot.learner.data']/sockEntries") do |sock|
-        new_value = SDSUtil.extract_blob_resources(:data => sock.attributes["value"], :host => host, :bundle => self, :use_relative_url => use_relative_url)
+        new_value = SDSUtil.extract_blob_resources(:data => sock.attributes["value"], :host => options[:host], :bundle => self, :use_relative_url => use_relative_url, :update_url => update_url)
         if new_value
           num += 1
           sock.attributes["value"] = new_value

@@ -1,5 +1,5 @@
 class Blob < ActiveRecord::Base
-  has_and_belongs_to_many :bundle
+  has_and_belongs_to_many :bundles
   
   before_create :create_token
   
