@@ -1,4 +1,4 @@
-ws namespace :sds do
+namespace :sds do
 #  require 'lib/sds_init.rb'
 
   namespace :setup do
