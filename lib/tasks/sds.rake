@@ -1,4 +1,4 @@
-namespace :sds do
+ws namespace :sds do
 #  require 'lib/sds_init.rb'
 
   namespace :setup do
@@ -750,6 +750,14 @@ post_data(@url, hash)
     
     desc "Replace all OTBlob contents in a bundle with a url pointing to a blob object with those contents"
     task :remove_blob_content_from_bundles => :environment do
+      host = nil
+      if ! ENV['HOST']
+        puts "If you want to set the blob urls to a particular host, set the HOST environment variable to the host address."
+        puts "e.g. HOST=http://foo.bar.com/ rake sds:utils:remove_blob_content_from_bundles"
+      else
+        host = URI.parse(ENV['HOST']).host
+      end
+      
       puts "Pulling OTBlob contents..."
 			limit = 100
 			offset = Bundle.find(:first, :order => 'id asc').id
@@ -760,7 +768,7 @@ post_data(@url, hash)
 			  print "\n#{0-((1000*(offset-max_offset))/size)/10.0}: "
 				Bundle.find(:all, :conditions => "id >= #{offset} AND id < #{offset + limit}").each do |b|
           begin
-            num = b.process_ot_blob_resources({:reparse => true})
+            num = b.process_ot_blob_resources({:host => host, :reparse => true})
             print num > 9 ? "+" : (num == 0 ? "." : "#{num}")
           rescue => e
             print 'x'
@@ -775,6 +783,14 @@ post_data(@url, hash)
     
     desc "Replace all OTBlob contents in a sock with a url pointing to a blob object with those contents"
     task :remove_blob_content_from_socks => :environment do
+      host = nil
+      if ! ENV['HOST']
+        puts "If you want to set the blob urls to a particular host, set the HOST environment variable to the host address."
+        puts "e.g. HOST=http://foo.bar.com/ rake sds:utils:remove_blob_content_from_socks"
+      else
+        host = URI.parse(ENV['HOST']).host
+      end
+      
       puts "Pulling OTBlob contents..."
       limit = 100
       offset = Sock.find(:first, :order => 'id asc').id
@@ -787,7 +803,7 @@ post_data(@url, hash)
 				num = 0
         Sock.find(:all, :conditions => "id >= #{offset} AND id < #{offset + limit}").each do |s|
           begin
-            num += s.process_ot_blob_resources
+            num += s.process_ot_blob_resources(host)
             # print num > 9 ? "+" : (num == 0 ? "." : "#{num}")
           rescue => e
             # print 'x'
@@ -824,7 +840,7 @@ post_data(@url, hash)
           b.bundles.each do |b|
             next if seen_bundles.include?(b.id)
             begin
-              b.process_ot_blob_resources({:host => host})
+              b.process_ot_blob_resources({:host => host, :reparse => true})
             rescue
             end
             b.socks.each do |s|
