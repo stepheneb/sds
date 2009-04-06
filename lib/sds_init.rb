@@ -76,6 +76,8 @@ class URLResolver
 end
 
 class SDSUtil
+  @@gzb64_regexp = /gzb64:([^<]+)/m
+  @@blob_url_regexp = /http[^"'<]+\/blobs\/([0-9]+)\/raw\/([0-9a-zA-Z]+)/
   
   if USE_LIBXML 
     @@xml_parser = XML::Parser.new
@@ -87,41 +89,18 @@ class SDSUtil
     default_params_hash = {:host => "http://saildataservice.concord.org/", :use_relative_url => false, :update_url => false}
     args.merge!(default_params_hash) {|k,o,n| o}
     num = 0
-    if USE_LIBXML
-      @@xml_parser.string = b64gzip_unpack(args[:data])
-      ot_learner_data_xml = @@xml_parser.parse.root
-      ot_learner_data_xml.find("//OTBlob/src").each do |raw|
-        blob_content = raw.content
-        if (blob_content =~ /blobs\/([0-9]+)\/raw\/([0-9a-zA-Z]+)$/)
-          if args[:update_url]
-            num += 1
-            raw.content = @@url_resolver.getUrl("raw_blob_url", {:id => $1, :token => $2, :host => args[:host], :only_path => args[:use_relative_url]})
-          end
-          next
-        end
+    text = b64gzip_unpack(args[:data])
+    if args[:update_url] && ! args[:use_relative_url]
+      # first find all the processed blobs, and re-point their urls
+      while (regexp_text.sub!(@@blob_url_regexp, @@url_resolver.getUrl("raw_blob_url", {:id => $1, :token => $2, :host => args[:host], :only_path => args[:use_relative_url]})))
         num += 1
-        if blob_content =~ /^gzb64:/
-          blob_content = b64gzip_unpack(blob_content.sub(/^gzb64:/, ""))
-        end
-        blob = Blob.find_or_create_by_content(:content => blob_content)
-        args[:bundle].blobs << blob
-        raw.content = @@url_resolver.getUrl("raw_blob_url", {:id => blob, :token => blob.token, :host => args[:host], :only_path => args[:use_relative_url]})
-      end
-    else
-      ot_learner_data_xml = REXML::Document.new(b64gzip_unpack(args[:data])).root
-      #   modify it
-      ot_learner_data_xml.elements.each("//OTBlob/src") do |raw|
-        blob_content = raw.text
-        next if (blob_content =~ /blobs\/[0-9]+\/raw\/[0-9a-zA-Z]+$/)
-        num += 1
-        if blob_content =~ /^gzb64:/
-          blob_content = b64gzip_unpack(blob_content.sub(/^gzb64:/, ""))
-        end
-        blob = Blob.find_or_create_by_content(:content => blob_content)
-        args[:bundle].blobs << blob
-        raw.text = @@url_resolver.getUrl("raw_blob_url", {:id => blob, :token => blob.token, :host => args[:host], :only_path => args[:use_relative_url]})
       end
     end
+    
+    # find all the unprocessed blobs, and extract them
+    while (regexp_text.sub!(@@gzb64_regexp, @@url_resolver.getUrl("raw_blob_url", {:id => blob = Blob.find_or_create_by_content(:content => b64gzip_unpack($1)), :token => blob.token, :host => args[:host], :only_path => args[:use_relative_url]}))) do
+      args[:bundle].blobs << blob
+      num += 1    end
     
     #   repack it and save it to the bundle contents
     if num > 0
