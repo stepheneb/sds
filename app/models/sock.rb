@@ -93,7 +93,7 @@ class Sock < ActiveRecord::Base
         if ((! ignore_file) && File.exist?(self.path + self.filename_decoded))
           File.read(self.path + self.filename_decoded)
         else
-          b64gzip_unpack(self.value)
+          SDSUtil.b64gzip_unpack(self.value)
         end
       else
         ""
