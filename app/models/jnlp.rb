@@ -54,7 +54,7 @@ class Jnlp < ActiveRecord::Base
           self.last_modified = f.last_modified
           self.filename = File.basename(self.url)
         end
-      rescue SocketError, OpenURI::HTTPError, OpenSSL::SSL::SSLError, Timeout::Error => e
+      rescue Exception => e
         if RAILS_ENV == 'production'
           additional_info = ''
         else
@@ -86,6 +86,8 @@ class Jnlp < ActiveRecord::Base
         "network unavailable"
       rescue Timeout::Error
         "network timeout"
+      rescue Exception
+        "exception"
       end
     end
   end
