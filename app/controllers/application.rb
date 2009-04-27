@@ -2,6 +2,9 @@
 # Likewise, all the methods added will be available for all controllers.
 class ApplicationController < ActionController::Base
   helper :all # include all helpers, all the time
+  
+  include ProcessLogger
+  
 
   include ExceptionNotifiable if EXCEPTION_NOTIFIER_CONFIGS_EXISTS
   
@@ -184,26 +187,13 @@ private
   
   def log_memory_filter
     GC.disable
-    start_mem = log_memory("START")
+    start_mem = ProcessLogger::log_memory("START")
     yield
-    log_memory("END", start_mem)
+    ProcessLogger::log_memory("END", start_mem)
     GC.enable
     GC.start
   end
 
-  def log_memory(cust, smem = 0)
-    pid = Process.pid
-    str = `ps -o vsz -p #{pid}`
-    req = request.env["REQUEST_URI"]
-    mem = str[/[0-9]+/]
-    if smem == 0
-      logger.info("#{cust} -- PID: #{pid} -- MEM: #{mem} -- METHOD: #{request.method.to_s} -- REQ: #{req}")
-    else
-      logger.info("#{cust} -- PID: #{pid} -- MEM: #{mem} -- DELTA: #{mem.to_i - smem.to_i} -- METHOD: #{request.method.to_s} -- REQ: #{req}")
-    end
-    return mem
-  end
- 
  # copied from rails/actionpack/lib/action_controller/request.rb
  # rails 2 made this method private!
  def parse_query_parameters(query_string)
