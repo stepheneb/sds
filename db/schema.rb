@@ -98,6 +98,7 @@ ActiveRecord::Schema.define(:version => 85) do
     t.string   "sailotrunk_otmlurl"
     t.string   "jnlp_properties"
     t.string   "previous_bundle_session_id"
+    t.integer  "original_bundle_content_id"
   end
 
   add_index "bundles", ["workgroup_id"], :name => "sds_bundles_workgroup_id_index"
@@ -370,8 +371,6 @@ ActiveRecord::Schema.define(:version => 85) do
     t.integer "role_id"
     t.integer "user_id"
   end
-
-  add_index "roles_users", ["role_id", "user_id"], :name => "role_user_index"
 
   create_table "sail_users", :force => true do |t|
     t.integer  "portal_id"
