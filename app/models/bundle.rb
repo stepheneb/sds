@@ -21,8 +21,6 @@
 class Bundle < ActiveRecord::Base
 	require 'zlib'
 	require 'b64'
-	
-  include ActionController::UrlWriter
 
 #  acts_as_reportable
   belongs_to :workgroup
@@ -31,7 +29,7 @@ class Bundle < ActiveRecord::Base
   
   has_one :log_bundle
   
-  has_many :blobs
+  has_and_belongs_to_many :blobs
 
   has_many :socks do
     def find_notes
@@ -192,7 +190,7 @@ class Bundle < ActiveRecord::Base
         nil || @@session_bundle = REXML::Document.new(self.bundle_content.content).root
       rescue REXML::ParseException
         nil
-      end        
+      end
     end
   end
   
@@ -320,56 +318,39 @@ class Bundle < ActiveRecord::Base
     # FIXME need to figure out if we were successfull and either return true or thrown an exception
   end
   
-  def process_ot_blob_resources(reparse = false)
+  def process_ot_blob_resources(args)
+    options = {:host => nil, :reparse => false}
+    options.merge!(args) {|k,o,n| n}
     num = 0
     bc = self.bundle_content
 		raise "No bundle contents!" if ! bc
-    if (reparse || (! @@session_bundle)) 
+    if (options[:reparse] || (! @@session_bundle)) 
       parse_content_xml
     end
-
+    
+    use_relative_url = can_blobs_use_relative_urls(false)
+    update_url = false
+    if ! options[:host]
+      sdsr = sds_return_address(false)
+      raise "Invalid return address!" if ! sdsr
+      options[:host] = sdsr.host
+    else
+      update_url = true
+    end
     if USE_LIBXML
-			sdsr = @@session_bundle.find("//sdsReturnAddresses").first
-			raise "Invalid return address!" if ! sdsr
-      host = URI.parse(sdsr.content).host
       @@session_bundle.find("//sockParts[@rimName='ot.learner.data']/sockEntries").each do |sock|
-        @@xml_parser.string = b64gzip_unpack(sock["value"])
-        ot_learner_data_xml = @@xml_parser.parse.root
-        ot_learner_data_xml.find("//OTBlob/src").each do |raw|
-          blob_content = raw.content
-          next if (blob_content =~ /blobs\/[0-9]+\/raw\/[0-9a-zA-Z]+$/)
+        new_value = SDSUtil.extract_blob_resources(:data => sock["value"], :host => options[:host], :bundle => self, :use_relative_url => use_relative_url, :update_url => update_url)
+        if new_value
           num += 1
-          if blob_content =~ /^gzb64:/
-            blob_content = b64gzip_unpack(blob_content.sub(/^gzb64:/, ""))
-          end
-          blob = Blob.find_or_create_by_content(:content => blob_content, :bundle => self)
-          raw.content = raw_blob_url(:id => blob, :token => blob.token, :host => host )
-        end
-        if num > 0
-          sock["value"] = b64gzip_pack(ot_learner_data_xml.to_s)
+          sock["value"] = new_value
         end
       end
     else
-      sdsr = @@session_bundle.elements["//sdsReturnAddresses"]
-      raise "Invalid return address!" if ! sdsr
-      host = URI.parse(sdsr.text).host
       @@session_bundle.elements.each("//sockParts[@rimName='ot.learner.data']/sockEntries") do |sock|
-        #   unpack it
-        ot_learner_data_xml = REXML::Document.new(b64gzip_unpack(sock.attributes["value"])).root
-        #   modify it
-        ot_learner_data_xml.elements.each("//OTBlob/src") do |raw|
-          blob_content = raw.text
-          next if (blob_content =~ /blobs\/[0-9]+\/raw\/[0-9a-zA-Z]+$/)
+        new_value = SDSUtil.extract_blob_resources(:data => sock.attributes["value"], :host => options[:host], :bundle => self, :use_relative_url => use_relative_url, :update_url => update_url)
+        if new_value
           num += 1
-          if blob_content =~ /^gzb64:/
-            blob_content = b64gzip_unpack(blob_content.sub(/^gzb64:/, ""))
-          end
-          blob = Blob.find_or_create_by_content(:content => blob_content, :bundle => self)
-          raw.text = raw_blob_url(:id => blob, :token => blob.token, :host => host )
-        end
-        #   repack it and save it to the bundle contents
-        if num > 0
-          sock.attributes["value"] = b64gzip_pack(ot_learner_data_xml.to_s)
+          sock.attributes["value"] = new_value
         end
       end
     end
@@ -469,24 +450,60 @@ class Bundle < ActiveRecord::Base
     data
   end
   
-  def sds_return_address
-    bxml =  REXML::Document.new(self.bundle_content.content).root
-    uri = URI.parse(bxml.elements["//sdsReturnAddresses"].text)
-    return uri
+  def sds_return_address(reload = true)
+    if reload
+      parse_content_xml
+    end
+    str_url = nil
+    if USE_LIBXML
+      sdsr = @@session_bundle.find("//sdsReturnAddresses").first
+      if sdsr
+        str_url = sdsr.content
+      else
+        return nil
+      end
+    else
+      sdsr = @@session_bundle.elements["//sdsReturnAddresses"]
+      if sdsr
+        str_url = sdsr.text
+      end
+    end
+    if str_url
+      return URI.parse(str_url)
+    else
+      return nil
+    end
   end
   
-  private
-  
-  def b64gzip_unpack(str)
-    Zlib::GzipReader.new(StringIO.new(B64::B64.decode(str))).read
-  end
-  
-  def b64gzip_pack(str)
-    gzip_string_io = StringIO.new()
-    gzip = Zlib::GzipWriter.new(gzip_string_io)
-    gzip.write(str)
-    gzip.close
-    gzip_string_io.rewind
-    B64::B64.encode(gzip_string_io.string)
+  def can_blobs_use_relative_urls(reload = true)
+    
+    # short circuit this for now ... we're not going to support relative urls at the moment, and instead just re-process the existing absolute urls
+    return false
+    
+#    if reload
+#      parse_content_xml
+#    end
+#    use_relative_url = false
+#    
+#    if USE_LIBXML
+#      # get the jnlp version <launchProperties key="maven.jnlp.version" value="udl-otrunk-0.1.0-20090223.172505"/>
+#      jnlp_version_attr = @@session_bundle.find("//launchProperties[@key='maven.jnlp.version']").first
+#      if jnlp_version_attr && jnlp_version_attr["value"] && (date_string = jnlp_version_attr["value"].split("-")[-1])
+#        if date_string.to_f > 20090330.17 && self.workgroup.offering.jnlp.config_version_id > 2
+#          # the new versions of the code using the View System (config version 3) can support relative urls from the learner data
+#          use_relative_url = true
+#        end
+#      end
+#    else
+#      # get the jnlp version <launchProperties key="maven.jnlp.version" value="udl-otrunk-0.1.0-20090223.172505"/>
+#      jnlp_version_attr = @@session_bundle.elements("//launchProperties[@key='maven.jnlp.version']")
+#      if jnlp_version_attr && jnlp_version_attr.attributes["value"] && (date_string = jnlp_version_attr.attributes["value"].split("-")[-1])
+#        if date_string.to_f > 20090330.17 && self.workgroup.offering.jnlp.config_version_id > 2
+#          # the new versions of the code using the View System (config version 3) can support relative urls from the learner data
+#          use_relative_url = true
+#        end
+#      end    
+#    end
+#    return use_relative_url
   end
 end

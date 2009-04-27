@@ -15,8 +15,6 @@ require 'zlib'
 require 'b64'
 
 class Sock < ActiveRecord::Base
-
-  include ActionController::UrlWriter
   
 #  acts_as_reportable
   belongs_to :bundle
@@ -95,7 +93,7 @@ class Sock < ActiveRecord::Base
         if ((! ignore_file) && File.exist?(self.path + self.filename_decoded))
           File.read(self.path + self.filename_decoded)
         else
-          b64gzip_unpack(self.value)
+          SDSUtil.b64gzip_unpack(self.value)
         end
       else
         ""
@@ -109,49 +107,26 @@ class Sock < ActiveRecord::Base
     end
   end
   
-  def process_ot_blob_resources
+  def process_ot_blob_resources(host = nil)
+    update_url = false
     if (self.pod.rim_name != "ot.learner.data")
       return 0
     end
     num = 0
-    host = self.bundle.sds_return_address.host
+    if ! host
+      uri = self.bundle.sds_return_address
+      if uri
+        host = uri.host
+      end
+    else
+      update_url = true
+    end
+    bundle = self.bundle
     begin
-      if USE_LIBXML
-        @@xml_parser.string = b64gzip_unpack(self.value)
-        ot_learner_data_xml = @@xml_parser.parse.root
-        ot_learner_data_xml.find("//OTBlob/src").each do |raw|
-          blob_content = raw.content
-          next if (blob_content =~ /blobs\/[0-9]+\/raw\/[0-9a-zA-Z]+$/)
-          num += 1
-          if blob_content =~ /^gzb64:/
-            blob_content = b64gzip_unpack(blob_content.sub(/^gzb64:/, ""))
-          end
-          blob = Blob.find_or_create_by_content(:content => blob_content, :bundle => self)
-          raw.content = raw_blob_url(:id => blob, :token => blob.token, :host => host )
-        end
-        if num > 0
-          self.value = b64gzip_pack(ot_learner_data_xml.to_s)
-          self.save
-        end
-      else
-        #   unpack it
-        ot_learner_data_xml = REXML::Document.new(b64gzip_unpack(self.value)).root
-        #   modify it
-        ot_learner_data_xml.elements.each("//OTBlob/src") do |raw|
-          blob_content = raw.text
-          next if (blob_content =~ /blobs\/[0-9]+\/raw\/[0-9a-zA-Z]+$/)
-          num += 1
-          if blob_content =~ /^gzb64:/
-            blob_content = b64gzip_unpack(blob_content.sub(/^gzb64:/, ""))
-          end
-          blob = Blob.find_or_create_by_content(:content => blob_content, :bundle => self)
-          raw.text = raw_blob_url(:id => blob, :token => blob.token, :host => host )
-        end
-        if num > 0
-          #   repack it and save it to the bundle contents
-          self.value = b64gzip_pack(ot_learner_data_xml.to_s)
-          self.save
-        end
+      new_val = SDSUtil.extract_blob_resources(:data => self.value, :bundle => bundle, :host => host, :use_relative_url => bundle.can_blobs_use_relative_urls, :update_url => update_url)
+      if new_val
+        self.value = new_val
+        self.save
       end
     rescue
       logger.warn "Couldn't modify sock entry #{self.id}"
@@ -181,18 +156,6 @@ class Sock < ActiveRecord::Base
       File.open("#{self.path}#{self.filename_decoded}", "w") { |f| f.write text(true) }
     end
   end
-  
-  def b64gzip_unpack(str)
-    Zlib::GzipReader.new(StringIO.new(B64::B64.decode(str))).read
-  end
-  
-  def b64gzip_pack(str)
-    gzip_string_io = StringIO.new()
-    gzip = Zlib::GzipWriter.new(gzip_string_io)
-    gzip.write(str)
-    gzip.close
-    gzip_string_io.rewind
-    B64::B64.encode(gzip_string_io.string)
-  end
+
 
 end

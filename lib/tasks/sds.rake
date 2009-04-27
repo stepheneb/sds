@@ -781,6 +781,14 @@ post_data(@url, hash)
     
     desc "Replace all OTBlob contents in a bundle with a url pointing to a blob object with those contents"
     task :remove_blob_content_from_bundles => :environment do
+      host = nil
+      if ! ENV['HOST']
+        puts "If you want to set the blob urls to a particular host, set the HOST environment variable to the host address."
+        puts "e.g. HOST=http://foo.bar.com/ rake sds:utils:remove_blob_content_from_bundles"
+      else
+        host = URI.parse(ENV['HOST']).host
+      end
+      
       puts "Pulling OTBlob contents..."
 			limit = 100
 			offset = Bundle.find(:first, :order => 'id asc').id
@@ -791,7 +799,7 @@ post_data(@url, hash)
 			  print "\n#{0-((1000*(offset-max_offset))/size)/10.0}: "
 				Bundle.find(:all, :conditions => "id >= #{offset} AND id < #{offset + limit}").each do |b|
           begin
-            num = b.process_ot_blob_resources(true)
+            num = b.process_ot_blob_resources({:host => host, :reparse => true})
             print num > 9 ? "+" : (num == 0 ? "." : "#{num}")
           rescue => e
             print 'x'
@@ -806,22 +814,75 @@ post_data(@url, hash)
     
     desc "Replace all OTBlob contents in a sock with a url pointing to a blob object with those contents"
     task :remove_blob_content_from_socks => :environment do
+      host = nil
+      if ! ENV['HOST']
+        puts "If you want to set the blob urls to a particular host, set the HOST environment variable to the host address."
+        puts "e.g. HOST=http://foo.bar.com/ rake sds:utils:remove_blob_content_from_socks"
+      else
+        host = URI.parse(ENV['HOST']).host
+      end
+      
       puts "Pulling OTBlob contents..."
       limit = 100
       offset = Sock.find(:first, :order => 'id asc').id
       max_offset = Sock.find(:first, :order => 'id desc').id
       size = max_offset - offset
       puts "max = #{max_offset}"
+			i = 0
       while offset < max_offset
-        print "\n#{0-((1000*(offset-max_offset))/size)/10.0}: "
+        print "\n#{0-((1000*(offset-max_offset))/size)/10.0}: " if (i % 50 == 0)
+				num = 0
         Sock.find(:all, :conditions => "id >= #{offset} AND id < #{offset + limit}").each do |s|
           begin
-            num = s.process_ot_blob_resources
-            print num > 9 ? "+" : (num == 0 ? "." : "#{num}")
+            num += s.process_ot_blob_resources(host)
+            # print num > 9 ? "+" : (num == 0 ? "." : "#{num}")
           rescue => e
-            print 'x'
-            $stderr.puts "#{s.id}: #{e}"
+            # print 'x'
+            # $stderr.puts "#{s.id}: #{e}"
           end
+        end
+        print num > 9 ? "+" : (num == 0 ? "." : "#{num}")
+        offset += limit
+				i += 1
+      end
+      puts ""
+      puts " done."
+    end
+    
+    desc "Update all blob urls to point to a new host"
+    task :update_blob_urls => :environment do
+      if ! ENV['HOST']
+        puts "You need to set the HOST environment variable to the host address to which you want to update the blob urls."
+        puts "e.g. HOST=http://foo.bar.com/ rake sds:utils:update_blob_urls"
+        return
+      end
+      host = URI.parse(ENV['HOST']).host
+      
+      puts "Updating bundles and socks..."
+      limit = 100
+      offset = Blob.find(:first, :order => 'id asc').id
+      max_offset = Blob.find(:first, :order => 'id desc').id
+      size = max_offset - offset
+      puts "max = #{max_offset}"
+      seen_bundles = []
+      while offset < max_offset
+        print "\n#{0-((1000*(offset-max_offset))/size)/10.0}: "
+        Blob.find(:all, :conditions => "id >= #{offset} AND id < #{offset + limit}").each do |b|
+          b.bundles.each do |b|
+            next if seen_bundles.include?(b.id)
+            begin
+              b.process_ot_blob_resources({:host => host, :reparse => true})
+            rescue
+            end
+            b.socks.each do |s|
+              begin
+                s.process_ot_blob_resources(host)
+              rescue
+              end
+            end
+            seen_bundles << b.id
+          end
+          print "."
         end
         offset += limit
       end

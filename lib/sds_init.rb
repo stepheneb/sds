@@ -67,6 +67,72 @@ class SdsTime < Time
   end
 end
 
+class URLResolver
+  include ActionController::UrlWriter
+  
+  def getUrl(method, options)
+    eval("#{method}(options)")
+  end
+end
+
+class SDSUtil
+  @@gzb64_regexp = /\s*gzb64:([^<]+)/m
+  @@url_resolver = URLResolver.new
+  
+  def self.extract_blob_resources(args)
+    default_params_hash = {:host => "http://saildataservice.concord.org/", :use_relative_url => false, :update_url => false}
+    args.merge!(default_params_hash) {|k,o,n| o}
+    
+    blob_url_regexp = /http[^"'<]+\/blobs\/([0-9]+)\/raw\/([0-9a-zA-Z]+)/
+    
+    @num = 0
+    text = b64gzip_unpack(args[:data])
+    if args[:update_url] && ! args[:use_relative_url]
+      # first find all the processed blobs, and re-point their urls
+      begin
+        text.gsub!(blob_url_regexp) {|match|
+         @num += 1
+         match = @@url_resolver.getUrl("raw_blob_url", {:id => $1, :token => $2, :host => args[:host], :only_path => args[:use_relative_url]})
+        }
+      rescue Exception => e
+        $stderr.puts "#{e}: #{$&}"
+      end
+    end
+    
+    begin
+      # find all the unprocessed blobs, and extract them
+      text.gsub!(@@gzb64_regexp) {|match|
+        blob = Blob.find_or_create_by_content(:content => b64gzip_unpack($1.gsub!(/\s/, "")))
+        args[:bundle].blobs << blob
+        @num += 1
+        match = @@url_resolver.getUrl("raw_blob_url", {:id => blob, :token => blob.token, :host => args[:host], :only_path => args[:use_relative_url]})
+      }
+    rescue Exception => e
+      $stderr.puts "#{e}: #{$&}"
+    end
+    
+    #   repack it and save it to the bundle contents
+    if @num > 0
+      b64gzip_sock_data = b64gzip_pack(text)
+      return b64gzip_sock_data
+    end
+    return nil
+  end
+  
+  def self.b64gzip_unpack(str)
+    Zlib::GzipReader.new(StringIO.new(B64::B64.decode(str))).read
+  end
+  
+  def self.b64gzip_pack(str)
+    gzip_string_io = StringIO.new()
+    gzip = Zlib::GzipWriter.new(gzip_string_io)
+    gzip.write(str)
+    gzip.close
+    gzip_string_io.rewind
+    B64::B64.encode(gzip_string_io.string)
+  end
+end
+
 if USE_LIBXML
 # This was used with LIBXML to scan for an attribute and return a default 
 # value if the xml attribute wasn't there.
