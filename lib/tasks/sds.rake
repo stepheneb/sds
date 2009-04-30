@@ -64,7 +64,7 @@ HEREDOC
 
       puts <<HEREDOC
 
-This task creates four roles (if they don't already exist):
+This task creates four roles (if they do not already exist):
 
   admin
   researcher
@@ -565,36 +565,43 @@ post_data(@url, hash)
   end
 
   namespace :utils do
-    gem 'nokogiri',  '= 1.0.7'
-    require 'nokogiri'
     desc "populate the bundle launch property attributes added in migration 085"
     task :populate_the_bundle_launch_property_attributes => :environment do
       include ProcessLogger
       bundle_count = Bundle.count
-      puts "\nProcessing BundleContent from #{bundle_count} Bundles to generate bundle launch property attributes added in migration 082."
-      offset = 0
-      limit = 1000
-      bundles = Bundle.find(:all, :offset => offset, :limit => limit)
-      while bundles.length > 0 do
-        puts "\n\nProcessing: #{offset+1}..#{offset+limit} out of #{bundle_count}; process memory: #{ProcessLogger::process_memory/1024} MB\n"
-        bundles.each do |b|
-          doc = Nokogiri::XML(b.bundle_content.content)
-          b.is_otml = !doc.xpath('//sockParts[@rimName="ot.learner.data"]').empty?
-          lp = {}
-          doc.xpath('//launchProperties').each {|l| lp[l['key']] = l['value']}        
-          b.maven_jnlp_version         = lp['maven.jnlp.version']
-          b.sds_time                   = lp['sds_time']
-          b.sailotrunk_otmlurl         = lp['sailotrunk.otmlurl']
-          b.maven_jnlp_version         = lp['maven.jnlp.version']
-          b.jnlp_properties            = lp['jnlp_properties']
-          b.previous_bundle_session_id = lp['previous.bundle.session.id']
-          b.save
-          print '.'
-        end
-        offset += limit
-        GC.start
-        bundles = Bundle.find(:all, :offset => offset, :limit => limit)
-      end
+      puts "\nProcessing BundleContent from #{bundle_count} Bundles to generate bundle launch property attributes added in migration 085."
+     limit = 100
+     offset = Bundle.find(:first, :order => 'id asc').id
+     max_offset = Bundle.find(:first, :order => 'id desc').id
+     size = max_offset - offset
+     puts "max = #{max_offset}"
+     while offset < max_offset
+       print "\n#{0-((1000*(offset-max_offset))/size)/10.0}: "
+       Bundle.find(:all, :conditions => "id >= #{offset} AND id < #{offset + limit}").each do |b|
+         begin
+           doc = XML::Parser.string(b.bundle_content.content).parse
+           
+           b.is_otml = doc.find('//sockParts[@rimName="ot.learner.data"]/sockEntries').empty?
+           lp = {}
+           doc.find('//launchProperties').each {|l| lp[l['key']] = l['value']}
+                 
+           b.maven_jnlp_version         = lp['maven.jnlp.version']
+           b.sds_time                   = lp['sds_time']
+           b.sailotrunk_otmlurl         = lp['sailotrunk.otmlurl']
+           b.maven_jnlp_version         = lp['maven.jnlp.version']
+           b.jnlp_properties            = lp['jnlp_properties']
+           b.previous_bundle_session_id = lp['previous.bundle.session.id']
+           b.save
+           print '.'
+         rescue => e
+           print 'x'
+           $stderr.puts "#{b.id}: #{e}"
+         end
+       end
+       offset += limit
+     end
+     puts ""
+     puts " done."
     end
     
     desc "display the cache path"
