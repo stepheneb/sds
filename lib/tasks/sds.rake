@@ -699,71 +699,24 @@ post_data(@url, hash)
     require 'activerecord'
     class RemoveSdsFromTableNames < ActiveRecord::Migration
       def self.up
-        rename_table("sds_bundle_contents", "bundle_contents")
-        rename_table("sds_bundles", "bundles")
-        rename_table("sds_config_versions", "config_versions")
-        rename_table("sds_curnit_maps", "curnit_maps")
-        rename_table("sds_curnits", "curnits")
-        rename_table("sds_errorbundles", "errorbundles")
-        rename_table("sds_jnlps", "jnlps")
-        rename_table("sds_log_bundles", "log_bundles")
-        rename_table("sds_offerings", "offerings")
-        rename_table("sds_offerings_attributes", "offerings_attributes")
-        rename_table("sds_pas_computational_input_values", "pas_computational_input_values")
-        rename_table("sds_pas_computational_inputs", "pas_computational_inputs")
-        rename_table("sds_pas_findings", "pas_findings")
-        rename_table("sds_pas_model_activity_datasets", "pas_model_activity_datasets")
-        rename_table("sds_pas_model_activity_modelruns", "pas_model_activity_modelruns")
-        rename_table("sds_pas_representational_attributes", "pas_representational_attributes")
-        rename_table("sds_pas_representational_types", "pas_representational_types")
-        rename_table("sds_pas_representational_values", "pas_representational_values")
-        rename_table("sds_pods", "pods")
-        rename_table("sds_portal_urls", "portal_urls")
-        rename_table("sds_portals", "portals")
-        rename_table("sds_rims", "rims")
-        rename_table("sds_roles", "roles")
-        rename_table("sds_roles_users", "roles_users")
-        rename_table("sds_sail_users", "sail_users")
-        rename_table("sds_schema_info", "schema_info")
-        rename_table("sds_sessions", "sessions")
-        rename_table("sds_socks", "socks")
-        rename_table("sds_users", "users")
-        rename_table("sds_workgroup_memberships", "workgroup_memberships")
-        rename_table("sds_workgroups", "workgroups")
+        ActiveRecord::Base.connection.tables.each do |table|
+          new_table = table.sub(/^sds_/, "")
+          if table != new_table
+            puts "Renaming table '#{table}' to '#{new_table}'"
+            rename_table(table, new_table)
+          end
+        end
       end
 
       def self.down
-        rename_table("bundle_contents", "sds_bundle_contents")
-        rename_table("bundles", "sds_bundles")
-        rename_table("config_versions", "sds_config_versions")
-        rename_table("curnit_maps", "sds_curnit_maps")
-        rename_table("curnits", "sds_curnits")
-        rename_table("errorbundles", "sds_errorbundles")
-        rename_table("jnlps", "sds_jnlps")
-        rename_table("log_bundles", "sds_log_bundles")
-        rename_table("offerings", "sds_offerings")
-        rename_table("offerings_attributes", "sds_offerings_attributes")
-        rename_table("pas_computational_input_values", "sds_pas_computational_input_values")
-        rename_table("pas_computational_inputs", "sds_pas_computational_inputs")
-        rename_table("pas_findings", "sds_pas_findings")
-        rename_table("pas_model_activity_datasets", "sds_pas_model_activity_datasets")
-        rename_table("pas_model_activity_modelruns", "sds_pas_model_activity_modelruns")
-        rename_table("pas_representational_attributes", "sds_pas_representational_attributes")
-        rename_table("pas_representational_types", "sds_pas_representational_types")
-        rename_table("pas_representational_values", "sds_pas_representational_values")
-        rename_table("pods", "sds_pods")
-        rename_table("portal_urls", "sds_portal_urls")
-        rename_table("portals", "sds_portals")
-        rename_table("rims", "sds_rims")
-        rename_table("roles", "sds_roles")
-        rename_table("roles_users", "sds_roles_users")
-        rename_table("sail_users", "sds_sail_users")
-        rename_table("schema_info", "sds_schema_info")
-        rename_table("sessions", "sds_sessions")
-        rename_table("socks", "sds_socks")
-        rename_table("users", "sds_users")
-        rename_table("workgroup_memberships", "sds_workgroup_memberships")
-        rename_table("workgroups", "sds_workgroups")
+        skip_tables = ["bj_config", "bj_job", "bj_job_archive" ]
+        ActiveRecord::Base.connection.tables.each do |table|
+          next if skip_tables.include?(table)
+          next if table =~ /^sds_/
+          new_table = "sds_" + table
+          puts "Renaming table '#{table}' to '#{new_table}'"
+          rename_table(table, new_table)
+        end
       end
     end
 
