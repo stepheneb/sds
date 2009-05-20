@@ -6,7 +6,7 @@ class HomeController < ApplicationController
   skip_before_filter :require_login_for_non_rest
 
   def index
-    if params[:pid]
+    if params[:pid] && params[:pid] =~ /^[0-9]+$/
       find_portal
     end
     begin
