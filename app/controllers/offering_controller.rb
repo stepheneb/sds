@@ -251,7 +251,7 @@ class OfferingController < ApplicationController
   end
 
   def bundle
-    if request.post? and (request.env['CONTENT_TYPE'] == "application/xml")
+    if request.post? and (request.env['CONTENT_TYPE'] == "application/xml" or request.env['CONTENT_TYPE'] == "text/xml")
       begin 
         raise "bundle too large" if request.raw_post.length > BUNDLE_SIZE_LIMIT
         if request.env['HTTP_CONTENT_ENCODING'] == 'b64gzip'

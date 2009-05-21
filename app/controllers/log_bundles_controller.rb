@@ -66,7 +66,7 @@ class LogBundlesController < ApplicationController
   # POST /log_bundles
   # POST /log_bundles.xml
   def create
-    if (request.env['CONTENT_TYPE'] == "application/xml")
+    if (request.env['CONTENT_TYPE'] == "application/xml" or request.env['CONTENT_TYPE'] == "text/xml")
       @log_bundle = LogBundle.new()
       begin 
         raise "bundle too large" if request.raw_post.length > BUNDLE_SIZE_LIMIT
