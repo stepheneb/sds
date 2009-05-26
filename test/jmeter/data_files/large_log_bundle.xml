@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="ASCII"?>
+<sailuserdata:EPortfolio xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:sailuserdata="sailuserdata">
+  <sessionBundles start="2009-05-20T15:26:18.077-0400" curnitUUID="cccccccc-0009-0000-0000-000000000000" sessionUUID="9720c8f6-c751-4e1c-947e-8c82e66996b2">
+    <sockParts podId="00000000-0000-0000-0000-000000000000" rimName="console_log">
+      <sockEntries value="Done setting up file logging."/>
+      <sockEntries value="May 20, 2009 3:26:19 PM net.sf.sail.core.service.impl.SessionManagerImpl start"/>
+      <sockEntries value="Loaded 97 objects from: http://itsi.diy.concord.org/activities/1164/otml/9/16/19455 opened url in 361ms downloaded and parsed xml in 357ms loaded ot db in 394ms"/>
+      <sockEntries value="INFO:  session property: sds_time=1242847578077"/>
+      <sockEntries value="May 20, 2009 3:26:19 PM net.sf.sail.core.service.impl.SessionManagerImpl start"/>
+      <sockEntries value="INFO:  session property: sailotrunk.otmlurl=http://itsi.diy.concord.org/activities/1164/otml/9/16/19455"/>
+      <sockEntries value="May 20, 2009 3:26:19 PM net.sf.sail.core.service.impl.SessionManagerImpl start"/>
+      <sockEntries value="INFO:  session property: jnlp_properties=otrunk.view.frame_title=ITSI DIY - 1164: Energy Conservation: Looking at Potential and Kinetic Energy"/>
+      <sockEntries value="May 20, 2009 3:26:19 PM net.sf.sail.emf.launch.PortfolioManagerService getOffering"/>
+      <sockEntries value="INFO: Bundle poster exists, let's try uploading old bundles"/>
+      <sockEntries value="May 20, 2009 3:26:19 PM net.sf.sail.emf.launch.PortfolioManagerService getOffering"/>
+      <sockEntries value="INFO: Skipping current log file"/>
+      <sockEntries value="May 20, 2009 3:26:19 PM net.sf.sail.emf.launch.PortfolioManagerService uploadBundle"/>
+      <sockEntries value="INFO: Attempting to upload old bundle: /Users/aunger/Library/Application Support/SailUserData/v375/console7842.xml"/>
+      <sockEntries value="May 20, 2009 3:26:19 PM net.sf.sail.emf.launch.PortfolioManagerService uploadBundle"/>
+      <sockEntries value="INFO: No SDS return address, deleting."/>
+      <sockEntries value="May 20, 2009 3:26:19 PM net.sf.sail.core.net.SailResourceLoader getInputStream"/>
+      <sockEntries value="INFO: loading: http://saildataservice.concord.org/7/offering/9006/bundle/57010/1"/>
+      <sockEntries value="May 20, 2009 3:26:19 PM net.sf.sail.emf.launch.PortfolioManagerService getOffering"/>
+      <sockEntries value="INFO: local learner data: /Users/aunger/Library/Application Support/SailUserData/v375/session19089.xml"/>
+      <sockEntries value="May 20, 2009 3:26:19 PM net.sf.sail.emf.launch.SessionBundleHelper setupSessionBundle"/>
+      <sockEntries value="INFO: jnlp_version: itsi-otrunk-0.1.0-20090323.194037-custom2"/>
+      <sockEntries value="May 20, 2009 3:26:19 PM net.sf.sail.emf.launch.SessionBundleHelper setupSessionBundle"/>
+      <sockEntries value="INFO: sdsReturnAddress: http://saildataservice.concord.org/7/offering/9006/bundle/57010/1"/>
+      <sockEntries value="May 20, 2009 3:26:19 PM net.sf.sail.emf.launch.SessionBundleHelper setupSessionBundle"/>
+      <sockEntries value="INFO: sessionId: 9720c8f6-c751-4e1c-947e-8c82e66996b2"/>
+      <sockEntries value="Another URLStreamHandlerFactory has already been registered"/>
+      <sockEntries value="May 20, 2009 3:26:20 PM net.sf.sail.core.net.SailResourceLoader getInputStream"/>
+      <sockEntries value="INFO: loading: http://itsi.diy.concord.org/activities/1164/otml/9/16/19455"/>
+      <sockEntries value="Error importing class: org.concord.otrunkmw.OTModelerPageEditable"/>
+      <sockEntries value="  this class was listed as an import in the otml file"/>
+      <sockEntries value="Can't find local id: vendor_id_vernier_labquest"/>
+      <sockEntries value="Can't find view: org.concord.otrunkmw.OTModelerPageEditView for object: org.concord.otrunkmw.OTModelerPageEditable"/>
+      <sockEntries value="  error: java.lang.ClassNotFoundException: org.concord.otrunkmw.OTModelerPageEditable"/>
+      <sockEntries value="May 20, 2009 3:26:22 PM net.sf.sail.core.beans.SessionContext start"/>
+      <sockEntries value="INFO: Session started at Wed May 20 15:26:18 EDT 2009"/>
+      <sockEntries value="INSETS: 10,50.0,40.0,10" millisecondsOffset="4224"/>
+      <sockEntries value="created delta object: 1b2b2a37-4574-11de-8f97-6556dbe83528" millisecondsOffset="4743"/>
+      <sockEntries value="INSETS: 10,50.0,40.0,10" millisecondsOffset="4843"/>
+      <sockEntries value="created delta object: 1b61ca98-4574-11de-8f97-6556dbe83528" millisecondsOffset="5101"/>
+      <sockEntries value="created delta object: 1b6ec2eb-4574-11de-8f97-6556dbe83528" millisecondsOffset="5186"/>
+      <sockEntries value="created delta object: 1b6f5f2c-4574-11de-8f97-6556dbe83528" millisecondsOffset="5191"/>
+      <sockEntries value="INSETS: 10,50.0,40.0,10" millisecondsOffset="5339"/>
+      <sockEntries value="created delta object: 1ba8708d-4574-11de-8f97-6556dbe83528" millisecondsOffset="5564"/>
+      <sockEntries value="created delta object: 1baaba80-4574-11de-8f97-6556dbe83528" millisecondsOffset="5579"/>
+      <sockEntries value="INSETS: 10,50.0,40.0,10" millisecondsOffset="5733"/>
+      <sockEntries value="created delta object: 1be50461-4574-11de-8f97-6556dbe83528" millisecondsOffset="5961"/>
+      <sockEntries value="created delta object: 1be6b214-4574-11de-8f97-6556dbe83528" millisecondsOffset="5973"/>
+      <sockEntries value="created delta object: 214b4f95-4574-11de-8f97-6556dbe83528" millisecondsOffset="15020"/>
+      <sockEntries value="created delta object: 2537cc06-4574-11de-8f97-6556dbe83528" millisecondsOffset="21603"/>
+      <sockEntries value="created delta object: 27e9a597-4574-11de-8f97-6556dbe83528" millisecondsOffset="26125"/>
+      <sockEntries value="created delta object: 2dc34c08-4574-11de-8f97-6556dbe83528" millisecondsOffset="35940"/>
+      <sockEntries value="created delta object: 3058eb09-4574-11de-8f97-6556dbe83528" millisecondsOffset="40276"/>
+      <sockEntries value="created delta object: 305eb76a-4574-11de-8f97-6556dbe83528" millisecondsOffset="40313"/>
+      <sockEntries value="created delta object: 32e7d34b-4574-11de-8f97-6556dbe83528" millisecondsOffset="44567"/>
+      <sockEntries value="created delta object: 32ea444c-4574-11de-8f97-6556dbe83528" millisecondsOffset="44583"/>
+      <sockEntries value="created delta object: 351ed78d-4574-11de-8f97-6556dbe83528" millisecondsOffset="48283"/>
+      <sockEntries value="created delta object: 3807788e-4574-11de-8f97-6556dbe83528" millisecondsOffset="53163"/>
+      <sockEntries value="created delta object: 3cb28a0f-4574-11de-8f97-6556dbe83528" millisecondsOffset="60995"/>
+      <sockEntries value="created delta object: 40add391-4574-11de-8f97-6556dbe83528" millisecondsOffset="67675"/>
+      <sockEntries value="created delta object: 40afa852-4574-11de-8f97-6556dbe83528" millisecondsOffset="67687"/>
+      <sockEntries value="created delta object: 42afbe13-4574-11de-8f97-6556dbe83528" millisecondsOffset="71043"/>
+    </sockParts>
+    <sdsReturnAddresses>http://saildataservice.concord.org/7/offering/9006/logs/57010</sdsReturnAddresses>
+    <launchProperties key="maven.jnlp.version" value="itsi-otrunk-0.1.0-20090323.194037-custom2"/>
+    <launchProperties key="sds_time" value="1242847578077"/>
+    <launchProperties key="sailotrunk.otmlurl" value="http://itsi.diy.concord.org/activities/1164/otml/9/16/19455"/>
+    <launchProperties key="jnlp_properties" value="otrunk.view.frame_title=ITSI DIY - 1164: Energy Conservation: Looking at Potential and Kinetic Energy"/>
+  </sessionBundles>
+</sailuserdata:EPortfolio>
