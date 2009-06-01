@@ -338,12 +338,13 @@ class OfferingController < ApplicationController
           body = p.html_body ? p.html_body.strip : nil
           act_num = curnit_map.empty? ? "" : curnit_map[p.uuid]['activity_number']
           step_num = curnit_map.empty? ? "" : curnit_map[p.uuid]['step_number']
-          ["#{p.id}", "#{p.uuid}", "#{p.rim_name}", "#{body}", act_num.to_i, step_num.to_i]
+          step_title = curnit_map.empty? ? "" : curnit_map[p.uuid]['title']
+          ["#{p.id}", "#{p.uuid}", "#{p.rim_name}", "#{body}", act_num.to_i, step_num.to_i, "#{step_title}"]
         else
           nil
         end
       }
-      pod_info = pod_info.compact
+      pod_info = pod_info.compact.sort{|a,b| (a[4] == b[4]) ? ((a[5] == b[5]) ? (a[2] <=> b[2]) : (a[5] <=> b[5])) : (a[4] <=> b[4]) }
 
       offering_data = { }
       workgroups.each do |w|
@@ -403,6 +404,7 @@ class OfferingController < ApplicationController
       content_row = ["Note HTML Content"]
       act_num_row = ["Activity Number"]
       step_num_row = ["Step Number"]
+      step_title_row = ["Step Title"]
       header_row = ["Workgroup"]
       col = -4
       padding = [nil,nil,nil,nil]
@@ -410,7 +412,7 @@ class OfferingController < ApplicationController
         padding = [nil]
       end
       # sort the pods by activity number, then step number, then rim_name
-      pod_info.sort{|a,b| (a[4] == b[4]) ? ((a[5] == b[5]) ? (a[2] <=> b[2]) : (a[5] <=> b[5])) : (a[4] <=> b[4]) }.each do |p|
+      pod_info.each do |p|
         # notes_worksheet.write(row, col += 5, [p])
         pid_row += [p[0]] + padding
         puuid_row += [p[1]] + padding
@@ -418,6 +420,7 @@ class OfferingController < ApplicationController
         content_row += [p[3]] + padding
         act_num_row += [p[4]] + padding
         step_num_row += [p[5]] + padding
+        step_title_row += [p[6]] + padding
         header_row += pod_headers
       end
       offerings = offering_data.keys.sort
@@ -428,6 +431,7 @@ class OfferingController < ApplicationController
         row << content_row
         row << act_num_row
         row << step_num_row
+        row << step_title_row
         row << header_row
         # row = 4
         offerings.each do |wid|
