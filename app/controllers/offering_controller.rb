@@ -328,33 +328,29 @@ class OfferingController < ApplicationController
       f = File.new(file, "w")
       f.write("")
       f.close
-      debug = []
+      
+      curnit_map = {}
+      workgroups = @offering.workgroups
+      workgroups.detect {|w| curnit_map = w.master_curnitmap; (! curnit_map.empty?) }
       pods = @offering.pods    
       pod_info = pods.collect { |p|
         if p.pas_type == 'note'
-          if p.html_body != nil
-            body = p.html_body.strip
-          else
-            body = nil
-          end
-          ["#{p.id}", "#{p.uuid}", "#{p.rim_name}", "#{body}"]
+          body = p.html_body ? p.html_body.strip : nil
+          act_num = curnit_map.empty? ? "" : curnit_map[p.uuid]['activity_number']
+          step_num = curnit_map.empty? ? "" : curnit_map[p.uuid]['step_number']
+          ["#{p.id}", "#{p.uuid}", "#{p.rim_name}", "#{body}", act_num.to_i, step_num.to_i]
         else
           nil
         end
       }
       pod_info = pod_info.compact
-      debug += ["In the method"]
-      workgroup_ids = @offering.workgroups.collect {|w| w.id }
+
       offering_data = { }
-      workgroup_ids.each do |wid|
+      workgroups.each do |w|
         workgroup_data = { }
-        w = Workgroup.find(wid)
         w.bundles.each do |b|
-          debug += ["working with bundle #{b.id}"]
           b.socks.each do |s|
-            debug += ["working with sock #{s.id}"]
             if s.pod.pas_type != 'note'
-              debug += ["sock is not a note, skipping"]
               next
             end
             data = [s.bundle.id, s.bundle.sail_session_start_time.to_s, s.id, TimeTracker.seconds_to_s(s.ms_offset/1000), s.value]
@@ -366,27 +362,23 @@ class OfferingController < ApplicationController
               w_counter = 1
 
               # put the sock data in a new or existing dummy workgroup
-              while (offering_data.has_key?("#{wid}|#{w_counter}") && offering_data["#{wid}|#{w_counter}"].has_key?(s.pod_id))
+              while (offering_data.has_key?("#{w.id}|#{w_counter}") && offering_data["#{w.id}|#{w_counter}"].has_key?(s.pod_id))
                 w_counter += 1
               end
-              if (offering_data.has_key?("#{wid}|#{w_counter}"))
-                debug += ["The workgroup #{wid}|#{w_counter} exists, but doesn't have this pod data defined"]
-                offering_data["#{wid}|#{w_counter}"]["#{s.pod_id}"] = data
+              if (offering_data.has_key?("#{w.id}|#{w_counter}"))
+                offering_data["#{w.id}|#{w_counter}"]["#{s.pod_id}"] = data
               else
-                debug += ["The workgroup #{wid}|#{w_counter} doesn't exist yet"]
                 new_workgroup_data = { }
                 new_workgroup_data["#{s.pod_id}"] = data
-                offering_data["#{wid}|#{w_counter}"] = new_workgroup_data
+                offering_data["#{w.id}|#{w_counter}"] = new_workgroup_data
               end
             else
               workgroup_data["#{s.pod_id}"] = data
             end
           end
         end
-        offering_data["#{wid}"] = workgroup_data
-      end 
-      debug +=  [ offering_data ]
-
+        offering_data["#{w.id}"] = workgroup_data
+      end
       # @workbook = Spreadsheet::Excel.new(file)
       # data_format = @workbook.add_format(:color=>"blue", :text_h_align=>1)
       # response.header_format = @workbook.add_format(:color=>"black", :bold=>1, :text_h_align=>1)
@@ -409,18 +401,23 @@ class OfferingController < ApplicationController
       puuid_row = ["Pod UUID"]
       rimname_row = ["Rim Name"]
       content_row = ["Note HTML Content"]
+      act_num_row = ["Activity Number"]
+      step_num_row = ["Step Number"]
       header_row = ["Workgroup"]
       col = -4
       padding = [nil,nil,nil,nil]
       if compact
         padding = [nil]
       end
-      pod_info.each do |p|
+      # sort the pods by activity number, then step number, then rim_name
+      pod_info.sort{|a,b| (a[4] == b[4]) ? ((a[5] == b[5]) ? (a[2] <=> b[2]) : (a[5] <=> b[5])) : (a[4] <=> b[4]) }.each do |p|
         # notes_worksheet.write(row, col += 5, [p])
         pid_row += [p[0]] + padding
         puuid_row += [p[1]] + padding
         rimname_row += [p[2]] + padding
         content_row += [p[3]] + padding
+        act_num_row += [p[4]] + padding
+        step_num_row += [p[5]] + padding
         header_row += pod_headers
       end
       offerings = offering_data.keys.sort
@@ -429,11 +426,12 @@ class OfferingController < ApplicationController
         row << puuid_row
         row << rimname_row
         row << content_row
+        row << act_num_row
+        row << step_num_row
         row << header_row
         # row = 4
         offerings.each do |wid|
           # rename the dummy workgroups to match the real workgroup id
-          debug += ["Found key #{wid}"]
           begin
             clean_wid = wid.split("|")[0]
           rescue
@@ -456,9 +454,6 @@ class OfferingController < ApplicationController
           row << row_data
           # notes_worksheet.write(row += 1, 0, row_data)
         end
-        # debug.each do |d|
-        #   row << [d]
-        # end
         row << []
       end
       exit(0)

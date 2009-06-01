@@ -250,12 +250,7 @@ class WorkgroupController < ApplicationController
   def report_xls
     members = @workgroup.sail_users.version(@workgroup.version) # array of SailUser objects
     
-    cmap = {}
-    @workgroup.valid_bundles.each do |b|
-      if b.curnitmap
-        cmap.merge!(b.curnitmap){|k,old,new| old }
-      end
-    end
+    cmap = @workgroup.master_curnitmap
     
     # Create the first worksheet which summarizes the workgroup information
     file = "#{RAILS_ROOT}/tmp/xls/workgroup-#{@workgroup.id}.xls"
