@@ -296,7 +296,7 @@ class Bundle < ActiveRecord::Base
       content_xml.elements.each("//sockParts[@rimName='ot.learner.data']/sockEntries") { |sock|
         begin
           #   unpack it
-          ot_learner_data_xml = REXML::Document.new(b64gzip_unpack(sock.attributes["value"])).root
+          ot_learner_data_xml = REXML::Document.new(SDSUtil.b64gzip_unpack(sock.attributes["value"])).root
           #   modify it
           otrunk_id = UUID.timestamp_create().to_s
           user_id = UUID.timestamp_create().to_s
@@ -306,7 +306,7 @@ class Bundle < ActiveRecord::Base
           user_object.attributes["id"] = user_id
           user_object.attributes["name"] = destination_workgroup.name
           #   repack it and save it to the bundle contents
-          sock.attributes["value"] = b64gzip_pack(ot_learner_data_xml.to_s)
+          sock.attributes["value"] = SDSUtil.b64gzip_pack(ot_learner_data_xml.to_s)
         rescue
           logger.warn "Couldn't modify sock entry in bundle #{self.id}"
         end
