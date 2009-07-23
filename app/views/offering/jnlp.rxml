@@ -18,6 +18,7 @@ if !extra_properties.blank?
 end
 
 sds_launcher = "net.sf.sail.emf.launch.EMFLauncher2"
+wrapper_launcher = "org.concord.LaunchJnlp"
 
 if USE_LIBXML
   app_desc = jnlp.find('./application-desc').first
@@ -36,8 +37,8 @@ else
 end
 
 # if there is a file-based launcher convert to an sds launcher
-case "net.sf.sail.emf.launch.EMFLauncher3"
-when app_desc_main_class
+case app_desc_main_class
+when "net.sf.sail.emf.launch.EMFLauncher3"
   if USE_LIBXML
     app_desc['main-class'] = sds_launcher
   else
@@ -63,13 +64,13 @@ end
 # ** Offering config view.
 #
 if USE_LIBXML
-  case sds_launcher
-  when app_desc['main-class']
+  case app_desc_main_class
+  when sds_launcher, wrapper_launcher
     app_desc_arg.content = config_url.gsub(/&/, '&amp;')
   end
 else
-  case sds_launcher
-  when app_desc_main_class, res_prop_value
+  case app_desc_main_class
+  when sds_launcher, wrapper_launcher
     app_desc_arg.text = config_url.gsub(/&/, '&amp;')
   end
 end
