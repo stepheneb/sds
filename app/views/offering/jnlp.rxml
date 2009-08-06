@@ -18,7 +18,7 @@ if !extra_properties.blank?
 end
 
 sds_launcher = "net.sf.sail.emf.launch.EMFLauncher2"
-wrapper_launcher = "org.concord.LaunchJnlp"
+config_url_pattern = "__CONFIG_URL__"
 
 if USE_LIBXML
   app_desc = jnlp.find('./application-desc').first
@@ -40,7 +40,7 @@ end
 case app_desc_main_class
 when "net.sf.sail.emf.launch.EMFLauncher3"
   if USE_LIBXML
-    app_desc['main-class'] = sds_launcher
+    app_desc['main-class'] = app_desc_main_class = sds_launcher
   else
     app_desc.attributes["main-class"] = app_desc_main_class = sds_launcher
   end
@@ -64,13 +64,11 @@ end
 # ** Offering config view.
 #
 if USE_LIBXML
-  case app_desc_main_class
-  when sds_launcher, wrapper_launcher
+  if app_desc_main_class == sds_launcher || config_url_pattern == app_desc_arg.content.strip
     app_desc_arg.content = config_url.gsub(/&/, '&amp;')
   end
 else
-  case app_desc_main_class
-  when sds_launcher, wrapper_launcher
+  if app_desc_main_class == sds_launcher || config_url_pattern == app_desc_arg.text.strip
     app_desc_arg.text = config_url.gsub(/&/, '&amp;')
   end
 end
