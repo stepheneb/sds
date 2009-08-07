@@ -75,25 +75,29 @@ end
 
 resources = ''
 if USE_LIBXML
-  res = jnlp.find('resources').first
-  if @jnlp_properties
-    @jnlp_properties.each do |name, value|
-      res << pr = XML::Node.new('property')
-      pr['name'] = name 
-      pr['value'] = value
-    end
+  resources = jnlp.find('resources')
+  resources.each do |res|
+    if res['os'] == nil && @jnlp_properties
+      @jnlp_properties.each do |name, value|
+        res << pr = XML::Node.new('property')
+        pr['name'] = name 
+        pr['value'] = value
+      end
+      break
   end
   resources = jnlp.find('//resources') 
 else
   resources = []
+  added_props = false
   jnlp.elements.each("//resources") { |e|
     resources.unshift(e)
-    if e.attributes["os"] == nil && @jnlp_properties
+    if e.attributes["os"] == nil && @jnlp_properties && !added_props
       @jnlp_properties.each do |name, value|
         resources[0] << pr = REXML::Element.new("property")
         pr.attributes["name"] = name
         pr.attributes["value"] = value
-      end
+      end  
+      added_props = true
     end
   }
   
