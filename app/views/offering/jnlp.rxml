@@ -84,6 +84,7 @@ if USE_LIBXML
         pr['value'] = value
       end
       break
+    end
   end
   resources = jnlp.find('//resources') 
 else
