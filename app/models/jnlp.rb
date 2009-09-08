@@ -93,15 +93,15 @@ class Jnlp < ActiveRecord::Base
   end
 
   def body_xml
-    begin
-      if USE_LIBXML
+    if USE_LIBXML
+      begin
         XML::Parser.string(self.body).parse.root
-      else
-        require "rexml/document"
-        REXML::Document.new(self.body).root
+      rescue XML::Parser::ParseError
+        nil
       end
-    rescue XML::Parser::ParseError
-      nil
+    else
+      require "rexml/document"
+      REXML::Document.new(self.body).root
     end
   end
 
