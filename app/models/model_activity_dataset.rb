@@ -13,7 +13,7 @@ class ModelActivityDataset < ActiveRecord::Base
   
   before_create :my_setup
   before_create :process_attributes
-  after_create :process_content
+#  after_create :process_content
   
   def my_setup
     @attrs = { :name => "name", :start_time => "start_time", :units => "units",
@@ -58,13 +58,13 @@ class ModelActivityDataset < ActiveRecord::Base
   end
   
   def process_content
-    # begin
-    xml = REXML::Document.new(self.content)
-    create_model_activity_dataset(xml)
-    # rescue => e
-    #  puts "Bad Model Activity Data in sock #{self.sock.id}: #{e}"
-    #  self.destroy
-    # end
+    begin
+      xml = REXML::Document.new(self.content)
+      create_model_activity_dataset(xml)
+    rescue => e
+      puts "Bad Model Activity Data in sock #{self.sock.id}: #{e}"
+      self.destroy
+    end
     return true
   end
   

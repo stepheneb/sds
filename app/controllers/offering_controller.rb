@@ -295,7 +295,7 @@ class OfferingController < ApplicationController
             end
           end
         end
-        response.headers["Content-Type"] = "text/xml"
+        response.headers["Content-Type"] = "application/xml"
         if @bundles.size > 0
           response.headers["Last-Modified"] = @bundles[-1].created_at.httpdate
         end
