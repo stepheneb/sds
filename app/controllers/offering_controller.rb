@@ -18,7 +18,7 @@ class OfferingController < ApplicationController
 
   layout "standard", :except => [ :atom ] 
 
-  BUNDLE_SIZE_LIMIT = 2**21-1 # 2M  
+  BUNDLE_SIZE_LIMIT = 2**24-1 # 16M -- matches the column size of the db  
 
   protected
 
@@ -259,6 +259,7 @@ class OfferingController < ApplicationController
         else
           content = request.raw_post
         end
+        raise "bundle too large" if content.length > BUNDLE_SIZE_LIMIT
         digest = Digest::MD5.hexdigest(content)
         if request.env['HTTP_CONTENT_MD5'] != nil
           if digest != request.env['HTTP_CONTENT_MD5']
