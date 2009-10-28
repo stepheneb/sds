@@ -318,7 +318,7 @@ class Bundle < ActiveRecord::Base
     # FIXME need to figure out if we were successfull and either return true or thrown an exception
   end
   
-  def process_ot_blob_resources(args)
+  def process_ot_blob_resources(args = {})
     options = {:host => nil, :reparse => false}
     options.merge!(args) {|k,o,n| n}
     num = 0
@@ -356,10 +356,9 @@ class Bundle < ActiveRecord::Base
     end
     if num > 0
       # save the original bundle_content so we can always get the unmodified content
-      self.original_bundle_content = BundleContent.new(:content => bc.content)
-      self.save
-      bc.content = @@session_bundle.to_s
-      bc.save
+      self.original_bundle_content = bc
+      self.bundle_content = BundleContent.create!(:content => @@session_bundle.to_s)      
+      self.save!
     end
     return num
   end
