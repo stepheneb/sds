@@ -8,6 +8,8 @@ require 'capistrano/ext/multistage'
 set :application, "saildataservice"
 set :repository,  "https://svn.concord.org/svn/sds/trunk"
 
+set :erb_templates_folder, "lib/capistrano/recipes/templates"
+
 set :mongrel_user, "mongrel"
 set :mongrel_group, "users"
 
@@ -45,3 +47,20 @@ depend :remote, :directory, "#{shared_path}/cache"
 depend :remote, :file, "#{shared_path}/config/mailer.yml"
 depend :remote, :file, "#{shared_path}/config/exception_notifier_recipients.yml"
 depend :remote, :file, "#{shared_path}/config/initializers/site_keys.rb"
+
+task :disable_web, :roles => :web do
+  on_rollback { delete "#{current_path}/public/system/maintenance.html" }
+
+  output = render("maintenance.rhtml")
+  put output, "#{current_path}/public/system/maintenance.html"
+end
+
+task :enable_web, :roles => :web do
+  delete "#{current_path}/public/system/maintenance.html"
+end
+
+def render(template_file)
+  require 'erb'
+  template = File.read(erb_templates_folder + "/" + template_file)
+  result = ERB.new(template).result(binding)  
+end

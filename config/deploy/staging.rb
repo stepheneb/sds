@@ -6,17 +6,19 @@ set :version, "staging"
 set :deploy_to, "/web/staging/#{application}"
 
 task :reset_staging_db, :roles => :db do
-  return if version != "staging"
-  
-  # put the app into maintenance mode
-  !deploy::web::disable
-  # dump the production db into the staging db
-  run "mysqladmin -u subroot -p#{subroot_pass} -f drop staging_#{application}_prod"
-  run "mysqladmin -u subroot -p#{subroot_pass} create staging_#{application}_prod"
-  run "mysqldump -u subroot -p#{subroot_pass} --lock-tables=false --add-drop-table --quick --extended-insert production_#{application}_prod | mysql -u #{application} -p#{application} staging_#{application}_prod"
-  # put app into running mode
-  !deploy::web::enable
-  puts "You might want to run cap reset_staging_db on any DIYs that are configured to point to the staging SDS so that the database ids will match up correctly."
+  if version == "staging"
+    # put the app into maintenance mode
+    disable_web
+    # dump the production db into the staging db
+    run "mysqladmin -u subroot -p#{subroot_pass} -f drop staging_#{application}_prod"
+    run "mysqladmin -u subroot -p#{subroot_pass} create staging_#{application}_prod"
+    run "mysqldump -u subroot -p#{subroot_pass} --lock-tables=false --add-drop-table --quick --extended-insert production_#{application}_prod | mysql -u #{application} -p#{application} staging_#{application}_prod"
+    # put app into running mode
+    enable_web
+    puts "You might want to run cap reset_staging_db on any DIYs that are configured to point to the staging SDS so that the database ids will match up correctly."
+  else
+    puts "You have to run in staging to execute this task."
+  end
 end
 
 namespace :deploy do
