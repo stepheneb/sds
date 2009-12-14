@@ -323,6 +323,24 @@ HEREDOC
          xml.object("class" => "net.sf.sail.core.service.impl.SessionLoadMonitor")  
          xml.object("class" => "net.sf.sail.core.service.impl.SessionManagerImpl")'
 
+
+     configConsoleLoggingAlways = '
+        xml.object("class" => "net.sf.sail.emf.launch.ConsoleLogServiceImpl") {
+          xml.void("property" => "bundlePoster") {
+            xml.object("class" => "net.sf.sail.emf.launch.BundlePoster") {
+              xml.void("property" => "postUrl") {
+                xml.string(@controller.url_for(
+                                :controller => "log_bundles", 
+                                :action => "index", 
+                                :id => @offering.id, 
+                                :wid => @workgroup.id,
+                                :pid => @portal.id,
+                                :only_path => false))
+              }
+            }
+          }
+        }'
+            
       configConsoleLogging = '
          xml.object("class" => "net.sf.sail.emf.launch.ConsoleLogServiceImpl") {
            if @savedata
@@ -446,7 +464,7 @@ HEREDOC
         :name => "OTrunk View System With console logging",
         :description => "This configures the user data to be stored in the sds using the sail-data-emf library.
           It loads content from an otml file and uses the OTViewer to display it.
-          It saves and sends the console log back.",
+          It saves and sends the console log back only if learner data will be saved.",
         :version => 1.1, 
         :template => 
           (configHeader + 
@@ -466,7 +484,7 @@ HEREDOC
           :name => "OTrunk Contoller System With console logging",
           :description => "This configures the user data to be stored in the sds using the sail-data-emf library.
           It loads content from an otml file and uses the controller system to load the root object which is treated as the root bean in a sail curnit.
-          It saves and sends the console log back.",
+          It saves and sends the console log back only if learner data will be saved.",
           :version => 1.1, 
           :template =>
             (configHeader + 
@@ -478,6 +496,26 @@ HEREDOC
             configUserService +
             configStandardServices +
             configFooter) }
+        cv.save!
+        puts "Created/updated: id: #{cv.id}, key: #{cv.key}, name: #{cv.name}"
+        
+        cv = ConfigVersion.find_or_initialize_by_key(:key => 'persist:sds content:otml-view logging-always')
+        cv.attributes = {
+        :name => "OTrunk View System With console logging always enabled",
+        :description => "This configures the user data to be stored in the sds using the sail-data-emf library.
+          It loads content from an otml file and uses the OTViewer to display it.
+          It saves and sends the console log back always.",
+        :version => 1.1, 
+        :template => 
+          (configHeader + 
+          configConsoleLoggingAlways +
+          configOTrunkViewSystemCurnit +
+          configPortfolioManagerService +
+          configLauncherService +
+          configSDSDataStore +
+          configUserService +
+          configStandardServices +
+          configFooter) }
         cv.save!
         puts "Created/updated: id: #{cv.id}, key: #{cv.key}, name: #{cv.name}"
       end            
