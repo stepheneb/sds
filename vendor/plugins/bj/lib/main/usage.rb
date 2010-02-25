@@ -20,9 +20,6 @@ module Main
       fields.clear
     end
 
-    def delete_at key
-      self[key] = nil
-    end
     alias_method 'delete', 'delete_at'
 
     def self.default_synopsis main
@@ -34,8 +31,12 @@ module Main
         s << " #{ main.fully_qualified_mode.join ' ' }"
       end
 
-      unless main.modes.empty?
-        modes = main.modes.keys.join('|')
+#p 'main.breadth_first_modes' => main.breadth_first_modes.map{|m| m.name}
+#p 'main.depth_first_modes' => main.depth_first_modes.map{|m| m.name}
+#p 'main.modes' => main.modes.map{|m| m.name}
+
+      unless main.breadth_first_modes.empty?
+        modes = main.breadth_first_modes.map{|mode| mode.name}.join('|')
         s << " (#{ modes })"
       end
 

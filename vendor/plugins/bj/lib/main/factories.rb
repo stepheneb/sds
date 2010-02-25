@@ -1,20 +1,28 @@
 module Main
-  def Main.create *a, &b
-    ::Main::Base.create(::Main::Base, *a, &b)
+  def Main.create(&block)
+    factory(&block)
   end
 
-  def Main.new *a, &b
-    create(::Main::Base, &b).new *a
+  def Main.factory(&block)
+    Program.factory(&block)
   end
 
-  def Main.run argv = ARGV, env = ENV, opts = {}, &block
-    Base.create(&block).new(argv, env, opts).run
+  def Main.new(*args, &block)
+    program = factory(&block).build(*args)
+    program.new()
   end
 
-  module ::Kernel
-    def Main argv = ARGV, env = ENV, opts = {}, &block
-      ::Main.run argv, env, opts, &block
-    end
-    alias_method 'main', 'Main'
+  def Main.run(*args, &block)
+    program = factory(&block).build(*args)
+    main = program.new()
+    main.run()
   end
+end
+
+module Kernel
+private
+  def Main(*args, &block)
+    Main.run(*args, &block)
+  end
+  alias_method 'main', 'Main'
 end

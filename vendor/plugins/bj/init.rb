@@ -1,13 +1,14 @@
 dirname, basename = File.split(File.expand_path(__FILE__))
 libdir = File.join dirname, "lib"
 
-$LOAD_PATH.unshift libdir
-begin
-  require "bj"
-ensure
-  $LOAD_PATH.shift
+unless defined? ::JRUBY && ::JRUBY  # don't initialize bj plugin if we are running in JRuby
+  $LOAD_PATH.unshift libdir
+  begin
+    require "bj"
+  ensure
+    $LOAD_PATH.shift
+  end
 end
-
 
 
 =begin
@@ -23,7 +24,8 @@ gem_path = [gem_home] #, *path]
 Gem.send :use_paths, gem_home, gem_path
 
 begin
-  %w[ attributes systemu orderedhash bj ].each do |lib|
+#   %w[ attributes systemu orderedhash bj ].each do |lib|
+  %w[ attributes orderedhash bj ].each do |lib|
     gem lib
     require lib
   end

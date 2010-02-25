@@ -80,6 +80,12 @@ class OrderedHash < ::Hash
     def keys
         @order
     end
+    def first
+      {@order.first => self[@order.first]}
+    end
+    def last
+      {@order.last => self[@order.last]}
+    end
     def invert
         hsh2 = Hash.new    
         @order.each { |k| hsh2[self[k]] = k }
@@ -182,6 +188,11 @@ class OrderedHash < ::Hash
       @__yaml_inline = bool
     end
     def yaml_inline!() self.yaml_inline = true end
+
+    def each_with_index
+      @order.each_with_index { |k, index| yield k, self[k], index }
+      self
+    end
 end # class OrderedHash
 
 def OrderedHash(*a, &b)

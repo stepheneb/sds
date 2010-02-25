@@ -5,8 +5,8 @@
 # Array#fields= is called
 #
   module ArrayFields 
-    self::VERSION = '4.6.0' unless defined? self::VERSION
-    def self.version() VERSION end
+    self::VERSION = '4.7.4' unless defined? self::VERSION
+    def self.version() Arrayfields::VERSION end
   #
   # multiton cache of fields - wraps fields and fieldpos map to save memory
   #
@@ -95,6 +95,9 @@
       if @fieldset and (String === idx or Symbol === idx)
         pos = @fieldset.pos idx
         return nil unless pos
+        new_fields = fields.dup
+        new_fields.delete_at(pos)
+        self.fields = new_fields
         super pos
       else
         super
@@ -155,7 +158,7 @@
       @fieldset.each{|field| yield field}
     end
     def each_value *args, &block
-      each *args, &block
+      each(*args, &block)
     end
     def fetch key
       self[key] or raise IndexError, 'key not found'
@@ -249,14 +252,17 @@
     end
     alias_method 'pairs', 'to_pairs'
 
-    def copy 
-      cp = clone
-      cp.fields = fields.clone
-      cp 
+    def clone
+      clone = super
+    ensure
+      clone.fields = fields.clone
     end
 
-    alias_method 'dup', 'copy'
-    alias_method 'clone', 'copy'
+    def dup
+      dup = super
+    ensure
+      dup.fields = fields.dup
+    end
 
     def deepcopy 
       cp = Marshal.load(Marshal.dump(self))
@@ -278,7 +284,7 @@
       array
     end
     def self.[] *pairs
-      new *pairs
+      new(*pairs)
     end
   end
   def Arrayfields(*a, &b) Arrayfields.new(*a, &b) end
@@ -304,13 +310,15 @@
   #
   # access to fieldset
   #
-    attr_reader :fieldset
+    def fieldset
+      @fieldset ||= nil
+    end
   #
   # access to field list
   #
     def fields *values
       return(send('fields=', *values)) unless values.empty?
-      @fieldset and @fieldset.fields
+      fieldset and fieldset.fields
     end
   end
 #
@@ -430,6 +438,6 @@
           each_pair{|f,v| map.add f,v}
         end
       end
-   end 
+    end 
   end
   Pseudohash = PseudoHash

@@ -2,7 +2,7 @@ module Main
 #
 # top level constants
 #
-  Main::VERSION = '2.8.2' unless
+  Main::VERSION = '4.2.0' unless
     defined? Main::VERSION
   def self.version() Main::VERSION end
 
@@ -29,20 +29,7 @@ module Main
   end
 
   require 'fattr'
-  begin
-    version = Fattr.version
-    raise unless version[%r/^1\./] 
-  rescue
-    abort "main requires fattrs >= 1.0.3 - gem install fattr"
-  end
-
   require 'arrayfields'
-  begin
-    version = Arrayfields.version
-    raise unless version[%r/^4\./] 
-  rescue
-    abort "main requires arrayfields >= 4.5.0 - gem install arrayfields"
-  end
 #
 # main's own libs
 #
@@ -55,6 +42,6 @@ module Main
   require libdir + 'parameter'
   require libdir + 'getoptlong'
   require libdir + 'mode'
-  require libdir + 'base'
+  require libdir + 'program'
   require libdir + 'factories'
 end

@@ -38,22 +38,24 @@ module Main
         @sym ||= name.split(%r/::/).last.downcase.to_sym
       end
 
-      def class_for type 
+      def class_for(type)
         sym = type.to_s.downcase.to_sym
         c = Types.detect{|t| t.sym == sym}
         raise ArgumentError, type.inspect unless c
         c
       end
 
-      def create type, *a, &b 
-        c = class_for type
+      def create(type, main, *a, &b)
+        c = class_for(type)
         obj = c.allocate
         obj.type = c.sym
-        obj.instance_eval{ initialize *a, &b }
+        obj.main = main
+        obj.instance_eval{ initialize(*a, &b) }
         obj
       end
     end
 
+    fattr 'main'
     fattr 'type'
     fattr 'names'
     fattr 'abbreviations'
@@ -74,8 +76,9 @@ module Main
     fattr 'error_handler_instead'
     fattr 'error_handler_after'
 
-    def initialize name, *names, &block
-      @names = Cast.list_of_string name, *names
+    def initialize(name, *names, &block)
+      @names = Cast.list_of_string(name, *names)
+
       @names.map! do |name|
         if name =~ %r/^-+/
           name.gsub! %r/^-+/, ''
@@ -88,7 +91,7 @@ module Main
 
         name
       end
-      @names = @names.sort.reverse
+      @names = @names.sort_by{|name| name.size}.reverse
       @names[1..-1].each do |name|
         raise ArgumentError, "only one long name allowed (#{ @names.inspect })" if
           name.size > 1
@@ -305,21 +308,38 @@ puts
     end
 
     class List < ::Array
-      def parse argv, env
+      fattr :main
+      fattr :argv
+      fattr :env
+
+      def parse main
+        @main, @argv, @env = main, main.argv, main.env
+
         ignore, stop = [], argv.index('--')
+
         if stop
           ignore = argv[stop .. -1]
           (argv.size - stop).times{ argv.pop }
         end
+
+        argv.push "--#{ argv.shift }" if argv.first == 'help'
+
         parse_options argv
+
         return 'help' if detect{|p| p.name.to_s == 'help' and p.given?}
+
         parse_keywords argv
         parse_arguments argv
         parse_environment env
+
         defaults!
         validate!
-        argv.push *ignore[1 .. -1] unless ignore.empty? 
-        self
+
+        argv.push(*ignore[1..-1]) unless ignore.empty? 
+
+        return self
+      ensure
+        @main, @argv, @env = nil
       end
 
       def parse_options argv, params = nil
@@ -463,7 +483,7 @@ puts
         each do |p|
           if(p.defaults? and (not p.given?)) 
             p.defaults.each do |default|
-              p.values << default # so as NOT to set 'given?'
+              p.values << (default.respond_to?('to_proc') ? main.instance_eval(&default) : default) # so as NOT to set 'given?'
             end
           end
         end
@@ -505,19 +525,18 @@ puts
         replace keep
       end
 
-      def << *a 
-        delete *a
+      def <<(*a)
+        delete(*a)
         super
       end
     end
 
     class DSL
       def self.evaluate param, &block
-        new(param).evaluate(&block)
+        new(param).instance_eval(&block)
       end
 
       attr 'param'
-      alias_method 'evaluate', 'instance_eval'
 
       def initialize param
         @param = param
@@ -527,7 +546,7 @@ puts
         name = param.name
         a ||= name
         b = fattr_block_for name, &block 
-        Main.current.module_eval{ fattr *a, &b }
+        @param.main.module_eval{ fattr(*a, &b) }
       end
       alias_method 'attribute', 'fattr'
 
@@ -536,8 +555,8 @@ puts
         lambda{ block.call self.param[name] }
       end
 
-      def attr *a, &b
-        fattr *a, &b
+      def attr(*a, &b)
+        fattr(*a, &b)
       end
 
       def example *list
@@ -624,19 +643,19 @@ puts
       end
       alias_method 'desc', 'description'
 
-      def default value, *values
-        param.defaults.push value 
-        param.defaults.push *values
+      def default *values, &block
+        if block.nil? and values.empty?
+          raise ArgumentError, 'no default'
+        end
+        unless values.empty?
+          param.defaults.push(*values)
+        end
+        unless block.nil?
+          param.defaults.push block
+        end
         param.defaults
       end
-      def defaults?
-        param.defaults?
-      end
-      def defaults value, *values 
-        param.defaults.push value 
-        param.defaults.push *values
-        param.defaults
-      end
+      alias_method 'defaults', 'default'
       def defaults?
         param.defaults?
       end
