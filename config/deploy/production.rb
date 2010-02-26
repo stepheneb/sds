@@ -4,3 +4,5 @@ set :version, "production"
  # servers (which is the default), you can specify the actual location
 # via the :deploy_to variable:
 set :deploy_to, "/web/production/#{application}"
+
+set :shared_path, "/web/production/#{application}/shared"

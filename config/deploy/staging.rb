@@ -5,6 +5,8 @@ set :version, "staging"
 # via the :deploy_to variable:
 set :deploy_to, "/web/staging/#{application}"
 
+set :shared_path, "/web/staging/#{application}/shared"
+
 task :reset_staging_db, :roles => :db do
   if version == "staging"
     # put the app into maintenance mode
