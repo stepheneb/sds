@@ -1,6 +1,6 @@
 if USE_LIBXML
   # gem 'libxml-ruby', '= 0.3.8.4.1'
-  gem 'libxml-ruby', '= 0.5.4'
+  gem 'libxml-ruby', '> 1.1.0'
   require 'xml/libxml'
 else
   require "rexml/document"
